@@ -1020,20 +1020,15 @@
             font-style: italic;
         }
 
-        /* Stacked compare values for Market Summary table */
-        .cell-compare-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            margin-top: 4px;
-        }
-
-        .cell-compare-line {
+        /* Inline compare values for Market Summary table */
+        .cell-compare-inline {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
+            margin-top: 4px;
             font-size: 12px;
+            flex-wrap: wrap;
         }
 
         .cell-compare-label {
@@ -1048,6 +1043,11 @@
         .cell-compare-value.up { color: var(--positive); }
         .cell-compare-value.down { color: var(--negative); }
         .cell-compare-value.neutral { color: var(--neutral); }
+
+        .cell-divider {
+            color: var(--light-steel);
+            margin: 0 4px;
+        }
 
         /* Tooltip */
         .chart-tooltip {
@@ -1562,19 +1562,19 @@
                             const change = calcChange(data.YTD, data.LYTD, config.format);
                             const changeClass = getChangeClass(change, config.format);
 
-                            let targetLine = '';
+                            let targetPart = '';
                             if (data.Target) {
                                 const tGap = calcTargetGap(data.YTD, data.Target, config.format);
                                 const tGapClass = getChangeClass(tGap, config.format);
-                                targetLine = `<div class="cell-compare-line"><span class="cell-compare-label">TGT:</span> <span class="cell-compare-value ${tGapClass}">${formatChange(tGap, config.format)}</span></div>`;
+                                targetPart = `<span class="cell-divider">|</span><span class="cell-compare-label">TGT:</span> <span class="cell-compare-value ${tGapClass}">${formatChange(tGap, config.format)}</span>`;
                             }
 
                             return `
                                 <td class="compare-cell">
                                     <div class="value-cell">${formatValue(data.YTD, config.format)}</div>
-                                    <div class="cell-compare-stack">
-                                        <div class="cell-compare-line"><span class="cell-compare-label">LY:</span> <span class="cell-compare-value ${changeClass}">${formatChange(change, config.format)}</span></div>
-                                        ${targetLine}
+                                    <div class="cell-compare-inline">
+                                        <span class="cell-compare-label">LY:</span> <span class="cell-compare-value ${changeClass}">${formatChange(change, config.format)}</span>
+                                        ${targetPart}
                                     </div>
                                 </td>
                             `;

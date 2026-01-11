@@ -44,11 +44,10 @@
         .logo-container {
             background: var(--white);
             padding: 8px;
-            border-radius: 8px;
         }
 
         .logo-container svg {
-            height: 60px;
+            height: 70px;
             width: auto;
         }
 
@@ -165,6 +164,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 8px;
         }
 
         .target-label { color: var(--text-muted); }
@@ -172,6 +172,23 @@
         .target-gap { font-weight: 600; }
         .target-gap.up { color: var(--positive); }
         .target-gap.down { color: var(--negative); }
+
+        .target-bar {
+            height: 6px;
+            background: var(--light-steel);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .target-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .target-fill.good { background: var(--positive); }
+        .target-fill.ok { background: #f59e0b; }
+        .target-fill.bad { background: var(--negative); }
 
         /* Section Headers */
         .section-header {
@@ -192,7 +209,7 @@
             font-size: 14px;
         }
 
-        /* Loyalty KPIs (formerly Focus Areas) */
+        /* Loyalty KPIs */
         .loyalty-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -308,11 +325,23 @@
             color: var(--navy);
         }
 
+        .cell-changes {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .cell-change-item.up { color: var(--positive); }
+        .cell-change-item.down { color: var(--negative); }
+        .cell-divider { color: var(--text-muted); }
+
         .cell-sub {
-            display: block;
             font-size: 11px;
             font-weight: 500;
-            margin-top: 2px;
         }
 
         .cell-sub.up { color: var(--positive); }
@@ -434,7 +463,7 @@
         }
 
         .upload-logo { margin-bottom: 24px; }
-        .upload-logo svg { height: 80px; }
+        .upload-logo svg { height: 100px; }
 
         .upload-box h2 { font-size: 24px; color: var(--navy); margin-bottom: 8px; }
         .upload-box p { color: var(--text-muted); margin-bottom: 24px; }
@@ -516,22 +545,26 @@
             height: 280px;
         }
 
-        /* Momentum Cards */
-        .momentum-grid {
+        /* KPI Detail Cards - same style as executive summary */
+        .kpi-detail-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 20px;
             margin-bottom: 24px;
         }
 
-        .momentum-card {
-            background: var(--light-bg);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
+        .kpi-detail-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--light-steel);
+            border-left: 4px solid var(--navy);
         }
 
-        .momentum-label {
+        .kpi-detail-card.positive { border-left-color: var(--positive); }
+        .kpi-detail-card.negative { border-left-color: var(--negative); }
+
+        .kpi-detail-label {
             font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -539,20 +572,26 @@
             margin-bottom: 8px;
         }
 
-        .momentum-value {
-            font-size: 24px;
+        .kpi-detail-value {
+            font-size: 28px;
             font-weight: 700;
             color: var(--navy);
+            margin-bottom: 4px;
         }
 
-        .momentum-change {
+        .kpi-detail-sub {
             font-size: 13px;
             font-weight: 600;
-            margin-top: 4px;
         }
 
-        .momentum-change.up { color: var(--positive); }
-        .momentum-change.down { color: var(--negative); }
+        .kpi-detail-sub.up { color: var(--positive); }
+        .kpi-detail-sub.down { color: var(--negative); }
+
+        .kpi-detail-compare {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
 
         .trend-badges {
             display: grid;
@@ -620,11 +659,46 @@
             border-top: 2px solid var(--navy);
         }
 
+        .cell-na {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Tooltip */
+        .chart-tooltip {
+            position: fixed;
+            background: var(--navy);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        .chart-tooltip.visible { display: block; }
+
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .tooltip-label { opacity: 0.8; }
+        .tooltip-value { font-weight: 600; }
+
         @media (max-width: 1200px) {
             .exec-summary { grid-template-columns: repeat(2, 1fr); }
             .loyalty-grid { grid-template-columns: 1fr; }
             .insights-grid { grid-template-columns: 1fr; }
-            .momentum-grid { grid-template-columns: 1fr; }
+            .kpi-detail-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -635,6 +709,7 @@
 </head>
 <body>
     <div id="app"></div>
+    <div class="chart-tooltip" id="chartTooltip"></div>
 
     <script>
     (function() {
@@ -642,38 +717,44 @@
         const MONTH_MAP = {'01 - Jan':'JAN','02 - Feb':'FEB','03 - Mar':'MAR','04 - Apr':'APR','05 - May':'MAY','06 - Jun':'JUN','07 - Jul':'JUL','08 - Aug':'AUG','09 - Sep':'SEP','10 - Oct':'OCT','11 - Nov':'NOV','12 - Dec':'DEC'};
 
         const KPI_CONFIG = {
-            'SLS_TTL': { name: 'Total Sales', format: 'currency', good: 'up' },
-            'SLS_PEN': { name: 'Sales Penetration', format: 'percent', good: 'up' },
-            'MBR_TTL': { name: 'Transacting Members', format: 'number', good: 'up' },
-            'MBR_NEW': { name: 'New Members', format: 'number', good: 'up' },
-            'MBR_RTN': { name: 'Returning Members', format: 'number', good: 'up' },
-            'AVG_ATF': { name: 'Avg Frequency', format: 'decimal', good: 'up' },
-            'AVG_AOV': { name: 'Avg Order Value', format: 'currency_small', good: 'up' },
-            'PCT_RDM': { name: 'Redeeming Members %', format: 'percent', good: 'up', loyalty: true },
-            'PCT_XBP': { name: 'Cross Brand Plus %', format: 'percent', good: 'up', loyalty: true },
-            'PCT_NBA': { name: 'New Brand Adopters %', format: 'percent', good: 'up', loyalty: true },
-            'AVG_BRD': { name: 'Avg Brands Shopped', format: 'decimal', good: 'up' },
-            'PTS_BRN': { name: 'Points Burned Value', format: 'currency', good: 'up' }
+            'SLS_TTL': { name: 'Total Sales', format: 'currency', good: 'up', hasShare: true },
+            'SLS_PEN': { name: 'Sales Penetration', format: 'percent', good: 'up', hasShare: false },
+            'MBR_TTL': { name: 'Transacting Members', format: 'number', good: 'up', hasShare: true },
+            'MBR_NEW': { name: 'New Members', format: 'number', good: 'up', hasShare: true },
+            'MBR_RTN': { name: 'Returning Members', format: 'number', good: 'up', hasShare: true },
+            'AVG_ATF': { name: 'Avg Frequency', format: 'decimal', good: 'up', hasShare: false },
+            'AVG_AOV': { name: 'Avg Order Value', format: 'currency_small', good: 'up', hasShare: false },
+            'PCT_RDM': { name: 'Redeeming Members %', format: 'percent', good: 'up', loyalty: true, hasShare: false },
+            'PCT_XBP': { name: 'Cross Brand Plus %', format: 'percent', good: 'up', loyalty: true, hasShare: false },
+            'PCT_NBA': { name: 'New Brand Adopters %', format: 'percent', good: 'up', loyalty: true, hasShare: false },
+            'AVG_BRD': { name: 'Avg Brands Shopped', format: 'decimal', good: 'up', hasShare: false },
+            'PTS_BRN': { name: 'Points Burned Value', format: 'currency', good: 'up', hasShare: true }
         };
 
         const MARKET_ORDER = ['All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
 
-        // Company Logo SVG
-        const LOGO_SVG = `<svg viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
-            <!-- Vertical lines -->
-            <rect x="20" y="0" width="8" height="95" fill="#8FAFD4"/>
-            <rect x="35" y="0" width="8" height="105" fill="#8FAFD4"/>
-            <rect x="50" y="0" width="8" height="115" fill="#8FAFD4"/>
-            <rect x="65" y="0" width="8" height="125" fill="#1B365D"/>
-            <!-- Curved elements -->
-            <path d="M20 95 Q20 130 45 150 Q55 158 55 145 Q55 130 35 115 Q20 105 20 95" fill="#1B365D"/>
-            <path d="M35 105 Q35 135 55 152 Q65 160 65 147 Q65 135 50 122 Q35 112 35 105" fill="#1B365D"/>
-            <path d="M50 115 Q50 140 68 155 Q78 162 78 150 Q78 140 65 128 Q50 120 50 115" fill="#1B365D"/>
-            <path d="M65 125 Q65 145 80 157 Q90 163 90 152 Q90 143 78 133 Q65 128 65 125" fill="#1B365D"/>
+        // Company Logo SVG - proper proportions matching the actual logo
+        const LOGO_SVG = `<svg viewBox="0 0 110 150" xmlns="http://www.w3.org/2000/svg">
+            <!-- Vertical bars -->
+            <rect x="18" y="5" width="6" height="70" fill="#8FAFD4"/>
+            <rect x="30" y="5" width="6" height="80" fill="#8FAFD4"/>
+            <rect x="42" y="5" width="6" height="90" fill="#8FAFD4"/>
+            <rect x="54" y="5" width="6" height="100" fill="#1B365D"/>
+            <!-- Curved wave elements -->
+            <path d="M18 75 C18 95, 25 115, 42 130 C50 136, 52 130, 48 120 C42 108, 30 100, 18 90 Z" fill="#1B365D"/>
+            <path d="M30 85 C30 105, 38 122, 52 135 C60 141, 62 135, 58 125 C52 113, 42 105, 30 97 Z" fill="#1B365D"/>
+            <path d="M42 95 C42 112, 50 128, 62 140 C70 146, 72 140, 68 130 C62 118, 54 110, 42 102 Z" fill="#1B365D"/>
+            <path d="M54 105 C54 120, 60 133, 72 143 C80 148, 82 142, 78 134 C72 124, 64 116, 54 110 Z" fill="#1B365D"/>
             <!-- Diamond accents -->
-            <rect x="95" y="25" width="10" height="10" transform="rotate(45 100 30)" fill="#1B365D"/>
-            <rect x="105" y="35" width="8" height="8" transform="rotate(45 109 39)" fill="#8FAFD4"/>
-            <rect x="95" y="45" width="8" height="8" transform="rotate(45 99 49)" fill="#8FAFD4"/>
+            <g transform="translate(78, 20)">
+                <rect width="12" height="12" transform="rotate(45 6 6)" fill="#1B365D"/>
+            </g>
+            <g transform="translate(88, 35)">
+                <rect width="9" height="9" transform="rotate(45 4.5 4.5)" fill="#8FAFD4"/>
+            </g>
+            <g transform="translate(78, 48)">
+                <rect width="9" height="9" transform="rotate(45 4.5 4.5)" fill="#8FAFD4"/>
+            </g>
         </svg>`;
 
         let state = {
@@ -781,12 +862,11 @@
             return [...new Set(state.data.map(d => d.Key))].filter(k => KPI_CONFIG[k]);
         }
 
-        // Generate balanced insights
+        // Generate insights without suggestions
         function generateInsights() {
             const insights = [];
             const market = 'All Markets';
 
-            // POSITIVE: Sales growth
             const sales = getLatestData(market, 'SLS_TTL');
             if (sales) {
                 const change = calcChange(sales.YTD, sales.LYTD, 'currency');
@@ -798,7 +878,6 @@
                 }
             }
 
-            // POSITIVE: AOV growth
             const aov = getLatestData(market, 'AVG_AOV');
             if (aov) {
                 const change = calcChange(aov.YTD, aov.LYTD, 'currency');
@@ -810,7 +889,6 @@
                 }
             }
 
-            // POSITIVE: Member growth
             const members = getLatestData(market, 'MBR_TTL');
             if (members) {
                 const change = calcChange(members.YTD, members.LYTD, 'number');
@@ -822,38 +900,35 @@
                 }
             }
 
-            // CONSTRUCTIVE: NBA opportunity
             const nba = getLatestData(market, 'PCT_NBA');
             if (nba) {
                 const change = calcChange(nba.YTD, nba.LYTD, 'percent');
                 if (change < 0) {
                     insights.push({
                         icon: '🎯', color: 'amber',
-                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')}) — cross-promotion campaigns could unlock growth`
+                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')})`
                     });
                 }
             }
 
-            // CONSTRUCTIVE: XBP opportunity
             const xbp = getLatestData(market, 'PCT_XBP');
             if (xbp) {
                 const change = calcChange(xbp.YTD, xbp.LYTD, 'percent');
                 if (change < 0) {
                     insights.push({
                         icon: '🔄', color: 'amber',
-                        text: `<strong>Cross-brand engagement:</strong> Multi-brand shoppers at ${formatValue(xbp.YTD, 'percent')} (${formatChange(change, 'percent')}) — bundled offers may help diversify baskets`
+                        text: `<strong>Cross-brand engagement:</strong> Multi-brand shoppers at ${formatValue(xbp.YTD, 'percent')} (${formatChange(change, 'percent')})`
                     });
                 }
             }
 
-            // CONSTRUCTIVE: Redemption opportunity
             const rdm = getLatestData(market, 'PCT_RDM');
             if (rdm) {
                 const change = calcChange(rdm.YTD, rdm.LYTD, 'percent');
                 if (change < 0) {
                     insights.push({
                         icon: '🎁', color: 'amber',
-                        text: `<strong>Redemption activation:</strong> Point usage at ${formatValue(rdm.YTD, 'percent')} (${formatChange(change, 'percent')}) — targeted reminders could re-engage dormant points`
+                        text: `<strong>Redemption activation:</strong> Point usage at ${formatValue(rdm.YTD, 'percent')} (${formatChange(change, 'percent')})`
                     });
                 }
             }
@@ -861,7 +936,6 @@
             return insights.slice(0, 6);
         }
 
-        // Render functions
         function render() {
             const app = document.getElementById('app');
             if (state.showUpload) {
@@ -970,11 +1044,16 @@
             if (data.Target) {
                 const gap = calcTargetGap(data.YTD, data.Target, config.format);
                 const gapClass = gap >= 0 ? 'up' : 'down';
+                const attainPct = Math.min((data.YTD / data.Target) * 100, 100);
+                const barClass = attainPct >= 95 ? 'good' : attainPct >= 85 ? 'ok' : 'bad';
                 targetHTML = `
                     <div class="metric-target">
                         <div class="target-row">
                             <span class="target-label">Target: ${formatValue(data.Target, config.format)}</span>
                             <span class="target-gap ${gapClass}">${formatChange(gap, config.format)}</span>
+                        </div>
+                        <div class="target-bar">
+                            <div class="target-fill ${barClass}" style="width:${attainPct}%"></div>
                         </div>
                     </div>
                 `;
@@ -1063,13 +1142,16 @@
                                         if (data.Target) {
                                             const tGap = calcTargetGap(data.YTD, data.Target, config.format);
                                             const tIsUp = tGap >= 0;
-                                            targetGapHTML = ` | <span class="cell-sub ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span>`;
+                                            targetGapHTML = `<span class="cell-divider">|</span><span class="cell-change-item ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span>`;
                                         }
 
                                         return `
                                             <td>
                                                 <span class="cell-value">${formatValue(data.YTD, config.format)}</span>
-                                                <span class="cell-sub ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>${targetGapHTML}
+                                                <div class="cell-changes">
+                                                    <span class="cell-change-item ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
+                                                    ${targetGapHTML}
+                                                </div>
                                             </td>
                                         `;
                                     }).join('')}
@@ -1102,12 +1184,11 @@
         function renderMarketAnalysis(kpiKey) {
             const config = KPI_CONFIG[kpiKey];
             const markets = getMarkets();
+            const hasShare = config.hasShare !== false;
 
-            // Get total for calculating share
             const totalData = getLatestData('All Markets', kpiKey);
             const totalValue = totalData?.YTD || 0;
 
-            // Prepare market data (excluding All Markets for the rows, but showing it)
             const allMarketData = markets.map(m => {
                 const data = getLatestData(m, kpiKey);
                 return { market: m, data, isTotal: m === 'All Markets' };
@@ -1123,7 +1204,7 @@
                             <tr>
                                 <th class="left" style="width:180px">Market</th>
                                 <th>2025 YTD</th>
-                                <th>% of Total</th>
+                                <th>% Share</th>
                                 <th>vs 2024</th>
                                 <th>vs Target</th>
                             </tr>
@@ -1133,16 +1214,18 @@
                                 const change = calcChange(data.YTD, data.LYTD, config.format);
                                 const isUp = change >= 0;
 
-                                // Calculate share of total
-                                let shareText = '—';
-                                if (!isTotal && totalValue > 0) {
+                                let shareText = '';
+                                if (!hasShare) {
+                                    shareText = '<span class="cell-na">N/A</span>';
+                                } else if (!isTotal && totalValue > 0) {
                                     const share = (data.YTD / totalValue) * 100;
                                     shareText = share.toFixed(1) + '%';
                                 } else if (isTotal) {
                                     shareText = '100%';
+                                } else {
+                                    shareText = '—';
                                 }
 
-                                // Target gap
                                 let targetGapText = '—';
                                 let targetGapClass = '';
                                 if (data.Target) {
@@ -1207,11 +1290,10 @@
                 return '<p>No data available for selection</p>';
             }
 
-            // Calculate R12M momentum (R12M vs LMR12M)
-            let r12mMomentum = null;
-            if (latestData?.R12M && latestData?.LMR12M) {
-                r12mMomentum = calcChange(latestData.R12M, latestData.LMR12M, config.format);
-            }
+            // Calculate changes
+            const ytdVsLytd = calcChange(latestData?.YTD, latestData?.LYTD, config.format);
+            const r12mVsLr12m = calcChange(latestData?.R12M, latestData?.LMR12M, config.format);
+            const ytdVsTarget = latestData?.Target ? calcTargetGap(latestData.YTD, latestData.Target, config.format) : null;
 
             // Prepare chart data
             const chartData = MONTHS.map(month => {
@@ -1245,12 +1327,14 @@
                 if (d.ytd !== null) {
                     const y = yScale(d.ytd);
                     pathYTD += (pathYTD ? ' L' : 'M') + `${x},${y}`;
-                    dotsYTD += `<circle cx="${x}" cy="${y}" r="4" fill="var(--navy)"/>`;
+                    const tooltipData = JSON.stringify({month: d.month, ytd: d.ytd, lytd: d.lytd, target: d.target, format: config.format}).replace(/"/g, '&quot;');
+                    dotsYTD += `<circle cx="${x}" cy="${y}" r="5" fill="var(--navy)" class="chart-dot" data-info="${tooltipData}" style="cursor:pointer"/>`;
                 }
                 if (d.lytd !== null) {
                     const y = yScale(d.lytd);
                     pathLYTD += (pathLYTD ? ' L' : 'M') + `${x},${y}`;
-                    dotsLYTD += `<circle cx="${x}" cy="${y}" r="4" fill="var(--steel-blue)"/>`;
+                    const tooltipData = JSON.stringify({month: d.month, ytd: d.ytd, lytd: d.lytd, target: d.target, format: config.format}).replace(/"/g, '&quot;');
+                    dotsLYTD += `<circle cx="${x}" cy="${y}" r="5" fill="var(--steel-blue)" class="chart-dot" data-info="${tooltipData}" style="cursor:pointer"/>`;
                 }
                 if (d.target !== null) {
                     const y = yScale(d.target);
@@ -1282,29 +1366,36 @@
                 `;
             }).join('');
 
-            // Target gap for card
-            let targetGapText = '';
-            if (latestData?.Target) {
-                const gap = calcTargetGap(latestData.YTD, latestData.Target, config.format);
-                const gapClass = gap >= 0 ? 'up' : 'down';
-                targetGapText = `<span class="cell-sub ${gapClass}" style="font-size:14px">${formatChange(gap, config.format)} from target</span>`;
-            }
+            // KPI Detail Cards
+            const ytdIsPositive = ytdVsTarget !== null ? ytdVsTarget >= 0 : (ytdVsLytd !== null ? ytdVsLytd >= 0 : true);
+            const lytdClass = ytdVsLytd !== null ? (ytdVsLytd >= 0 ? 'positive' : 'negative') : '';
+            const r12mClass = r12mVsLr12m !== null ? (r12mVsLr12m >= 0 ? 'positive' : 'negative') : '';
 
             return `
-                <div class="momentum-grid">
-                    <div class="momentum-card">
-                        <div class="momentum-label">2025 YTD</div>
-                        <div class="momentum-value">${formatValue(latestData?.YTD, config.format)}</div>
-                        ${targetGapText ? `<div>${targetGapText}</div>` : ''}
+                <div class="kpi-detail-grid">
+                    <div class="kpi-detail-card ${ytdVsTarget !== null ? (ytdVsTarget >= 0 ? 'positive' : 'negative') : ''}">
+                        <div class="kpi-detail-label">2025 YTD vs Target</div>
+                        <div class="kpi-detail-value">${formatValue(latestData?.YTD, config.format)}</div>
+                        ${ytdVsTarget !== null ? `
+                            <div class="kpi-detail-sub ${ytdVsTarget >= 0 ? 'up' : 'down'}">${formatChange(ytdVsTarget, config.format)} from target</div>
+                            <div class="kpi-detail-compare">Target: ${formatValue(latestData?.Target, config.format)}</div>
+                        ` : '<div class="kpi-detail-compare">No target set</div>'}
                     </div>
-                    <div class="momentum-card">
-                        <div class="momentum-label">Rolling 12M</div>
-                        <div class="momentum-value">${formatValue(latestData?.R12M, config.format)}</div>
-                        ${r12mMomentum !== null ? `<div class="momentum-change ${r12mMomentum >= 0 ? 'up' : 'down'}">${formatChange(r12mMomentum, config.format)} momentum</div>` : ''}
+                    <div class="kpi-detail-card ${lytdClass}">
+                        <div class="kpi-detail-label">2024 LYTD vs 2025 YTD</div>
+                        <div class="kpi-detail-value">${formatValue(latestData?.LYTD, config.format)}</div>
+                        ${ytdVsLytd !== null ? `
+                            <div class="kpi-detail-sub ${ytdVsLytd >= 0 ? 'up' : 'down'}">${formatChange(ytdVsLytd, config.format)} YoY growth</div>
+                            <div class="kpi-detail-compare">2025: ${formatValue(latestData?.YTD, config.format)}</div>
+                        ` : ''}
                     </div>
-                    <div class="momentum-card">
-                        <div class="momentum-label">Target</div>
-                        <div class="momentum-value">${latestData?.Target ? formatValue(latestData.Target, config.format) : '—'}</div>
+                    <div class="kpi-detail-card ${r12mClass}">
+                        <div class="kpi-detail-label">Rolling 12M vs Prior R12M</div>
+                        <div class="kpi-detail-value">${formatValue(latestData?.R12M, config.format)}</div>
+                        ${r12mVsLr12m !== null ? `
+                            <div class="kpi-detail-sub ${r12mVsLr12m >= 0 ? 'up' : 'down'}">${formatChange(r12mVsLr12m, config.format)} momentum</div>
+                            <div class="kpi-detail-compare">Prior R12M: ${formatValue(latestData?.LMR12M, config.format)}</div>
+                        ` : ''}
                     </div>
                 </div>
 
@@ -1332,7 +1423,6 @@
         }
 
         function attachEvents() {
-            // Upload
             const dropzone = document.getElementById('dropzone');
             const fileInput = document.getElementById('fileInput');
             const demoBtn = document.getElementById('demoBtn');
@@ -1356,7 +1446,6 @@
                 demoBtn.onclick = loadDemoData;
             }
 
-            // Tabs
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.onclick = () => {
                     state.activeTab = tab.dataset.tab;
@@ -1364,7 +1453,6 @@
                 };
             });
 
-            // Market KPI select
             const marketKpiSelect = document.getElementById('marketKpiSelect');
             if (marketKpiSelect) {
                 marketKpiSelect.onchange = () => {
@@ -1372,7 +1460,6 @@
                 };
             }
 
-            // KPI detail selects
             const kpiMarketSelect = document.getElementById('kpiMarketSelect');
             const kpiSelect = document.getElementById('kpiSelect');
 
@@ -1380,6 +1467,7 @@
                 kpiMarketSelect.onchange = () => {
                     state.selectedMarket = kpiMarketSelect.value;
                     document.getElementById('kpiDetailContent').innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || 'SLS_TTL');
+                    attachChartTooltips();
                 };
             }
 
@@ -1387,8 +1475,54 @@
                 kpiSelect.onchange = () => {
                     state.selectedKPI = kpiSelect.value;
                     document.getElementById('kpiDetailContent').innerHTML = renderKPIDetail(state.selectedMarket || 'All Markets', state.selectedKPI);
+                    attachChartTooltips();
                 };
             }
+
+            attachChartTooltips();
+        }
+
+        function attachChartTooltips() {
+            const tooltip = document.getElementById('chartTooltip');
+            const dots = document.querySelectorAll('.chart-dot');
+
+            dots.forEach(dot => {
+                dot.addEventListener('mouseenter', (e) => {
+                    const info = JSON.parse(e.target.dataset.info);
+                    const change = calcChange(info.ytd, info.lytd, info.format);
+                    tooltip.innerHTML = `
+                        <div class="tooltip-title">${info.month}</div>
+                        <div class="tooltip-row">
+                            <span class="tooltip-label">2025:</span>
+                            <span class="tooltip-value">${formatValue(info.ytd, info.format)}</span>
+                        </div>
+                        <div class="tooltip-row">
+                            <span class="tooltip-label">2024:</span>
+                            <span class="tooltip-value">${formatValue(info.lytd, info.format)}</span>
+                        </div>
+                        ${info.target ? `
+                        <div class="tooltip-row">
+                            <span class="tooltip-label">Target:</span>
+                            <span class="tooltip-value">${formatValue(info.target, info.format)}</span>
+                        </div>
+                        ` : ''}
+                        <div class="tooltip-row">
+                            <span class="tooltip-label">vs 2024:</span>
+                            <span class="tooltip-value" style="color:${change >= 0 ? '#2E7D5A' : '#C4314B'}">${formatChange(change, info.format)}</span>
+                        </div>
+                    `;
+                    tooltip.classList.add('visible');
+                });
+
+                dot.addEventListener('mousemove', (e) => {
+                    tooltip.style.left = (e.clientX + 15) + 'px';
+                    tooltip.style.top = (e.clientY - 10) + 'px';
+                });
+
+                dot.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('visible');
+                });
+            });
         }
 
         function loadFile(file) {
@@ -1422,7 +1556,6 @@
                 });
         }
 
-        // Initialize
         render();
     })();
     </script>

@@ -950,6 +950,7 @@
         };
 
         // Map human-readable KPI names to internal keys (for new CSV format)
+        // Includes variations to handle different naming conventions
         const KPI_NAME_MAP = {
             'Total Sales': 'SLS_TTL',
             'Sales Penetration': 'SLS_PEN',
@@ -957,12 +958,20 @@
             'New Members': 'MBR_NEW',
             'Returning Members': 'MBR_RTN',
             'Avg Frequency': 'AVG_ATF',
+            'Average Frequency': 'AVG_ATF',
             'Avg Order Value': 'AVG_AOV',
+            'Average Order Value': 'AVG_AOV',
+            'AOV': 'AVG_AOV',
             'Redeeming Members %': 'PCT_RDM',
+            'Redeeming Members': 'PCT_RDM',
             'Cross Brand Plus %': 'PCT_XBP',
+            'Cross Brand Plus': 'PCT_XBP',
             'New Brand Adopters %': 'PCT_NBA',
+            'New Brand Adopters': 'PCT_NBA',
             'Avg Brands Shopped': 'AVG_BRD',
-            'Points Burned Value': 'PTS_BRN'
+            'Average Brands Shopped': 'AVG_BRD',
+            'Points Burned Value': 'PTS_BRN',
+            'Points Burned': 'PTS_BRN'
         };
 
         const MARKET_ORDER = ['All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
@@ -1045,10 +1054,13 @@
             return sign + change.toFixed(1) + '%';
         }
 
-        // Get CSS class for change value: up (>=1%), down (<=-1%), neutral (between -1% and 1%)
-        function getChangeClass(change) {
+        // Get CSS class for change value
+        // For percent format (PP): neutral if between -0.1 and +0.1 PP
+        // For other formats (%): neutral if between -1% and +1%
+        function getChangeClass(change, format) {
             if (change === null) return '';
-            if (Math.abs(change) < 1) return 'neutral';
+            const threshold = format === 'percent' ? 0.1 : 1;
+            if (Math.abs(change) < threshold) return 'neutral';
             return change >= 0 ? 'up' : 'down';
         }
 
@@ -1301,7 +1313,7 @@
 
             // Card accent based on TARGET if available, otherwise vs LY - uses same thresholds as badges
             const accentChange = targetGap !== null ? targetGap : changeVsLY;
-            const cardAccentClass = getChangeClass(accentChange) || 'neutral';
+            const cardAccentClass = getChangeClass(accentChange, config.format) || 'neutral';
 
             // Arrow SVGs
             const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
@@ -1311,7 +1323,7 @@
             // Target row - primary comparison (highlighted)
             let targetRow = '';
             if (data.Target) {
-                const gapClass = getChangeClass(targetGap);
+                const gapClass = getChangeClass(targetGap, config.format);
                 targetRow = `
                     <div class="metric-target-row">
                         <div class="metric-target-left">
@@ -1324,7 +1336,7 @@
             }
 
             // vs 2024 - subtle with arrow
-            const vsLYClass = getChangeClass(changeVsLY);
+            const vsLYClass = getChangeClass(changeVsLY, config.format);
             const vsArrow = vsLYClass === 'up' ? arrowUp : (vsLYClass === 'down' ? arrowDown : arrowNeutral);
             const vsRow = `
                 <div class="metric-vs-row">
@@ -1380,12 +1392,12 @@
                                         const data = getLatestData(m, k);
                                         if (!data) return '<td>—</td>';
                                         const change = calcChange(data.YTD, data.LYTD, config.format);
-                                        const changeClass = getChangeClass(change);
+                                        const changeClass = getChangeClass(change, config.format);
 
                                         let targetGapHTML = '';
                                         if (data.Target) {
                                             const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                            const tGapClass = getChangeClass(tGap);
+                                            const tGapClass = getChangeClass(tGap, config.format);
                                             targetGapHTML = `<span class="cell-divider">|</span><span style="color:var(--text-muted);font-weight:400">vs TGT:</span> <span class="cell-change-item ${tGapClass}">${formatChange(tGap, config.format)}</span>`;
                                         }
 
@@ -1526,13 +1538,13 @@
                             <tbody>
                                 ${marketData.map(({market, data}) => {
                                     const change = calcChange(data.YTD, data.LYTD, config.format);
-                                    const changeClass = getChangeClass(change);
+                                    const changeClass = getChangeClass(change, config.format);
 
                                     let targetHTML = '';
                                     if (hasTargets) {
                                         if (data.Target) {
                                             const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                            const tGapClass = getChangeClass(tGap);
+                                            const tGapClass = getChangeClass(tGap, config.format);
                                             targetHTML = `
                                                 <td class="compare-cell">
                                                     <div class="compare-group">
@@ -1567,14 +1579,14 @@
                                         <td class="compare-cell">
                                             <div class="compare-group">
                                                 <span class="compare-value">${formatValue(totalRow.data.LYTD, config.format)}</span>
-                                                <span class="compare-badge ${getChangeClass(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format))}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
+                                                <span class="compare-badge ${getChangeClass(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
                                             </div>
                                         </td>
                                         ${hasTargets && totalRow.data.Target ? `
                                             <td class="compare-cell">
                                                 <div class="compare-group">
                                                     <span class="compare-value">${formatValue(totalRow.data.Target, config.format)}</span>
-                                                    <span class="compare-badge ${getChangeClass(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format))}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
+                                                    <span class="compare-badge ${getChangeClass(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
                                                 </div>
                                             </td>
                                         ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
@@ -1691,7 +1703,7 @@
             // Monthly change badges
             const badgesHTML = chartData.map(d => {
                 const change = calcChange(d.ytd, d.lytd, config.format);
-                const changeClass = getChangeClass(change);
+                const changeClass = getChangeClass(change, config.format);
                 return `
                     <div class="trend-badge">
                         <div class="trend-badge-month">${d.month}</div>
@@ -1711,20 +1723,20 @@
                     <div class="kpi-hero-comparisons">
                         <div class="kpi-comparison-item">
                             <span class="kpi-comp-label">vs 2024</span>
-                            <span class="kpi-comp-value ${getChangeClass(ytdVsLytd)}">${formatChange(ytdVsLytd, config.format)}</span>
+                            <span class="kpi-comp-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
                             <span class="kpi-comp-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
                         </div>
                         ${ytdVsTarget !== null ? `
                         <div class="kpi-comparison-item">
                             <span class="kpi-comp-label">vs Target</span>
-                            <span class="kpi-comp-value ${getChangeClass(ytdVsTarget)}">${formatChange(ytdVsTarget, config.format)}</span>
+                            <span class="kpi-comp-value ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
                             <span class="kpi-comp-detail">Target: ${formatValue(latestData?.Target, config.format)}</span>
                         </div>
                         ` : ''}
                         ${r12mVsLr12m !== null ? `
                         <div class="kpi-comparison-item">
                             <span class="kpi-comp-label">R12M Momentum</span>
-                            <span class="kpi-comp-value ${getChangeClass(r12mVsLr12m)}">${formatChange(r12mVsLr12m, config.format)}</span>
+                            <span class="kpi-comp-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
                             <span class="kpi-comp-detail">R12M: ${formatValue(latestData?.R12M, config.format)} | Prior: ${formatValue(latestData?.LMR12M, config.format)}</span>
                         </div>
                         ` : ''}

@@ -260,19 +260,19 @@
 
         .market-table th {
             background: var(--navy);
-            padding: 14px 16px;
+            padding: 16px 18px;
             text-align: center;
-            font-size: 12px;
+            font-size: 14px;
             color: white;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .market-table th.left { text-align: left; }
 
         .market-table td {
-            padding: 14px 16px;
+            padding: 16px 18px;
             border-top: 1px solid var(--light-steel);
             font-size: 14px;
             text-align: center;
@@ -299,7 +299,8 @@
         }
 
         .cell-value {
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 18px;
             color: var(--navy);
         }
 
@@ -668,18 +669,23 @@
         }
 
         .modern-table th {
-            padding: 16px 16px;
+            padding: 16px 18px;
             text-align: center;
-            font-size: 13px;
-            color: var(--navy);
+            font-size: 14px;
+            color: white;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 700;
-            border-bottom: 2px solid var(--light-steel);
-            background: rgba(27, 54, 93, 0.03);
+            background: var(--navy);
         }
 
-        .modern-table th:first-child { text-align: left; }
+        .modern-table th:first-child {
+            text-align: left;
+            border-radius: 8px 0 0 0;
+        }
+        .modern-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
         .modern-table th.right { text-align: right; }
         .modern-table th.center { text-align: center; }
 
@@ -920,7 +926,13 @@
     <script>
     (function() {
         const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        const MONTH_MAP = {'01 - Jan':'JAN','02 - Feb':'FEB','03 - Mar':'MAR','04 - Apr':'APR','05 - May':'MAY','06 - Jun':'JUN','07 - Jul':'JUL','08 - Aug':'AUG','09 - Sep':'SEP','10 - Oct':'OCT','11 - Nov':'NOV','12 - Dec':'DEC'};
+        // Support both "01 - Jan" and "01-Jan" formats
+        const MONTH_MAP = {
+            '01 - Jan':'JAN','02 - Feb':'FEB','03 - Mar':'MAR','04 - Apr':'APR','05 - May':'MAY','06 - Jun':'JUN',
+            '07 - Jul':'JUL','08 - Aug':'AUG','09 - Sep':'SEP','10 - Oct':'OCT','11 - Nov':'NOV','12 - Dec':'DEC',
+            '01-Jan':'JAN','02-Feb':'FEB','03-Mar':'MAR','04-Apr':'APR','05-May':'MAY','06-Jun':'JUN',
+            '07-Jul':'JUL','08-Aug':'AUG','09-Sep':'SEP','10-Oct':'OCT','11-Nov':'NOV','12-Dec':'DEC'
+        };
 
         const KPI_CONFIG = {
             'SLS_TTL': { name: 'Total Sales', format: 'currency', good: 'up', hasShare: true },
@@ -935,6 +947,22 @@
             'PCT_NBA': { name: 'New Brand Adopters %', format: 'percent', good: 'up', loyalty: true, hasShare: false },
             'AVG_BRD': { name: 'Avg Brands Shopped', format: 'decimal', good: 'up', hasShare: false },
             'PTS_BRN': { name: 'Points Burned Value', format: 'currency', good: 'up', hasShare: true }
+        };
+
+        // Map human-readable KPI names to internal keys (for new CSV format)
+        const KPI_NAME_MAP = {
+            'Total Sales': 'SLS_TTL',
+            'Sales Penetration': 'SLS_PEN',
+            'Transacting Members': 'MBR_TTL',
+            'New Members': 'MBR_NEW',
+            'Returning Members': 'MBR_RTN',
+            'Avg Frequency': 'AVG_ATF',
+            'Avg Order Value': 'AVG_AOV',
+            'Redeeming Members %': 'PCT_RDM',
+            'Cross Brand Plus %': 'PCT_XBP',
+            'New Brand Adopters %': 'PCT_NBA',
+            'Avg Brands Shopped': 'AVG_BRD',
+            'Points Burned Value': 'PTS_BRN'
         };
 
         const MARKET_ORDER = ['All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
@@ -1029,6 +1057,10 @@
             const headers = lines[0].split(',').map(h => h.trim());
             const data = [];
 
+            // Check if using new format (has KPI column instead of Key)
+            const hasKPIColumn = headers.includes('KPI');
+            const hasKeyColumn = headers.includes('Key');
+
             for (let i = 1; i < lines.length; i++) {
                 const values = lines[i].split(',');
                 const row = {};
@@ -1036,10 +1068,20 @@
                     let val = values[idx]?.trim();
                     if (['YTD', 'LYTD', 'R12M', 'LMR12M', 'Target'].includes(h)) {
                         row[h] = val === '' ? null : parseFloat(val);
+                    } else if (h === 'KPI') {
+                        // Map human-readable KPI name to internal key
+                        row['Key'] = KPI_NAME_MAP[val] || val;
+                    } else if (h === 'Month') {
+                        // Normalize month format to "XX - Mon" for consistency
+                        if (val && val.match(/^\d{2}-[A-Za-z]{3}$/)) {
+                            val = val.replace('-', ' - ');
+                        }
+                        row[h] = val;
                     } else {
                         row[h] = val;
                     }
                 });
+                // Support both old format (Key) and new format (KPI mapped to Key)
                 if (row.Market && row.Key) data.push(row);
             }
             return data;
@@ -1417,29 +1459,29 @@
             let donutSegments = '';
             let labelElements = '';
             let cumulative = 0;
-            const svgSize = 240;
+            const svgSize = 280;
             const center = svgSize / 2;
-            const radius = 85;
+            const radius = 75;
             const circumference = 2 * Math.PI * radius;
 
             shareData.forEach((item, idx) => {
                 const segmentLength = (item.share / 100) * circumference;
                 const offset = (cumulative / 100) * circumference;
-                donutSegments += `<circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${item.color}" stroke-width="32" stroke-dasharray="${segmentLength} ${circumference}" stroke-dashoffset="-${offset}"/>`;
+                donutSegments += `<circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${item.color}" stroke-width="28" stroke-dasharray="${segmentLength} ${circumference}" stroke-dashoffset="-${offset}"/>`;
 
                 // Calculate label position (middle of segment)
                 const midAngle = ((cumulative + item.share / 2) / 100) * 2 * Math.PI - Math.PI / 2;
-                const labelRadius = radius + 45;
+                const labelRadius = radius + 55;
                 const lx = center + Math.cos(midAngle) * labelRadius;
                 const ly = center + Math.sin(midAngle) * labelRadius;
-                const textAnchor = lx > center ? 'start' : 'end';
+                const textAnchor = lx > center + 10 ? 'start' : (lx < center - 10 ? 'end' : 'middle');
 
                 // Short market name
                 const shortName = item.market.replace('United Arab Emirates', 'UAE');
 
                 labelElements += `
-                    <text x="${lx}" y="${ly - 6}" text-anchor="${textAnchor}" fill="${item.color}" font-size="13" font-weight="700">${item.share.toFixed(0)}%</text>
-                    <text x="${lx}" y="${ly + 8}" text-anchor="${textAnchor}" fill="var(--text-muted)" font-size="10">${shortName}</text>
+                    <text x="${lx}" y="${ly}" text-anchor="${textAnchor}" fill="${item.color}" font-size="14" font-weight="700">${item.share.toFixed(0)}%</text>
+                    <text x="${lx}" y="${ly + 14}" text-anchor="${textAnchor}" fill="#64748B" font-size="11">${shortName}</text>
                 `;
 
                 cumulative += item.share;

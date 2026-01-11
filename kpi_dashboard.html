@@ -13,6 +13,8 @@
             --light-steel: #B8D4E8;
             --positive: #2E7D5A;
             --negative: #C4314B;
+            --positive-soft: #3d9970;
+            --negative-soft: #d35d6e;
             --white: #FFFFFF;
             --light-bg: #F8FAFC;
             --text-dark: #1B365D;
@@ -154,28 +156,53 @@
             align-items: center;
             gap: 8px;
             font-size: 13px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .metric-target-label {
             color: var(--text-muted);
         }
 
-        .metric-target-gap {
+        .metric-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
             font-weight: 600;
+            font-size: 12px;
         }
 
-        .metric-target-gap.up { color: var(--positive); }
-        .metric-target-gap.down { color: var(--negative); }
+        .metric-badge.up {
+            background: rgba(61, 153, 112, 0.15);
+            color: var(--positive-soft);
+        }
+
+        .metric-badge.down {
+            background: rgba(211, 93, 110, 0.15);
+            color: var(--negative-soft);
+        }
 
         .metric-vs-line {
             font-size: 12px;
             color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .metric-vs-value {
+        .metric-vs-badge {
+            padding: 2px 8px;
+            border-radius: 10px;
             font-weight: 600;
-            color: var(--steel-blue);
+            font-size: 11px;
+        }
+
+        .metric-vs-badge.up {
+            background: rgba(143, 175, 212, 0.25);
+            color: var(--positive-soft);
+        }
+
+        .metric-vs-badge.down {
+            background: rgba(143, 175, 212, 0.25);
+            color: var(--negative-soft);
         }
 
         /* Section Headers */
@@ -970,8 +997,8 @@
             'AVG_AOV': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
             'AVG_ATF': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
             'SLS_PEN': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
-            'PCT_NBA': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-            'PCT_XBP': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+            'PCT_NBA': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>',
+            'PCT_XBP': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
             'PCT_RDM': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>'
         };
 
@@ -986,23 +1013,24 @@
             // Card accent based on TARGET if available, otherwise vs LY
             const isGood = targetGap !== null ? targetGap >= 0 : (changeVsLY !== null ? changeVsLY >= 0 : true);
 
-            // Target line (primary comparison)
+            // Target line with badge
             let targetLine = '';
             if (data.Target) {
                 const gapClass = targetGap >= 0 ? 'up' : 'down';
                 targetLine = `
                     <div class="metric-target-line">
                         <span class="metric-target-label">Target: ${formatValue(data.Target, config.format)}</span>
-                        <span class="metric-target-gap ${gapClass}">${formatChange(targetGap, config.format)}</span>
+                        <span class="metric-badge ${gapClass}">${formatChange(targetGap, config.format)}</span>
                     </div>
                 `;
             }
 
-            // vs 2024 line (secondary, muted)
+            // vs 2024 line with colored badge
             const vsLYClass = changeVsLY >= 0 ? 'up' : 'down';
             const vsLine = `
                 <div class="metric-vs-line">
-                    <span class="metric-vs-value">${formatChange(changeVsLY, config.format)}</span> vs 2024
+                    <span class="metric-vs-badge ${vsLYClass}">${formatChange(changeVsLY, config.format)}</span>
+                    <span>vs 2024</span>
                 </div>
             `;
 

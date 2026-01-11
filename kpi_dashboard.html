@@ -668,17 +668,20 @@
         }
 
         .modern-table th {
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 12px;
-            color: var(--text-muted);
+            padding: 16px 16px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--navy);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 700;
             border-bottom: 2px solid var(--light-steel);
+            background: rgba(27, 54, 93, 0.03);
         }
 
+        .modern-table th:first-child { text-align: left; }
         .modern-table th.right { text-align: right; }
+        .modern-table th.center { text-align: center; }
 
         .modern-table td {
             padding: 16px;
@@ -699,7 +702,7 @@
         }
 
         .modern-table .value-cell {
-            text-align: right;
+            text-align: center;
             font-weight: 700;
             color: var(--navy);
             font-variant-numeric: tabular-nums;
@@ -707,7 +710,7 @@
         }
 
         .modern-table .compare-cell {
-            text-align: right;
+            text-align: center;
         }
 
         .modern-table .compare-group {

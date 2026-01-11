@@ -615,43 +615,48 @@
 
         .trend-badges {
             display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 6px;
-            margin-top: 20px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-top: 24px;
         }
 
         .trend-badge {
             background: var(--light-bg);
-            padding: 8px 4px;
-            border-radius: 6px;
+            padding: 16px 12px;
+            border-radius: 10px;
             text-align: center;
+            border: 1px solid rgba(184, 212, 232, 0.3);
         }
 
         .trend-badge-month {
-            font-size: 10px;
+            font-size: 13px;
+            font-weight: 600;
             color: var(--text-muted);
-            margin-bottom: 2px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .trend-badge-actual {
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: 700;
             color: var(--navy);
-            margin-bottom: 2px;
+            margin-bottom: 6px;
         }
 
         .trend-badge-value {
-            font-size: 10px;
+            font-size: 14px;
             font-weight: 600;
         }
 
-        .trend-badge-value.up { color: var(--positive-soft); }
-        .trend-badge-value.down { color: var(--negative-soft); }
-        .trend-badge-value.neutral { color: var(--neutral-soft); }
+        .trend-badge-value.up { color: var(--positive); }
+        .trend-badge-value.down { color: var(--negative); }
+        .trend-badge-value.neutral { color: var(--neutral); }
 
         .trend-badge-label {
             font-weight: 400;
             color: var(--text-muted);
+            font-size: 12px;
         }
 
         /* Modern Market Table */
@@ -911,11 +916,13 @@
         @media (max-width: 1200px) {
             .exec-summary { grid-template-columns: repeat(2, 1fr); }
             .insights-grid { grid-template-columns: 1fr; }
+            .trend-badges { grid-template-columns: repeat(4, 1fr); }
         }
 
         @media (max-width: 768px) {
             .header, .main, .nav-tabs { padding-left: 20px; padding-right: 20px; }
             .exec-summary { grid-template-columns: 1fr; }
+            .trend-badges { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>

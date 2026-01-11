@@ -625,47 +625,60 @@
             color: var(--neutral);
         }
 
-        /* Secondary comparisons - vs 2024 and R12M */
+        /* Hero card main layout - two columns */
+        .kpi-hero-content {
+            display: flex;
+            gap: 32px;
+            align-items: stretch;
+        }
+
+        .kpi-hero-main {
+            flex: 1;
+        }
+
+        /* Secondary comparisons - vs 2024 and R12M stacked on right */
         .kpi-hero-secondary {
             display: flex;
-            gap: 24px;
-            padding-top: 16px;
-            border-top: 1px solid var(--light-steel);
+            flex-direction: column;
+            gap: 12px;
+            padding-left: 32px;
+            border-left: 1px solid var(--light-steel);
+            min-width: 200px;
+            justify-content: center;
         }
 
         .kpi-secondary-item {
-            flex: 1;
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
+            gap: 16px;
             padding: 12px 16px;
-            background: rgba(248, 250, 252, 0.5);
+            background: var(--light-bg);
             border-radius: 8px;
-            border: 1px solid rgba(184, 212, 232, 0.3);
         }
 
         .kpi-secondary-info {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
         }
 
         .kpi-secondary-label {
-            font-size: 10px;
-            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--navy);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .kpi-secondary-detail {
-            font-size: 11px;
+            font-size: 13px;
             color: var(--text-muted);
         }
 
         .kpi-secondary-value {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 700;
-            margin-left: auto;
         }
 
         .kpi-secondary-value.up { color: var(--positive); }
@@ -1823,33 +1836,37 @@
             return `
                 <div class="kpi-hero-card ${overallPositive ? 'positive' : 'negative'}">
                     <div class="kpi-hero-label">${config.name} — 2025 YTD</div>
-                    <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
-                    ${ytdVsTarget !== null ? `
-                    <div class="kpi-hero-target">
-                        <div>
-                            <div class="kpi-hero-target-label">vs Target</div>
-                            <div class="kpi-hero-target-value">Target: ${formatValue(latestData?.Target, config.format)}</div>
-                        </div>
-                        <span class="kpi-hero-target-badge ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
-                    </div>
-                    ` : ''}
-                    <div class="kpi-hero-secondary">
-                        <div class="kpi-secondary-item">
-                            <div class="kpi-secondary-info">
-                                <span class="kpi-secondary-label">vs 2024</span>
-                                <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
+                    <div class="kpi-hero-content">
+                        <div class="kpi-hero-main">
+                            <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
+                            ${ytdVsTarget !== null ? `
+                            <div class="kpi-hero-target">
+                                <div>
+                                    <div class="kpi-hero-target-label">vs Target</div>
+                                    <div class="kpi-hero-target-value">Target: ${formatValue(latestData?.Target, config.format)}</div>
+                                </div>
+                                <span class="kpi-hero-target-badge ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
                             </div>
-                            <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
+                            ` : ''}
                         </div>
-                        ${r12mVsLr12m !== null ? `
-                        <div class="kpi-secondary-item">
-                            <div class="kpi-secondary-info">
-                                <span class="kpi-secondary-label">R12M Momentum</span>
-                                <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)}</span>
+                        <div class="kpi-hero-secondary">
+                            <div class="kpi-secondary-item">
+                                <div class="kpi-secondary-info">
+                                    <span class="kpi-secondary-label">vs 2024</span>
+                                    <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
+                                </div>
+                                <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
                             </div>
-                            <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
+                            ${r12mVsLr12m !== null ? `
+                            <div class="kpi-secondary-item">
+                                <div class="kpi-secondary-info">
+                                    <span class="kpi-secondary-label">R12M Momentum</span>
+                                    <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)}</span>
+                                </div>
+                                <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
+                            </div>
+                            ` : ''}
                         </div>
-                        ` : ''}
                     </div>
                 </div>
 

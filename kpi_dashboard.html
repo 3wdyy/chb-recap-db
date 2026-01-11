@@ -13,8 +13,10 @@
             --light-steel: #B8D4E8;
             --positive: #2E7D5A;
             --negative: #C4314B;
+            --neutral: #B8860B;
             --positive-soft: #3d9970;
             --negative-soft: #d35d6e;
+            --neutral-soft: #D4A017;
             --white: #FFFFFF;
             --light-bg: #F8FAFC;
             --text-dark: #1B365D;
@@ -192,6 +194,11 @@
             color: var(--negative);
         }
 
+        .metric-target-badge.neutral {
+            background: rgba(184, 134, 11, 0.15);
+            color: var(--neutral);
+        }
+
         /* vs 2024 - secondary with arrow */
         .metric-vs-row {
             display: flex;
@@ -210,6 +217,7 @@
 
         .metric-vs-arrow.up { color: var(--positive); }
         .metric-vs-arrow.down { color: var(--negative); }
+        .metric-vs-arrow.neutral { color: var(--neutral); }
 
         .metric-vs-arrow svg {
             width: 14px;
@@ -303,6 +311,7 @@
 
         .cell-change-item.up { color: var(--positive); }
         .cell-change-item.down { color: var(--negative); }
+        .cell-change-item.neutral { color: var(--neutral); }
         .cell-divider { color: var(--text-muted); }
 
         .cell-sub {
@@ -312,6 +321,7 @@
 
         .cell-sub.up { color: var(--positive); }
         .cell-sub.down { color: var(--negative); }
+        .cell-sub.neutral { color: var(--neutral); }
 
         /* Insights Panel */
         .insights-panel {
@@ -567,6 +577,7 @@
 
         .kpi-comp-value.up { color: var(--positive); }
         .kpi-comp-value.down { color: var(--negative); }
+        .kpi-comp-value.neutral { color: var(--neutral); }
 
         .kpi-comp-detail {
             font-size: 12px;
@@ -607,6 +618,7 @@
 
         .trend-badge-value.up { color: var(--positive-soft); }
         .trend-badge-value.down { color: var(--negative-soft); }
+        .trend-badge-value.neutral { color: var(--neutral-soft); }
 
         .trend-badge-label {
             font-weight: 400;
@@ -698,6 +710,11 @@
         .modern-table .compare-badge.down {
             background: rgba(196, 49, 75, 0.12);
             color: var(--negative);
+        }
+
+        .modern-table .compare-badge.neutral {
+            background: rgba(184, 134, 11, 0.12);
+            color: var(--neutral);
         }
 
         .modern-table .total-row {
@@ -944,6 +961,13 @@
             return sign + change.toFixed(1) + '%';
         }
 
+        // Get CSS class for change value: up (>=10%), down (<=-10%), neutral (between)
+        function getChangeClass(change) {
+            if (change === null) return '';
+            if (Math.abs(change) < 10) return 'neutral';
+            return change >= 0 ? 'up' : 'down';
+        }
+
         function parseCSV(text) {
             const lines = text.trim().split('\n');
             const headers = lines[0].split(',').map(h => h.trim());
@@ -1183,11 +1207,12 @@
             // Arrow SVGs
             const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
             const arrowDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+            const arrowNeutral = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/></svg>';
 
             // Target row - primary comparison (highlighted)
             let targetRow = '';
             if (data.Target) {
-                const gapClass = targetGap >= 0 ? 'up' : 'down';
+                const gapClass = getChangeClass(targetGap);
                 targetRow = `
                     <div class="metric-target-row">
                         <div class="metric-target-left">
@@ -1200,11 +1225,12 @@
             }
 
             // vs 2024 - subtle with arrow
-            const vsLYClass = changeVsLY >= 0 ? 'up' : 'down';
+            const vsLYClass = getChangeClass(changeVsLY);
+            const vsArrow = vsLYClass === 'up' ? arrowUp : (vsLYClass === 'down' ? arrowDown : arrowNeutral);
             const vsRow = `
                 <div class="metric-vs-row">
                     <span class="metric-vs-arrow ${vsLYClass}">
-                        ${changeVsLY >= 0 ? arrowUp : arrowDown}
+                        ${vsArrow}
                         ${formatChange(changeVsLY, config.format)}
                     </span>
                     <span>vs 2024</span>
@@ -1255,20 +1281,20 @@
                                         const data = getLatestData(m, k);
                                         if (!data) return '<td>—</td>';
                                         const change = calcChange(data.YTD, data.LYTD, config.format);
-                                        const isUp = change >= 0;
+                                        const changeClass = getChangeClass(change);
 
                                         let targetGapHTML = '';
                                         if (data.Target) {
                                             const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                            const tIsUp = tGap >= 0;
-                                            targetGapHTML = `<span class="cell-divider">|</span><span style="color:var(--text-muted);font-weight:400">vs TGT:</span> <span class="cell-change-item ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span>`;
+                                            const tGapClass = getChangeClass(tGap);
+                                            targetGapHTML = `<span class="cell-divider">|</span><span style="color:var(--text-muted);font-weight:400">vs TGT:</span> <span class="cell-change-item ${tGapClass}">${formatChange(tGap, config.format)}</span>`;
                                         }
 
                                         return `
                                             <td>
                                                 <span class="cell-value">${formatValue(data.YTD, config.format)}</span>
                                                 <div class="cell-changes">
-                                                    <span style="color:var(--text-muted);font-weight:400">vs LY:</span> <span class="cell-change-item ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
+                                                    <span style="color:var(--text-muted);font-weight:400">vs LY:</span> <span class="cell-change-item ${changeClass}">${formatChange(change, config.format)}</span>
                                                     ${targetGapHTML}
                                                 </div>
                                             </td>
@@ -1387,18 +1413,18 @@
                             <tbody>
                                 ${marketData.map(({market, data}) => {
                                     const change = calcChange(data.YTD, data.LYTD, config.format);
-                                    const isUp = change >= 0;
+                                    const changeClass = getChangeClass(change);
 
                                     let targetHTML = '';
                                     if (hasTargets) {
                                         if (data.Target) {
                                             const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                            const tIsUp = tGap >= 0;
+                                            const tGapClass = getChangeClass(tGap);
                                             targetHTML = `
                                                 <td class="compare-cell">
                                                     <div class="compare-group">
                                                         <span class="compare-value">${formatValue(data.Target, config.format)}</span>
-                                                        <span class="compare-badge ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span>
+                                                        <span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>
                                                     </div>
                                                 </td>
                                             `;
@@ -1414,7 +1440,7 @@
                                             <td class="compare-cell">
                                                 <div class="compare-group">
                                                     <span class="compare-value">${formatValue(data.LYTD, config.format)}</span>
-                                                    <span class="compare-badge ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
+                                                    <span class="compare-badge ${changeClass}">${formatChange(change, config.format)}</span>
                                                 </div>
                                             </td>
                                             ${targetHTML}
@@ -1428,14 +1454,14 @@
                                         <td class="compare-cell">
                                             <div class="compare-group">
                                                 <span class="compare-value">${formatValue(totalRow.data.LYTD, config.format)}</span>
-                                                <span class="compare-badge ${calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format) >= 0 ? 'up' : 'down'}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
+                                                <span class="compare-badge ${getChangeClass(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format))}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
                                             </div>
                                         </td>
                                         ${hasTargets && totalRow.data.Target ? `
                                             <td class="compare-cell">
                                                 <div class="compare-group">
                                                     <span class="compare-value">${formatValue(totalRow.data.Target, config.format)}</span>
-                                                    <span class="compare-badge ${calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format) >= 0 ? 'up' : 'down'}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
+                                                    <span class="compare-badge ${getChangeClass(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format))}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
                                                 </div>
                                             </td>
                                         ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
@@ -1552,12 +1578,12 @@
             // Monthly change badges
             const badgesHTML = chartData.map(d => {
                 const change = calcChange(d.ytd, d.lytd, config.format);
-                const isUp = change >= 0;
+                const changeClass = getChangeClass(change);
                 return `
                     <div class="trend-badge">
                         <div class="trend-badge-month">${d.month}</div>
                         <div class="trend-badge-actual">${formatValue(d.ytd, config.format)}</div>
-                        <div class="trend-badge-value ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)} <span class="trend-badge-label">vs LY</span></div>
+                        <div class="trend-badge-value ${changeClass}">${formatChange(change, config.format)} <span class="trend-badge-label">vs LY</span></div>
                     </div>
                 `;
             }).join('');
@@ -1572,20 +1598,20 @@
                     <div class="kpi-hero-comparisons">
                         <div class="kpi-comparison-item">
                             <span class="kpi-comp-label">vs 2024</span>
-                            <span class="kpi-comp-value ${ytdVsLytd >= 0 ? 'up' : 'down'}">${formatChange(ytdVsLytd, config.format)}</span>
+                            <span class="kpi-comp-value ${getChangeClass(ytdVsLytd)}">${formatChange(ytdVsLytd, config.format)}</span>
                             <span class="kpi-comp-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
                         </div>
                         ${ytdVsTarget !== null ? `
                         <div class="kpi-comparison-item">
                             <span class="kpi-comp-label">vs Target</span>
-                            <span class="kpi-comp-value ${ytdVsTarget >= 0 ? 'up' : 'down'}">${formatChange(ytdVsTarget, config.format)}</span>
+                            <span class="kpi-comp-value ${getChangeClass(ytdVsTarget)}">${formatChange(ytdVsTarget, config.format)}</span>
                             <span class="kpi-comp-detail">Target: ${formatValue(latestData?.Target, config.format)}</span>
                         </div>
                         ` : ''}
                         ${r12mVsLr12m !== null ? `
                         <div class="kpi-comparison-item">
                             <span class="kpi-comp-label">R12M Momentum</span>
-                            <span class="kpi-comp-value ${r12mVsLr12m >= 0 ? 'up' : 'down'}">${formatChange(r12mVsLr12m, config.format)}</span>
+                            <span class="kpi-comp-value ${getChangeClass(r12mVsLr12m)}">${formatChange(r12mVsLr12m, config.format)}</span>
                             <span class="kpi-comp-detail">R12M: ${formatValue(latestData?.R12M, config.format)} | Prior: ${formatValue(latestData?.LMR12M, config.format)}</span>
                         </div>
                         ` : ''}

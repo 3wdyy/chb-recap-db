@@ -180,31 +180,6 @@
             color: var(--negative-soft);
         }
 
-        .metric-vs-line {
-            font-size: 12px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .metric-vs-badge {
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 11px;
-        }
-
-        .metric-vs-badge.up {
-            background: rgba(143, 175, 212, 0.25);
-            color: var(--positive-soft);
-        }
-
-        .metric-vs-badge.down {
-            background: rgba(143, 175, 212, 0.25);
-            color: var(--negative-soft);
-        }
-
         /* Section Headers */
         .section-header {
             display: flex;
@@ -268,6 +243,7 @@
             font-weight: 600;
             color: var(--navy);
             text-align: left !important;
+            white-space: nowrap;
         }
 
         .market-name.total {
@@ -629,6 +605,19 @@
             border-top: 1px solid var(--light-steel);
             font-size: 14px;
             text-align: center;
+        }
+
+        .analysis-table .market-name {
+            white-space: nowrap;
+            text-align: left;
+        }
+
+        .analysis-table .col-group-start {
+            border-left: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .analysis-table td.col-group-start {
+            border-left: 2px solid var(--light-steel);
         }
 
         .analysis-table tr:hover td { background: var(--light-bg); }
@@ -1037,12 +1026,12 @@
                 `;
             }
 
-            // vs 2024 line with colored badge
+            // 2024 line with same style as target
             const vsLYClass = changeVsLY >= 0 ? 'up' : 'down';
             const vsLine = `
-                <div class="metric-vs-line">
-                    <span class="metric-vs-badge ${vsLYClass}">${formatChange(changeVsLY, config.format)}</span>
-                    <span>vs 2024</span>
+                <div class="metric-target-line">
+                    <span class="metric-target-label">2024: ${formatValue(data.LYTD, config.format)}</span>
+                    <span class="metric-badge ${vsLYClass}">${formatChange(changeVsLY, config.format)}</span>
                 </div>
             `;
 
@@ -1162,9 +1151,9 @@
                                 <th class="left" style="width:160px">Market</th>
                                 <th>2025 YTD</th>
                                 <th>% Share</th>
-                                <th>2024 YTD</th>
+                                <th class="col-group-start">2024 YTD</th>
                                 <th>vs 2024</th>
-                                ${hasTargets ? '<th>Target</th><th>vs Target</th>' : ''}
+                                ${hasTargets ? '<th class="col-group-start">Target</th><th>vs Target</th>' : ''}
                             </tr>
                         </thead>
                         <tbody>
@@ -1196,7 +1185,7 @@
                                         targetGapText = formatChange(tGap, config.format);
                                     }
                                     targetCols = `
-                                        <td class="cell-value">${targetValue}</td>
+                                        <td class="cell-value col-group-start">${targetValue}</td>
                                         <td><span class="cell-sub ${targetGapClass}" style="font-size:14px">${targetGapText}</span></td>
                                     `;
                                 }
@@ -1206,7 +1195,7 @@
                                         <td class="market-name">${market}</td>
                                         <td class="cell-value">${formatValue(data.YTD, config.format)}</td>
                                         <td>${shareText}</td>
-                                        <td class="cell-value">${formatValue(data.LYTD, config.format)}</td>
+                                        <td class="cell-value col-group-start">${formatValue(data.LYTD, config.format)}</td>
                                         <td><span class="cell-sub ${isUp ? 'up' : 'down'}" style="font-size:14px">${formatChange(change, config.format)}</span></td>
                                         ${targetCols}
                                     </tr>

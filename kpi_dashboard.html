@@ -576,9 +576,103 @@
             font-size: 48px;
             font-weight: 700;
             color: var(--navy);
+            margin-bottom: 16px;
+        }
+
+        /* Primary comparison - vs Target */
+        .kpi-hero-target {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--light-bg);
+            border-radius: 10px;
             margin-bottom: 20px;
         }
 
+        .kpi-hero-target-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-hero-target-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .kpi-hero-target-badge {
+            font-size: 22px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 8px;
+        }
+
+        .kpi-hero-target-badge.up {
+            background: rgba(46, 125, 90, 0.12);
+            color: var(--positive);
+        }
+
+        .kpi-hero-target-badge.down {
+            background: rgba(196, 49, 75, 0.12);
+            color: var(--negative);
+        }
+
+        .kpi-hero-target-badge.neutral {
+            background: rgba(184, 134, 11, 0.12);
+            color: var(--neutral);
+        }
+
+        /* Secondary comparisons - vs 2024 and R12M */
+        .kpi-hero-secondary {
+            display: flex;
+            gap: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--light-steel);
+        }
+
+        .kpi-secondary-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(248, 250, 252, 0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(184, 212, 232, 0.3);
+        }
+
+        .kpi-secondary-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .kpi-secondary-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-secondary-detail {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .kpi-secondary-value {
+            font-size: 16px;
+            font-weight: 700;
+            margin-left: auto;
+        }
+
+        .kpi-secondary-value.up { color: var(--positive); }
+        .kpi-secondary-value.down { color: var(--negative); }
+        .kpi-secondary-value.neutral { color: var(--neutral); }
+
+        /* Legacy - keep for backwards compat */
         .kpi-hero-comparisons {
             display: flex;
             gap: 32px;
@@ -1718,24 +1812,30 @@
                 <div class="kpi-hero-card ${overallPositive ? 'positive' : 'negative'}">
                     <div class="kpi-hero-label">${config.name} — 2025 YTD</div>
                     <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
-                    <div class="kpi-hero-comparisons">
-                        <div class="kpi-comparison-item">
-                            <span class="kpi-comp-label">vs 2024</span>
-                            <span class="kpi-comp-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
-                            <span class="kpi-comp-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
+                    ${ytdVsTarget !== null ? `
+                    <div class="kpi-hero-target">
+                        <div>
+                            <div class="kpi-hero-target-label">vs Target</div>
+                            <div class="kpi-hero-target-value">Target: ${formatValue(latestData?.Target, config.format)}</div>
                         </div>
-                        ${ytdVsTarget !== null ? `
-                        <div class="kpi-comparison-item">
-                            <span class="kpi-comp-label">vs Target</span>
-                            <span class="kpi-comp-value ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
-                            <span class="kpi-comp-detail">Target: ${formatValue(latestData?.Target, config.format)}</span>
+                        <span class="kpi-hero-target-badge ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
+                    </div>
+                    ` : ''}
+                    <div class="kpi-hero-secondary">
+                        <div class="kpi-secondary-item">
+                            <div class="kpi-secondary-info">
+                                <span class="kpi-secondary-label">vs 2024</span>
+                                <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
+                            </div>
+                            <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
                         </div>
-                        ` : ''}
                         ${r12mVsLr12m !== null ? `
-                        <div class="kpi-comparison-item">
-                            <span class="kpi-comp-label">R12M Momentum</span>
-                            <span class="kpi-comp-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
-                            <span class="kpi-comp-detail">R12M: ${formatValue(latestData?.R12M, config.format)} | Prior: ${formatValue(latestData?.LMR12M, config.format)}</span>
+                        <div class="kpi-secondary-item">
+                            <div class="kpi-secondary-info">
+                                <span class="kpi-secondary-label">R12M Momentum</span>
+                                <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)}</span>
+                            </div>
+                            <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
                         </div>
                         ` : ''}
                     </div>

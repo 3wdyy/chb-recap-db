@@ -578,6 +578,13 @@
         }
 
         /* Modern Market Table */
+        .market-analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 32px;
+            align-items: start;
+        }
+
         .modern-table {
             width: 100%;
             border-collapse: separate;
@@ -585,7 +592,7 @@
         }
 
         .modern-table th {
-            padding: 12px 20px;
+            padding: 12px 16px;
             text-align: left;
             font-size: 11px;
             color: var(--text-muted);
@@ -596,12 +603,11 @@
         }
 
         .modern-table th.right { text-align: right; }
-        .modern-table th.center { text-align: center; }
 
         .modern-table td {
-            padding: 16px 20px;
+            padding: 14px 16px;
             font-size: 14px;
-            border-bottom: 1px solid rgba(184, 212, 232, 0.5);
+            border-bottom: 1px solid rgba(184, 212, 232, 0.4);
             vertical-align: middle;
         }
 
@@ -622,73 +628,134 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .modern-table .share-cell {
-            text-align: center;
+        .modern-table .compare-cell {
+            text-align: right;
         }
 
-        .modern-table .share-bar {
-            display: flex;
+        .modern-table .compare-group {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
         }
 
-        .modern-table .share-bar-track {
-            flex: 1;
-            height: 6px;
-            background: var(--light-bg);
-            border-radius: 3px;
-            overflow: hidden;
-            max-width: 80px;
-        }
-
-        .modern-table .share-bar-fill {
-            height: 100%;
-            background: var(--steel-blue);
-            border-radius: 3px;
-        }
-
-        .modern-table .share-value {
-            font-size: 13px;
+        .modern-table .compare-value {
             color: var(--text-muted);
-            min-width: 42px;
-            text-align: right;
-        }
-
-        .modern-table .change-cell {
-            text-align: right;
-        }
-
-        .modern-table .change-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
             font-size: 13px;
-            font-weight: 600;
+            font-variant-numeric: tabular-nums;
         }
 
-        .modern-table .change-badge.up {
-            background: rgba(46, 125, 90, 0.1);
+        .modern-table .compare-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 52px;
+            text-align: center;
+        }
+
+        .modern-table .compare-badge.up {
+            background: rgba(46, 125, 90, 0.12);
             color: var(--positive);
         }
 
-        .modern-table .change-badge.down {
-            background: rgba(196, 49, 75, 0.1);
+        .modern-table .compare-badge.down {
+            background: rgba(196, 49, 75, 0.12);
             color: var(--negative);
         }
 
         .modern-table .total-row {
-            background: linear-gradient(90deg, rgba(27, 54, 93, 0.06) 0%, rgba(27, 54, 93, 0.02) 100%);
+            background: linear-gradient(90deg, rgba(27, 54, 93, 0.05) 0%, transparent 100%);
         }
 
         .modern-table .total-row td {
             border-top: 2px solid var(--navy);
             border-bottom: none;
-            padding-top: 18px;
-            padding-bottom: 18px;
+            padding-top: 16px;
+            padding-bottom: 16px;
         }
 
         .modern-table .total-row .market-cell {
             font-weight: 700;
+        }
+
+        /* Donut Chart */
+        .donut-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            background: var(--light-bg);
+            border-radius: 12px;
+        }
+
+        .donut-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .donut-chart {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+
+        .donut-chart svg {
+            transform: rotate(-90deg);
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .donut-center-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .donut-center-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .donut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 16px;
+            width: 100%;
+        }
+
+        .donut-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .donut-legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+
+        .donut-legend-label {
+            flex: 1;
+            color: var(--text-dark);
+        }
+
+        .donut-legend-value {
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
         }
 
         .cell-na {
@@ -1202,76 +1269,136 @@
 
             const hasTargets = allMarketData.some(d => d.data?.Target);
 
-            // Sort: non-total markets by value descending, then total at end
-            const sortedData = [
-                ...allMarketData.filter(d => !d.isTotal).sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0)),
-                ...allMarketData.filter(d => d.isTotal)
-            ];
+            // Non-total markets sorted by value
+            const marketData = allMarketData.filter(d => !d.isTotal).sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
+            const totalRow = allMarketData.find(d => d.isTotal);
+
+            // Donut chart colors
+            const DONUT_COLORS = ['#1B365D', '#4A6FA5', '#8FAFD4', '#B8D4E8', '#D4E4F1'];
+
+            // Calculate shares for donut
+            const shareData = marketData.map((d, i) => ({
+                market: d.market,
+                value: d.data.YTD,
+                share: totalValue > 0 ? (d.data.YTD / totalValue) * 100 : 0,
+                color: DONUT_COLORS[i % DONUT_COLORS.length]
+            }));
+
+            // Build donut segments
+            let donutSegments = '';
+            let cumulative = 0;
+            const radius = 70;
+            const circumference = 2 * Math.PI * radius;
+
+            shareData.forEach(item => {
+                const segmentLength = (item.share / 100) * circumference;
+                const offset = (cumulative / 100) * circumference;
+                donutSegments += `<circle cx="90" cy="90" r="${radius}" fill="none" stroke="${item.color}" stroke-width="28" stroke-dasharray="${segmentLength} ${circumference}" stroke-dashoffset="-${offset}"/>`;
+                cumulative += item.share;
+            });
+
+            // Donut legend
+            const legendHTML = shareData.map(item => `
+                <div class="donut-legend-item">
+                    <div class="donut-legend-color" style="background: ${item.color}"></div>
+                    <span class="donut-legend-label">${item.market}</span>
+                    <span class="donut-legend-value">${item.share.toFixed(1)}%</span>
+                </div>
+            `).join('');
+
+            // Donut chart HTML
+            const donutHTML = hasShare ? `
+                <div class="donut-container">
+                    <div class="donut-title">Market Share</div>
+                    <div class="donut-chart">
+                        <svg width="180" height="180" viewBox="0 0 180 180">
+                            ${donutSegments}
+                        </svg>
+                        <div class="donut-center">
+                            <div class="donut-center-value">${formatValue(totalValue, config.format)}</div>
+                            <div class="donut-center-label">Total</div>
+                        </div>
+                    </div>
+                    <div class="donut-legend">${legendHTML}</div>
+                </div>
+            ` : '';
 
             return `
                 <div class="chart-container">
                     <div class="chart-header">
                         <div class="chart-title">${config?.name || kpiKey} by Market</div>
                     </div>
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th>Market</th>
-                                <th class="right">2025 YTD</th>
-                                ${hasShare ? '<th class="center">Share</th>' : ''}
-                                <th class="right">vs 2024</th>
-                                ${hasTargets ? '<th class="right">vs Target</th>' : ''}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${sortedData.map(({market, data, isTotal}) => {
-                                const change = calcChange(data.YTD, data.LYTD, config.format);
-                                const isUp = change >= 0;
+                    <div class="${hasShare ? 'market-analysis-grid' : ''}">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Market</th>
+                                    <th class="right">2025 YTD</th>
+                                    <th class="right">2024</th>
+                                    ${hasTargets ? '<th class="right">Target</th>' : ''}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${marketData.map(({market, data}) => {
+                                    const change = calcChange(data.YTD, data.LYTD, config.format);
+                                    const isUp = change >= 0;
 
-                                let shareHTML = '';
-                                if (hasShare) {
-                                    if (!isTotal && totalValue > 0) {
-                                        const share = (data.YTD / totalValue) * 100;
-                                        shareHTML = `
-                                            <td class="share-cell">
-                                                <div class="share-bar">
-                                                    <div class="share-bar-track">
-                                                        <div class="share-bar-fill" style="width: ${share}%"></div>
+                                    let targetHTML = '';
+                                    if (hasTargets) {
+                                        if (data.Target) {
+                                            const tGap = calcTargetGap(data.YTD, data.Target, config.format);
+                                            const tIsUp = tGap >= 0;
+                                            targetHTML = `
+                                                <td class="compare-cell">
+                                                    <div class="compare-group">
+                                                        <span class="compare-value">${formatValue(data.Target, config.format)}</span>
+                                                        <span class="compare-badge ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span>
                                                     </div>
-                                                    <span class="share-value">${share.toFixed(1)}%</span>
+                                                </td>
+                                            `;
+                                        } else {
+                                            targetHTML = '<td class="compare-cell">—</td>';
+                                        }
+                                    }
+
+                                    return `
+                                        <tr>
+                                            <td class="market-cell">${market}</td>
+                                            <td class="value-cell">${formatValue(data.YTD, config.format)}</td>
+                                            <td class="compare-cell">
+                                                <div class="compare-group">
+                                                    <span class="compare-value">${formatValue(data.LYTD, config.format)}</span>
+                                                    <span class="compare-badge ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
                                                 </div>
                                             </td>
-                                        `;
-                                    } else if (isTotal) {
-                                        shareHTML = '<td class="share-cell"><span class="share-value">100%</span></td>';
-                                    } else {
-                                        shareHTML = '<td class="share-cell">—</td>';
-                                    }
-                                }
-
-                                let targetHTML = '';
-                                if (hasTargets) {
-                                    if (data.Target) {
-                                        const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                        const tIsUp = tGap >= 0;
-                                        targetHTML = `<td class="change-cell"><span class="change-badge ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span></td>`;
-                                    } else {
-                                        targetHTML = '<td class="change-cell">—</td>';
-                                    }
-                                }
-
-                                return `
-                                    <tr class="${isTotal ? 'total-row' : ''}">
-                                        <td class="market-cell">${market}</td>
-                                        <td class="value-cell">${formatValue(data.YTD, config.format)}</td>
-                                        ${shareHTML}
-                                        <td class="change-cell"><span class="change-badge ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span></td>
-                                        ${targetHTML}
+                                            ${targetHTML}
+                                        </tr>
+                                    `;
+                                }).join('')}
+                                ${totalRow ? `
+                                    <tr class="total-row">
+                                        <td class="market-cell">All Markets</td>
+                                        <td class="value-cell">${formatValue(totalRow.data.YTD, config.format)}</td>
+                                        <td class="compare-cell">
+                                            <div class="compare-group">
+                                                <span class="compare-value">${formatValue(totalRow.data.LYTD, config.format)}</span>
+                                                <span class="compare-badge ${calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format) >= 0 ? 'up' : 'down'}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
+                                            </div>
+                                        </td>
+                                        ${hasTargets && totalRow.data.Target ? `
+                                            <td class="compare-cell">
+                                                <div class="compare-group">
+                                                    <span class="compare-value">${formatValue(totalRow.data.Target, config.format)}</span>
+                                                    <span class="compare-badge ${calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format) >= 0 ? 'up' : 'down'}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
+                                                </div>
+                                            </td>
+                                        ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
                                     </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
+                                ` : ''}
+                            </tbody>
+                        </table>
+                        ${donutHTML}
+                    </div>
                 </div>
             `;
         }

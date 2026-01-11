@@ -151,33 +151,69 @@
             margin-bottom: 16px;
         }
 
-        .metric-target-line {
+        /* Target comparison - primary */
+        .metric-target-row {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            margin-bottom: 8px;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
 
-        .metric-target-label {
+        .metric-target-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
             color: var(--text-muted);
         }
 
-        .metric-badge {
-            padding: 3px 10px;
+        .metric-target-val {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .metric-target-badge {
+            padding: 4px 10px;
             border-radius: 12px;
             font-weight: 600;
+            font-size: 13px;
+        }
+
+        .metric-target-badge.up {
+            background: rgba(46, 125, 90, 0.15);
+            color: var(--positive);
+        }
+
+        .metric-target-badge.down {
+            background: rgba(196, 49, 75, 0.15);
+            color: var(--negative);
+        }
+
+        /* vs 2024 - secondary with arrow */
+        .metric-vs-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-size: 12px;
+            color: var(--text-muted);
         }
 
-        .metric-badge.up {
-            background: rgba(61, 153, 112, 0.15);
-            color: var(--positive-soft);
+        .metric-vs-arrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-weight: 600;
         }
 
-        .metric-badge.down {
-            background: rgba(211, 93, 110, 0.15);
-            color: var(--negative-soft);
+        .metric-vs-arrow.up { color: var(--positive); }
+        .metric-vs-arrow.down { color: var(--negative); }
+
+        .metric-vs-arrow svg {
+            width: 14px;
+            height: 14px;
         }
 
         /* Section Headers */
@@ -1144,24 +1180,34 @@
             // Card accent based on TARGET if available, otherwise vs LY
             const isGood = targetGap !== null ? targetGap >= 0 : (changeVsLY !== null ? changeVsLY >= 0 : true);
 
-            // Target line with badge
-            let targetLine = '';
+            // Arrow SVGs
+            const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
+            const arrowDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+
+            // Target row - primary comparison (highlighted)
+            let targetRow = '';
             if (data.Target) {
                 const gapClass = targetGap >= 0 ? 'up' : 'down';
-                targetLine = `
-                    <div class="metric-target-line">
-                        <span class="metric-target-label">Target: ${formatValue(data.Target, config.format)}</span>
-                        <span class="metric-badge ${gapClass}">${formatChange(targetGap, config.format)}</span>
+                targetRow = `
+                    <div class="metric-target-row">
+                        <div class="metric-target-left">
+                            <span>Target:</span>
+                            <span class="metric-target-val">${formatValue(data.Target, config.format)}</span>
+                        </div>
+                        <span class="metric-target-badge ${gapClass}">${formatChange(targetGap, config.format)}</span>
                     </div>
                 `;
             }
 
-            // 2024 line with same style as target
+            // vs 2024 - subtle with arrow
             const vsLYClass = changeVsLY >= 0 ? 'up' : 'down';
-            const vsLine = `
-                <div class="metric-target-line">
-                    <span class="metric-target-label">2024: ${formatValue(data.LYTD, config.format)}</span>
-                    <span class="metric-badge ${vsLYClass}">${formatChange(changeVsLY, config.format)}</span>
+            const vsRow = `
+                <div class="metric-vs-row">
+                    <span class="metric-vs-arrow ${vsLYClass}">
+                        ${changeVsLY >= 0 ? arrowUp : arrowDown}
+                        ${formatChange(changeVsLY, config.format)}
+                    </span>
+                    <span>vs 2024</span>
                 </div>
             `;
 
@@ -1172,8 +1218,8 @@
                         <div class="metric-label">${config.name}</div>
                     </div>
                     <div class="metric-value">${formatValue(data.YTD, config.format)}</div>
-                    ${targetLine}
-                    ${vsLine}
+                    ${targetRow}
+                    ${vsRow}
                 </div>
             `;
         }

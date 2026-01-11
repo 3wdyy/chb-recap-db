@@ -625,24 +625,62 @@
             color: var(--neutral);
         }
 
-        /* Hero card main layout - two columns */
-        .kpi-hero-content {
+        /* Hero card main layout - three columns 3:2:2 */
+        .kpi-hero-content-3col {
             display: flex;
-            gap: 32px;
+            gap: 0;
             align-items: stretch;
         }
 
         .kpi-hero-main {
             flex: 3;
+            display: flex;
+            align-items: center;
         }
 
-        /* Secondary comparisons - vs 2024 and R12M stacked on right */
+        /* Middle section - vs Target */
+        .kpi-hero-target-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 32px;
+            border-left: 1px solid var(--light-steel);
+            border-right: 1px solid var(--light-steel);
+            text-align: center;
+        }
+
+        .kpi-target-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .kpi-target-value {
+            font-size: 16px;
+            color: var(--navy);
+            margin-bottom: 10px;
+        }
+
+        .kpi-target-badge {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .kpi-target-badge.up { color: var(--positive); }
+        .kpi-target-badge.down { color: var(--negative); }
+        .kpi-target-badge.neutral { color: var(--neutral); }
+
+        /* Right section - vs 2024 and R12M stacked */
         .kpi-hero-secondary {
             display: flex;
             flex-direction: column;
             gap: 14px;
-            padding-left: 36px;
-            border-left: 1px solid var(--light-steel);
+            padding-left: 32px;
             flex: 2;
             justify-content: center;
         }
@@ -1930,19 +1968,17 @@
             return `
                 <div class="kpi-hero-card ${overallPositive ? 'positive' : 'negative'}">
                     <div class="kpi-hero-label">${config.name} — 2025 YTD</div>
-                    <div class="kpi-hero-content">
+                    <div class="kpi-hero-content-3col">
                         <div class="kpi-hero-main">
                             <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
-                            ${ytdVsTarget !== null ? `
-                            <div class="kpi-hero-target">
-                                <div>
-                                    <div class="kpi-hero-target-label">vs Target</div>
-                                    <div class="kpi-hero-target-value">Target: ${formatValue(latestData?.Target, config.format)}</div>
-                                </div>
-                                <span class="kpi-hero-target-badge ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
-                            </div>
-                            ` : ''}
                         </div>
+                        ${ytdVsTarget !== null ? `
+                        <div class="kpi-hero-target-section">
+                            <div class="kpi-target-label">VS TARGET</div>
+                            <div class="kpi-target-value">Target: ${formatValue(latestData?.Target, config.format)}</div>
+                            <div class="kpi-target-badge ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</div>
+                        </div>
+                        ` : ''}
                         <div class="kpi-hero-secondary">
                             <div class="kpi-secondary-item">
                                 <div class="kpi-secondary-info">

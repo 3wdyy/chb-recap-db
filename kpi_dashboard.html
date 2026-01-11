@@ -212,7 +212,7 @@
         /* Loyalty KPIs */
         .loyalty-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-bottom: 40px;
         }
@@ -375,6 +375,7 @@
 
         .insight-item {
             display: flex;
+            align-items: center;
             gap: 12px;
             padding: 16px;
             background: var(--light-bg);
@@ -696,9 +697,13 @@
 
         @media (max-width: 1200px) {
             .exec-summary { grid-template-columns: repeat(2, 1fr); }
-            .loyalty-grid { grid-template-columns: 1fr; }
+            .loyalty-grid { grid-template-columns: repeat(2, 1fr); }
             .insights-grid { grid-template-columns: 1fr; }
             .kpi-detail-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .loyalty-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -733,28 +738,21 @@
 
         const MARKET_ORDER = ['All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
 
-        // Company Logo SVG - proper proportions matching the actual logo
-        const LOGO_SVG = `<svg viewBox="0 0 110 150" xmlns="http://www.w3.org/2000/svg">
-            <!-- Vertical bars -->
-            <rect x="18" y="5" width="6" height="70" fill="#8FAFD4"/>
-            <rect x="30" y="5" width="6" height="80" fill="#8FAFD4"/>
-            <rect x="42" y="5" width="6" height="90" fill="#8FAFD4"/>
-            <rect x="54" y="5" width="6" height="100" fill="#1B365D"/>
-            <!-- Curved wave elements -->
-            <path d="M18 75 C18 95, 25 115, 42 130 C50 136, 52 130, 48 120 C42 108, 30 100, 18 90 Z" fill="#1B365D"/>
-            <path d="M30 85 C30 105, 38 122, 52 135 C60 141, 62 135, 58 125 C52 113, 42 105, 30 97 Z" fill="#1B365D"/>
-            <path d="M42 95 C42 112, 50 128, 62 140 C70 146, 72 140, 68 130 C62 118, 54 110, 42 102 Z" fill="#1B365D"/>
-            <path d="M54 105 C54 120, 60 133, 72 143 C80 148, 82 142, 78 134 C72 124, 64 116, 54 110 Z" fill="#1B365D"/>
+        // Company Logo SVG - simplified clean design on white background
+        const LOGO_SVG = `<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+            <!-- White background -->
+            <rect width="120" height="60" fill="#FFFFFF"/>
+            <!-- Vertical bars with gradient heights -->
+            <rect x="10" y="18" width="8" height="32" rx="2" fill="#B8D4E8"/>
+            <rect x="22" y="12" width="8" height="38" rx="2" fill="#8FAFD4"/>
+            <rect x="34" y="6" width="8" height="44" rx="2" fill="#8FAFD4"/>
+            <rect x="46" y="2" width="8" height="48" rx="2" fill="#1B365D"/>
+            <!-- Wave accent at bottom -->
+            <path d="M10 50 Q30 56, 54 50" stroke="#1B365D" stroke-width="3" fill="none" stroke-linecap="round"/>
             <!-- Diamond accents -->
-            <g transform="translate(78, 20)">
-                <rect width="12" height="12" transform="rotate(45 6 6)" fill="#1B365D"/>
-            </g>
-            <g transform="translate(88, 35)">
-                <rect width="9" height="9" transform="rotate(45 4.5 4.5)" fill="#8FAFD4"/>
-            </g>
-            <g transform="translate(78, 48)">
-                <rect width="9" height="9" transform="rotate(45 4.5 4.5)" fill="#8FAFD4"/>
-            </g>
+            <rect x="68" y="10" width="10" height="10" transform="rotate(45 73 15)" fill="#1B365D"/>
+            <rect x="82" y="18" width="8" height="8" transform="rotate(45 86 22)" fill="#8FAFD4"/>
+            <rect x="70" y="28" width="8" height="8" transform="rotate(45 74 32)" fill="#B8D4E8"/>
         </svg>`;
 
         let state = {
@@ -906,7 +904,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🎯', color: 'amber',
-                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')})`
+                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
                     });
                 }
             }
@@ -917,7 +915,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🔄', color: 'amber',
-                        text: `<strong>Cross-brand engagement:</strong> Multi-brand shoppers at ${formatValue(xbp.YTD, 'percent')} (${formatChange(change, 'percent')})`
+                        text: `<strong>Cross-brand engagement:</strong> Multi-brand shoppers at ${formatValue(xbp.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
                     });
                 }
             }
@@ -928,7 +926,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🎁', color: 'amber',
-                        text: `<strong>Redemption activation:</strong> Point usage at ${formatValue(rdm.YTD, 'percent')} (${formatChange(change, 'percent')})`
+                        text: `<strong>Redemption activation:</strong> Point usage at ${formatValue(rdm.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
                     });
                 }
             }
@@ -991,7 +989,7 @@
         function renderSummaryTab() {
             const market = 'All Markets';
             const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF'];
-            const loyaltyKPIs = ['PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
+            const loyaltyKPIs = ['SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
             const insights = generateInsights();
 
             return `
@@ -1044,8 +1042,10 @@
             if (data.Target) {
                 const gap = calcTargetGap(data.YTD, data.Target, config.format);
                 const gapClass = gap >= 0 ? 'up' : 'down';
-                const attainPct = Math.min((data.YTD / data.Target) * 100, 100);
-                const barClass = attainPct >= 95 ? 'good' : attainPct >= 85 ? 'ok' : 'bad';
+                const attainPct = Math.min((data.YTD / data.Target) * 100, 150);
+                const displayPct = Math.min(attainPct, 100);
+                // Bar color based on gap direction: above target = green, below = red
+                const barClass = gap >= 0 ? 'good' : 'bad';
                 targetHTML = `
                     <div class="metric-target">
                         <div class="target-row">
@@ -1053,7 +1053,7 @@
                             <span class="target-gap ${gapClass}">${formatChange(gap, config.format)}</span>
                         </div>
                         <div class="target-bar">
-                            <div class="target-fill ${barClass}" style="width:${attainPct}%"></div>
+                            <div class="target-fill ${barClass}" style="width:${displayPct}%"></div>
                         </div>
                     </div>
                 `;
@@ -1076,30 +1076,44 @@
             const data = getLatestData(market, kpiKey);
             if (!data || !config) return '';
 
-            const change = calcChange(data.YTD, data.LYTD, config.format);
-            const isNegative = change !== null && change < 0;
+            const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
+            const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
+
+            // Determine card status based on target gap if available, otherwise vs LY
+            const isNegative = targetGap !== null ? targetGap < 0 : (changeVsLY !== null && changeVsLY < 0);
 
             const iconMap = {
+                'SLS_PEN': '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
                 'PCT_NBA': '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>',
                 'PCT_XBP': '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
                 'PCT_RDM': '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21M3 12h18M7.5 8V6.5a4.5 4.5 0 019 0V8"/></svg>'
             };
 
-            let targetText = '';
-            if (data.Target) {
-                const gap = calcTargetGap(data.YTD, data.Target, config.format);
-                targetText = `Target: ${formatValue(data.Target, config.format)} (${formatChange(gap, config.format)})`;
+            // Primary display: vs Target gap
+            let primaryValue = '';
+            let primaryLabel = '';
+            if (targetGap !== null) {
+                primaryValue = `<div class="loyalty-value ${targetGap >= 0 ? 'green' : 'red'}">${formatChange(targetGap, config.format)}</div>`;
+                primaryLabel = `<div class="loyalty-detail">vs Target: ${formatValue(data.Target, config.format)}</div>`;
+            } else if (changeVsLY !== null) {
+                primaryValue = `<div class="loyalty-value ${changeVsLY >= 0 ? 'green' : 'red'}">${formatChange(changeVsLY, config.format)}</div>`;
+                primaryLabel = `<div class="loyalty-detail">vs 2024</div>`;
             }
+
+            // Secondary info: actual value and vs LY (when target is shown)
+            let secondaryInfo = `<div class="loyalty-target">2025: ${formatValue(data.YTD, config.format)}`;
+            if (targetGap !== null && changeVsLY !== null) {
+                secondaryInfo += ` <span style="color:${changeVsLY >= 0 ? 'var(--positive)' : 'var(--negative)'}">(${formatChange(changeVsLY, config.format)} vs LY)</span>`;
+            }
+            secondaryInfo += '</div>';
 
             return `
                 <div class="loyalty-card ${isNegative ? 'declining' : 'improving'}">
                     <div class="loyalty-icon ${isNegative ? 'red' : 'green'}" style="color: ${isNegative ? 'var(--negative)' : 'var(--positive)'}">${iconMap[kpiKey] || ''}</div>
                     <div class="loyalty-title">${config.name}</div>
-                    <div class="loyalty-value ${isNegative ? 'red' : 'green'}">${formatChange(change, config.format)}</div>
-                    <div class="loyalty-detail">
-                        2025: ${formatValue(data.YTD, config.format)} vs 2024: ${formatValue(data.LYTD, config.format)}
-                    </div>
-                    ${targetText ? `<div class="loyalty-target">${targetText}</div>` : ''}
+                    ${primaryValue}
+                    ${primaryLabel}
+                    ${secondaryInfo}
                 </div>
             `;
         }
@@ -1116,13 +1130,7 @@
                     <thead>
                         <tr>
                             <th class="left">Market</th>
-                            ${kpis.map(k => {
-                                const hasTarget = markets.some(m => {
-                                    const d = getLatestData(m, k);
-                                    return d && d.Target;
-                                });
-                                return `<th>${KPI_CONFIG[k]?.name || k}<br><small style="font-weight:400;opacity:0.8">vs 2024${hasTarget ? ' | vs Target' : ''}</small></th>`;
-                            }).join('')}
+                            ${kpis.map(k => `<th>${KPI_CONFIG[k]?.name || k}</th>`).join('')}
                         </tr>
                     </thead>
                     <tbody>
@@ -1142,14 +1150,14 @@
                                         if (data.Target) {
                                             const tGap = calcTargetGap(data.YTD, data.Target, config.format);
                                             const tIsUp = tGap >= 0;
-                                            targetGapHTML = `<span class="cell-divider">|</span><span class="cell-change-item ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span>`;
+                                            targetGapHTML = `<span class="cell-divider">|</span><span style="color:var(--text-muted);font-weight:400">vs TGT:</span> <span class="cell-change-item ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span>`;
                                         }
 
                                         return `
                                             <td>
                                                 <span class="cell-value">${formatValue(data.YTD, config.format)}</span>
                                                 <div class="cell-changes">
-                                                    <span class="cell-change-item ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
+                                                    <span style="color:var(--text-muted);font-weight:400">vs LY:</span> <span class="cell-change-item ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
                                                     ${targetGapHTML}
                                                 </div>
                                             </td>
@@ -1194,6 +1202,9 @@
                 return { market: m, data, isTotal: m === 'All Markets' };
             }).filter(d => d.data);
 
+            // Check if any market has target data
+            const hasTargets = allMarketData.some(d => d.data?.Target);
+
             return `
                 <div class="chart-container">
                     <div class="chart-header">
@@ -1202,11 +1213,12 @@
                     <table class="analysis-table">
                         <thead>
                             <tr>
-                                <th class="left" style="width:180px">Market</th>
+                                <th class="left" style="width:160px">Market</th>
                                 <th>2025 YTD</th>
                                 <th>% Share</th>
+                                <th>2024 YTD</th>
                                 <th>vs 2024</th>
-                                <th>vs Target</th>
+                                ${hasTargets ? '<th>Target</th><th>vs Target</th>' : ''}
                             </tr>
                         </thead>
                         <tbody>
@@ -1226,12 +1238,21 @@
                                     shareText = '—';
                                 }
 
-                                let targetGapText = '—';
-                                let targetGapClass = '';
-                                if (data.Target) {
-                                    const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                    targetGapClass = tGap >= 0 ? 'up' : 'down';
-                                    targetGapText = formatChange(tGap, config.format);
+                                let targetCols = '';
+                                if (hasTargets) {
+                                    let targetValue = '—';
+                                    let targetGapText = '—';
+                                    let targetGapClass = '';
+                                    if (data.Target) {
+                                        targetValue = formatValue(data.Target, config.format);
+                                        const tGap = calcTargetGap(data.YTD, data.Target, config.format);
+                                        targetGapClass = tGap >= 0 ? 'up' : 'down';
+                                        targetGapText = formatChange(tGap, config.format);
+                                    }
+                                    targetCols = `
+                                        <td class="cell-value">${targetValue}</td>
+                                        <td><span class="cell-sub ${targetGapClass}" style="font-size:14px">${targetGapText}</span></td>
+                                    `;
                                 }
 
                                 return `
@@ -1239,12 +1260,9 @@
                                         <td class="market-name">${market}</td>
                                         <td class="cell-value">${formatValue(data.YTD, config.format)}</td>
                                         <td>${shareText}</td>
-                                        <td>
-                                            <span class="cell-sub ${isUp ? 'up' : 'down'}" style="font-size:14px">${formatChange(change, config.format)}</span>
-                                        </td>
-                                        <td>
-                                            <span class="cell-sub ${targetGapClass}" style="font-size:14px">${targetGapText}</span>
-                                        </td>
+                                        <td class="cell-value">${formatValue(data.LYTD, config.format)}</td>
+                                        <td><span class="cell-sub ${isUp ? 'up' : 'down'}" style="font-size:14px">${formatChange(change, config.format)}</span></td>
+                                        ${targetCols}
                                     </tr>
                                 `;
                             }).join('')}
@@ -1489,7 +1507,8 @@
             dots.forEach(dot => {
                 dot.addEventListener('mouseenter', (e) => {
                     const info = JSON.parse(e.target.dataset.info);
-                    const change = calcChange(info.ytd, info.lytd, info.format);
+                    const changeVsLY = calcChange(info.ytd, info.lytd, info.format);
+                    const changeVsTarget = info.target ? calcTargetGap(info.ytd, info.target, info.format) : null;
                     tooltip.innerHTML = `
                         <div class="tooltip-title">${info.month}</div>
                         <div class="tooltip-row">
@@ -1497,19 +1516,15 @@
                             <span class="tooltip-value">${formatValue(info.ytd, info.format)}</span>
                         </div>
                         <div class="tooltip-row">
-                            <span class="tooltip-label">2024:</span>
-                            <span class="tooltip-value">${formatValue(info.lytd, info.format)}</span>
+                            <span class="tooltip-label">vs 2024:</span>
+                            <span class="tooltip-value">${formatValue(info.lytd, info.format)} <span style="color:${changeVsLY >= 0 ? '#2E7D5A' : '#C4314B'}">(${formatChange(changeVsLY, info.format)})</span></span>
                         </div>
                         ${info.target ? `
                         <div class="tooltip-row">
-                            <span class="tooltip-label">Target:</span>
-                            <span class="tooltip-value">${formatValue(info.target, info.format)}</span>
+                            <span class="tooltip-label">vs Target:</span>
+                            <span class="tooltip-value">${formatValue(info.target, info.format)} <span style="color:${changeVsTarget >= 0 ? '#2E7D5A' : '#C4314B'}">(${formatChange(changeVsTarget, info.format)})</span></span>
                         </div>
                         ` : ''}
-                        <div class="tooltip-row">
-                            <span class="tooltip-label">vs 2024:</span>
-                            <span class="tooltip-value" style="color:${change >= 0 ? '#2E7D5A' : '#C4314B'}">${formatChange(change, info.format)}</span>
-                        </div>
                     `;
                     tooltip.classList.add('visible');
                 });

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2025 Performance Review | KPI Dashboard</title>
+    <!-- SheetJS for Excel parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1276,6 +1278,130 @@
             .exec-summary { grid-template-columns: 1fr; }
             .trend-badges { grid-template-columns: repeat(3, 1fr); }
         }
+
+        /* Mode Selection Styles */
+        .mode-selector {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .mode-card {
+            flex: 1;
+            background: var(--white);
+            border: 2px solid var(--light-steel);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            border-color: var(--steel-blue);
+            background: var(--light-bg);
+        }
+
+        .mode-card.selected {
+            border-color: var(--navy);
+            background: rgba(27, 54, 93, 0.05);
+        }
+
+        .mode-card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .mode-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .mode-card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Header Mode Switcher */
+        .header-mode-switcher {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 16px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 4px;
+            border: 1px solid var(--light-steel);
+        }
+
+        .mode-toggle-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-toggle-btn.active {
+            background: var(--navy);
+            color: white;
+        }
+
+        .mode-toggle-btn:hover:not(.active) {
+            background: var(--light-steel);
+            color: var(--navy);
+        }
+
+        /* Cascade Filter Styles */
+        .filter-cascade {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Comparison Tables */
+        .comparison-section {
+            margin-bottom: 32px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Upload file type hint */
+        .upload-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .upload-hint strong {
+            color: var(--navy);
+        }
     </style>
 </head>
 <body>
@@ -1285,15 +1411,18 @@
     <script>
     (function() {
         const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        // Support both "01 - Jan" and "01-Jan" formats
+        // Support both "01 - Jan" and "01-Jan" formats, and also "Mon-YY" format
         const MONTH_MAP = {
             '01 - Jan':'JAN','02 - Feb':'FEB','03 - Mar':'MAR','04 - Apr':'APR','05 - May':'MAY','06 - Jun':'JUN',
             '07 - Jul':'JUL','08 - Aug':'AUG','09 - Sep':'SEP','10 - Oct':'OCT','11 - Nov':'NOV','12 - Dec':'DEC',
             '01-Jan':'JAN','02-Feb':'FEB','03-Mar':'MAR','04-Apr':'APR','05-May':'MAY','06-Jun':'JUN',
-            '07-Jul':'JUL','08-Aug':'AUG','09-Sep':'SEP','10-Oct':'OCT','11-Nov':'NOV','12-Dec':'DEC'
+            '07-Jul':'JUL','08-Aug':'AUG','09-Sep':'SEP','10-Oct':'OCT','11-Nov':'NOV','12-Dec':'DEC',
+            'Jan-25':'JAN','Feb-25':'FEB','Mar-25':'MAR','Apr-25':'APR','May-25':'MAY','Jun-25':'JUN',
+            'Jul-25':'JUL','Aug-25':'AUG','Sep-25':'SEP','Oct-25':'OCT','Nov-25':'NOV','Dec-25':'DEC'
         };
 
-        const KPI_CONFIG = {
+        // MUSE mode KPI configurations
+        const MUSE_KPI_CONFIG = {
             'SLS_TTL': { name: 'Total Sales', format: 'currency', good: 'up', hasShare: true },
             'SLS_PEN': { name: 'Sales Penetration', format: 'percent', good: 'up', hasShare: false },
             'MBR_TTL': { name: 'Transacting Members', format: 'number', good: 'up', hasShare: true },
@@ -1308,9 +1437,40 @@
             'PTS_BRN': { name: 'Points Burned Value', format: 'currency', good: 'up', hasShare: true }
         };
 
-        // Map human-readable KPI names to internal keys (for new CSV format)
-        // Includes variations to handle different naming conventions
-        const KPI_NAME_MAP = {
+        // MC mode KPI configurations
+        const MC_KPI_CONFIG = {
+            'TOTAL OWN BRAND SALES': { name: 'Total Own Brand Sales', format: 'currency', good: 'up', hasShare: true, hero: true },
+            'KNOWN SALES': { name: 'Known Sales', format: 'currency', good: 'up', hasShare: true },
+            'NEW CUSTOMERS KNOWN SALES': { name: 'New Customers Sales', format: 'currency', good: 'up', hasShare: true },
+            'RETURNING CUSTOMERS KNOWN SALES': { name: 'Returning Customers Sales', format: 'currency', good: 'up', hasShare: true },
+            'CUSTOMER COUNT': { name: 'Customer Count', format: 'number', good: 'up', hasShare: true, hero: true },
+            'NEW CUSTOMER COUNT': { name: 'New Customers', format: 'number', good: 'up', hasShare: true, hero: true },
+            'RETURNING CUSTOMER COUNT': { name: 'Returning Customers', format: 'number', good: 'up', hasShare: true },
+            'TRANSACTION COUNT': { name: 'Transaction Count', format: 'number', good: 'up', hasShare: true },
+            'NEW CUSTOMERS TRANSACTION COUNT': { name: 'New Customers Transactions', format: 'number', good: 'up', hasShare: true },
+            'RETURNING CUSTOMERS TRANSACTION COUNT': { name: 'Returning Customers Transactions', format: 'number', good: 'up', hasShare: true },
+            'AOV': { name: 'Avg Order Value', format: 'currency_small', good: 'up', hasShare: false, hero: true },
+            'NEW CUSTOMERS AOV': { name: 'New Customers AOV', format: 'currency_small', good: 'up', hasShare: false },
+            'RETURNING CUSTOMERS AOV': { name: 'Returning Customers AOV', format: 'currency_small', good: 'up', hasShare: false },
+            'ACV': { name: 'Avg Customer Value', format: 'currency_small', good: 'up', hasShare: false },
+            'NEW CUSTOMERS ACV': { name: 'New Customers ACV', format: 'currency_small', good: 'up', hasShare: false },
+            'RETURNING CUSTOMERS ACV': { name: 'Returning Customers ACV', format: 'currency_small', good: 'up', hasShare: false },
+            'AVERAGE FREQUENCY': { name: 'Avg Frequency', format: 'decimal', good: 'up', hasShare: false, hero: true },
+            'NEW CUSTOMERS AVERAGE FREQUENCY': { name: 'New Customers Frequency', format: 'decimal', good: 'up', hasShare: false },
+            'RETURNING CUSTOMERS AVERAGE FREQUENCY': { name: 'Returning Customers Frequency', format: 'decimal', good: 'up', hasShare: false },
+            'UPT': { name: 'Units Per Transaction', format: 'decimal', good: 'up', hasShare: false },
+            'NEW CUSTOMERS UPT': { name: 'New Customers UPT', format: 'decimal', good: 'up', hasShare: false },
+            'RETURNING CUSTOMERS UPT': { name: 'Returning Customers UPT', format: 'decimal', good: 'up', hasShare: false },
+            'SALES LINKAGE': { name: 'Sales Linkage', format: 'percent', good: 'up', hasShare: false, hero: true }
+        };
+
+        // Get current KPI config based on mode
+        function getKPIConfig() {
+            return state.mode === 'MC' ? MC_KPI_CONFIG : MUSE_KPI_CONFIG;
+        }
+
+        // Map human-readable KPI names to internal keys (for MUSE mode CSV format)
+        const MUSE_KPI_NAME_MAP = {
             'Total Sales': 'SLS_TTL',
             'Sales Penetration': 'SLS_PEN',
             'Transacting Members': 'MBR_TTL',
@@ -1333,7 +1493,7 @@
             'Points Burned': 'PTS_BRN'
         };
 
-        const MARKET_ORDER = ['All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
+        const MARKET_ORDER = ['All', 'All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
 
         // Company Logo SVG - simplified clean design on white background
         const LOGO_SVG = `<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
@@ -1353,12 +1513,95 @@
         </svg>`;
 
         let state = {
-            data: null,
-            selectedMarket: 'All Markets',
+            mode: 'MUSE', // 'MUSE' or 'MC'
+            museData: null,
+            mcData: null,
+            selectedBU: 'All',
+            selectedMarket: 'All',
+            selectedChannel: 'All',
             selectedKPI: null,
             activeTab: 'summary',
             showUpload: true
         };
+
+        // Get current mode's data
+        function getData() {
+            return state.mode === 'MC' ? state.mcData : state.museData;
+        }
+
+        // Get available BUs from data
+        function getBUs() {
+            const data = getData();
+            if (!data) return [];
+            const bus = [...new Set(data.map(d => d.BU))].filter(b => b);
+            // Sort with 'All' first
+            return bus.sort((a, b) => {
+                if (a === 'All') return -1;
+                if (b === 'All') return 1;
+                return a.localeCompare(b);
+            });
+        }
+
+        // Get available markets for selected BU
+        function getMarkets() {
+            const data = getData();
+            if (!data) return [];
+            let filtered = data;
+            if (state.mode === 'MC' && state.selectedBU !== 'All') {
+                filtered = data.filter(d => d.BU === state.selectedBU);
+            }
+            const markets = [...new Set(filtered.map(d => d.Market))].filter(m => m);
+            return MARKET_ORDER.filter(m => markets.includes(m));
+        }
+
+        // Get available channels for selected BU and Market
+        function getChannels() {
+            const data = getData();
+            if (!data) return [];
+            let filtered = data;
+            if (state.mode === 'MC') {
+                if (state.selectedBU !== 'All') {
+                    filtered = filtered.filter(d => d.BU === state.selectedBU);
+                }
+                if (state.selectedMarket !== 'All') {
+                    filtered = filtered.filter(d => d.Market === state.selectedMarket);
+                }
+            }
+            const channels = [...new Set(filtered.map(d => d.Channel))].filter(c => c);
+            // Sort with 'All' first
+            return channels.sort((a, b) => {
+                if (a === 'All') return -1;
+                if (b === 'All') return 1;
+                return a.localeCompare(b);
+            });
+        }
+
+        // Get KPIs available in current data
+        function getKPIs() {
+            const data = getData();
+            const config = getKPIConfig();
+            if (!data) return [];
+            return [...new Set(data.map(d => d.Key))].filter(k => config[k]);
+        }
+
+        // Get data with current filters applied
+        function getFilteredData() {
+            const data = getData();
+            if (!data) return [];
+            let filtered = data;
+            if (state.mode === 'MC') {
+                if (state.selectedBU !== 'All') {
+                    filtered = filtered.filter(d => d.BU === state.selectedBU);
+                }
+                if (state.selectedMarket !== 'All') {
+                    filtered = filtered.filter(d => d.Market === state.selectedMarket);
+                }
+                if (state.selectedChannel !== 'All') {
+                    filtered = filtered.filter(d => d.Channel === state.selectedChannel);
+                }
+            }
+            return filtered;
+        }
 
         // Utility functions
         function formatValue(value, format) {
@@ -1423,62 +1666,160 @@
             return change >= 0 ? 'up' : 'down';
         }
 
-        function parseCSV(text) {
+        // Parse CSV text into data array
+        function parseCSV(text, mode = 'MUSE') {
             const lines = text.trim().split('\n');
             const headers = lines[0].split(',').map(h => h.trim());
             const data = [];
 
-            // Check if using new format (has KPI column instead of Key)
-            const hasKPIColumn = headers.includes('KPI');
-            const hasKeyColumn = headers.includes('Key');
-
             for (let i = 1; i < lines.length; i++) {
                 const values = lines[i].split(',');
+                if (values.length < 3) continue; // Skip empty lines
                 const row = {};
                 headers.forEach((h, idx) => {
                     let val = values[idx]?.trim();
                     if (['YTD', 'LYTD', 'R12M', 'LMR12M', 'Target'].includes(h)) {
-                        row[h] = val === '' ? null : parseFloat(val);
+                        row[h] = val === '' || val === undefined ? null : parseFloat(val);
                     } else if (h === 'KPI') {
-                        // Map human-readable KPI name to internal key
-                        row['Key'] = KPI_NAME_MAP[val] || val;
+                        // For MC mode, keep KPI name as-is; for MUSE, map to internal key
+                        if (mode === 'MUSE') {
+                            row['Key'] = MUSE_KPI_NAME_MAP[val] || val;
+                        } else {
+                            row['Key'] = val;
+                        }
+                    } else if (h === 'Key') {
+                        row['Key'] = val;
                     } else if (h === 'Month') {
-                        // Normalize month format to "XX - Mon" for consistency
+                        // Normalize month format
                         if (val && val.match(/^\d{2}-[A-Za-z]{3}$/)) {
                             val = val.replace('-', ' - ');
                         }
                         row[h] = val;
+                    } else if (h === 'BU') {
+                        row['BU'] = val || (mode === 'MUSE' ? 'MUSE' : 'All');
+                    } else if (h === 'Channel') {
+                        row['Channel'] = val || 'All';
                     } else {
                         row[h] = val;
                     }
                 });
+
+                // Ensure BU and Channel exist
+                if (!row.BU) row.BU = mode === 'MUSE' ? 'MUSE' : 'All';
+                if (!row.Channel) row.Channel = 'All';
+
                 // Support both old format (Key) and new format (KPI mapped to Key)
                 if (row.Market && row.Key) data.push(row);
             }
             return data;
         }
 
-        function getLatestData(market, kpiKey) {
-            if (!state.data) return null;
-            const rows = state.data.filter(d => d.Market === market && d.Key === kpiKey);
-            return rows.find(d => d.Month === '12 - Dec') || rows[rows.length - 1];
+        // Parse Excel workbook with MUSE and MC sheets
+        function parseExcel(workbook) {
+            const result = { muse: null, mc: null };
+
+            // Parse MUSE sheet
+            if (workbook.SheetNames.includes('MUSE')) {
+                const sheet = workbook.Sheets['MUSE'];
+                const csv = XLSX.utils.sheet_to_csv(sheet);
+                result.muse = parseCSV(csv, 'MUSE');
+            }
+
+            // Parse MC sheet
+            if (workbook.SheetNames.includes('MC')) {
+                const sheet = workbook.Sheets['MC'];
+                const csv = XLSX.utils.sheet_to_csv(sheet);
+                result.mc = parseCSV(csv, 'MC');
+            }
+
+            return result;
         }
 
-        function getMonthlyData(market, kpiKey) {
-            if (!state.data) return [];
-            return state.data.filter(d => d.Market === market && d.Key === kpiKey)
-                .sort((a, b) => a.Month.localeCompare(b.Month));
+        // Get latest data for a specific combination of filters
+        function getLatestData(market, kpiKey, bu = null, channel = null) {
+            const data = getData();
+            if (!data) return null;
+
+            let rows = data.filter(d => d.Market === market && d.Key === kpiKey);
+
+            if (state.mode === 'MC') {
+                if (bu && bu !== 'All') {
+                    rows = rows.filter(d => d.BU === bu);
+                } else if (state.selectedBU !== 'All') {
+                    rows = rows.filter(d => d.BU === state.selectedBU);
+                }
+                if (channel && channel !== 'All') {
+                    rows = rows.filter(d => d.Channel === channel);
+                } else if (state.selectedChannel !== 'All') {
+                    rows = rows.filter(d => d.Channel === state.selectedChannel);
+                }
+            }
+
+            // Find December data or latest available
+            const decRow = rows.find(d =>
+                d.Month === '12 - Dec' ||
+                d.Month === 'Dec-25' ||
+                d.Month?.includes('Dec')
+            );
+            return decRow || rows[rows.length - 1];
         }
 
-        function getMarkets() {
-            if (!state.data) return [];
-            const markets = [...new Set(state.data.map(d => d.Market))];
-            return MARKET_ORDER.filter(m => markets.includes(m));
+        // Get monthly data for charts
+        function getMonthlyData(market, kpiKey, bu = null, channel = null) {
+            const data = getData();
+            if (!data) return [];
+
+            let rows = data.filter(d => d.Market === market && d.Key === kpiKey);
+
+            if (state.mode === 'MC') {
+                if (bu && bu !== 'All') {
+                    rows = rows.filter(d => d.BU === bu);
+                } else if (state.selectedBU !== 'All') {
+                    rows = rows.filter(d => d.BU === state.selectedBU);
+                }
+                if (channel && channel !== 'All') {
+                    rows = rows.filter(d => d.Channel === channel);
+                } else if (state.selectedChannel !== 'All') {
+                    rows = rows.filter(d => d.Channel === state.selectedChannel);
+                }
+            }
+
+            return rows.sort((a, b) => (a.Month || '').localeCompare(b.Month || ''));
         }
 
-        function getKPIs() {
-            if (!state.data) return [];
-            return [...new Set(state.data.map(d => d.Key))].filter(k => KPI_CONFIG[k]);
+        // Get data for dimension analysis (BU, Market, Channel)
+        function getDimensionData(dimension, kpiKey) {
+            const data = getData();
+            const config = getKPIConfig();
+            if (!data || !config[kpiKey]) return [];
+
+            let items = [];
+            let groupBy;
+
+            if (dimension === 'bu') {
+                groupBy = 'BU';
+                items = getBUs();
+            } else if (dimension === 'market') {
+                groupBy = 'Market';
+                items = getMarkets();
+            } else if (dimension === 'channel') {
+                groupBy = 'Channel';
+                items = getChannels();
+            }
+
+            return items.map(item => {
+                const latest = getLatestData(
+                    dimension === 'market' ? item : state.selectedMarket,
+                    kpiKey,
+                    dimension === 'bu' ? item : state.selectedBU,
+                    dimension === 'channel' ? item : state.selectedChannel
+                );
+                return {
+                    name: item,
+                    data: latest,
+                    isTotal: item === 'All'
+                };
+            }).filter(d => d.data);
         }
 
         // Generate insights without suggestions
@@ -1571,43 +1912,96 @@
                     <div class="upload-box">
                         <div class="upload-logo">${LOGO_SVG}</div>
                         <h2>2025 Performance Review</h2>
-                        <p>Upload your KPI data to generate the presentation dashboard</p>
-                        <div class="dropzone" id="dropzone">
-                            <p class="dropzone-text"><span>Click to upload</span> or drag & drop CSV</p>
-                            <input type="file" id="fileInput" accept=".csv" style="display:none">
+                        <p>Select dashboard mode and upload your data</p>
+
+                        <div class="mode-selector">
+                            <div class="mode-card ${state.mode === 'MUSE' ? 'selected' : ''}" data-mode="MUSE">
+                                <div class="mode-card-icon">💎</div>
+                                <div class="mode-card-title">MUSE</div>
+                                <div class="mode-card-desc">Loyalty program analytics</div>
+                            </div>
+                            <div class="mode-card ${state.mode === 'MC' ? 'selected' : ''}" data-mode="MC">
+                                <div class="mode-card-icon">📊</div>
+                                <div class="mode-card-title">MC</div>
+                                <div class="mode-card-desc">Multi-channel customer metrics</div>
+                            </div>
                         </div>
-                        <button class="btn-primary" id="demoBtn">Load Demo Data</button>
+
+                        <div class="dropzone" id="dropzone">
+                            <p class="dropzone-text"><span>Click to upload</span> or drag & drop</p>
+                            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+                        </div>
+                        <p class="upload-hint">
+                            <strong>Excel:</strong> Workbook with sheets named "MUSE" and/or "MC"<br>
+                            <strong>CSV:</strong> Single mode data file
+                        </p>
+                        <button class="btn-primary" id="demoBtn" style="margin-top: 16px;">Load Demo Data</button>
                     </div>
                 </div>
             `;
         }
 
         function renderDashboard() {
+            const hasBothModes = state.museData && state.mcData;
+            const modeLabel = state.mode === 'MC' ? 'Multi-Channel' : 'MUSE Loyalty';
+
+            // Different tabs for MC mode
+            const mcTabs = `
+                <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
+                <div class="nav-tab ${state.activeTab === 'bu' ? 'active' : ''}" data-tab="bu">BU Analysis</div>
+                <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
+                <div class="nav-tab ${state.activeTab === 'channel' ? 'active' : ''}" data-tab="channel">Channel Analysis</div>
+                <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
+            `;
+
+            const museTabs = `
+                <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
+                <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
+                <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
+            `;
+
             return `
                 <header class="header">
                     <div class="header-left">
                         <div class="logo-container">${LOGO_SVG}</div>
                         <div class="header-text">
                             <h1>2025 Performance Review</h1>
-                            <p>Year-over-Year Analysis | Strategic KPI Dashboard</p>
+                            <p>Year-over-Year Analysis | ${modeLabel} Dashboard</p>
                         </div>
                     </div>
-                    <span class="header-badge">Full Year Results</span>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        ${hasBothModes ? `
+                        <div class="header-mode-switcher">
+                            <div class="mode-toggle">
+                                <button class="mode-toggle-btn ${state.mode === 'MUSE' ? 'active' : ''}" data-mode="MUSE">MUSE</button>
+                                <button class="mode-toggle-btn ${state.mode === 'MC' ? 'active' : ''}" data-mode="MC">MC</button>
+                            </div>
+                        </div>
+                        ` : ''}
+                        <span class="header-badge">${state.mode} Mode</span>
+                    </div>
                 </header>
                 <nav class="nav-tabs">
-                    <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
-                    <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
-                    <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
+                    ${state.mode === 'MC' ? mcTabs : museTabs}
                 </nav>
                 <main class="main">
                     ${state.activeTab === 'summary' ? renderSummaryTab() : ''}
+                    ${state.activeTab === 'bu' && state.mode === 'MC' ? renderBUTab() : ''}
                     ${state.activeTab === 'markets' ? renderMarketsTab() : ''}
+                    ${state.activeTab === 'channel' && state.mode === 'MC' ? renderChannelTab() : ''}
                     ${state.activeTab === 'kpi' ? renderKPITab() : ''}
                 </main>
             `;
         }
 
         function renderSummaryTab() {
+            if (state.mode === 'MC') {
+                return renderMCSummaryTab();
+            }
+            return renderMUSESummaryTab();
+        }
+
+        function renderMUSESummaryTab() {
             const market = 'All Markets';
             const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF'];
             const loyaltyKPIs = ['SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
@@ -1650,8 +2044,332 @@
             `;
         }
 
-        // Icons for metrics
+        function renderMCSummaryTab() {
+            // Hero KPIs for MC mode
+            const heroKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'AVERAGE FREQUENCY', 'SALES LINKAGE', 'NEW CUSTOMER COUNT'];
+            const comparisonKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV'];
+
+            return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Key Performance Indicators</div>
+                        <div class="section-subtitle">Full Year 2025 vs 2024 | ${state.selectedBU === 'All' ? 'All BUs' : state.selectedBU} | ${state.selectedMarket === 'All' ? 'All Markets' : state.selectedMarket} | ${state.selectedChannel === 'All' ? 'All Channels' : state.selectedChannel}</div>
+                    </div>
+                </div>
+
+                ${renderMCFilters()}
+
+                <div class="exec-summary" style="grid-template-columns: repeat(3, 1fr);">
+                    ${heroKPIs.map(key => renderMetricCard('All', key)).join('')}
+                </div>
+
+                <div class="comparison-grid" style="margin-top: 32px;">
+                    ${renderDimensionComparisonTable('bu', 'BU Comparison', comparisonKPIs)}
+                    ${renderDimensionComparisonTable('channel', 'Channel Comparison', comparisonKPIs)}
+                </div>
+
+                ${renderDimensionComparisonTable('market', 'Market Comparison', comparisonKPIs)}
+            `;
+        }
+
+        // Render cascade filters for MC mode
+        function renderMCFilters() {
+            const bus = getBUs();
+            const markets = getMarkets();
+            const channels = getChannels();
+
+            return `
+                <div class="filter-row filter-cascade" style="margin-bottom: 24px;">
+                    <div class="filter-group">
+                        <label>Business Unit</label>
+                        <select class="filter-select" id="buFilter">
+                            ${bus.map(b => `<option value="${b}" ${b === state.selectedBU ? 'selected' : ''}>${b}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Market</label>
+                        <select class="filter-select" id="marketFilter">
+                            ${markets.map(m => `<option value="${m}" ${m === state.selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Channel</label>
+                        <select class="filter-select" id="channelFilter">
+                            ${channels.map(c => `<option value="${c}" ${c === state.selectedChannel ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render comparison table for a dimension (bu, market, channel)
+        function renderDimensionComparisonTable(dimension, title, kpis) {
+            const config = getKPIConfig();
+            const items = dimension === 'bu' ? getBUs() :
+                          dimension === 'market' ? getMarkets() :
+                          getChannels();
+
+            // Filter to show only available KPIs
+            const availableKPIs = kpis.filter(k => config[k]);
+            if (availableKPIs.length === 0) return '';
+
+            // Get data for each item
+            const itemsData = items.map(item => {
+                const kpiData = {};
+                availableKPIs.forEach(kpi => {
+                    kpiData[kpi] = getLatestData(
+                        dimension === 'market' ? item : 'All',
+                        kpi,
+                        dimension === 'bu' ? item : 'All',
+                        dimension === 'channel' ? item : 'All'
+                    );
+                });
+                return { name: item, kpiData, isTotal: item === 'All' };
+            }).filter(d => Object.values(d.kpiData).some(v => v));
+
+            // Separate total row
+            const totalItem = itemsData.find(d => d.isTotal);
+            const otherItems = itemsData.filter(d => !d.isTotal)
+                .sort((a, b) => {
+                    const aVal = a.kpiData[availableKPIs[0]]?.YTD || 0;
+                    const bVal = b.kpiData[availableKPIs[0]]?.YTD || 0;
+                    return bVal - aVal;
+                });
+
+            function renderRow(item, isTotal = false) {
+                return `
+                    <tr class="${isTotal ? 'total-row' : ''}">
+                        <td class="market-cell">${item.name}</td>
+                        ${availableKPIs.map(kpi => {
+                            const kpiConfig = config[kpi];
+                            const data = item.kpiData[kpi];
+                            if (!data) return '<td class="compare-cell">—</td>';
+
+                            const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
+                            const changeClass = getChangeClass(change, kpiConfig.format);
+
+                            let targetPart = '';
+                            if (data.Target) {
+                                const tGap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
+                                const tGapClass = getChangeClass(tGap, kpiConfig.format);
+                                targetPart = `<span class="cell-divider">|</span><span class="cell-compare-label">TGT:</span> <span class="cell-compare-value ${tGapClass}">${formatChange(tGap, kpiConfig.format)}</span>`;
+                            }
+
+                            return `
+                                <td class="compare-cell">
+                                    <div class="value-cell">${formatValue(data.YTD, kpiConfig.format)}</div>
+                                    <div class="cell-compare-inline">
+                                        <span class="cell-compare-label">LY:</span> <span class="cell-compare-value ${changeClass}">${formatChange(change, kpiConfig.format)}</span>
+                                        ${targetPart}
+                                    </div>
+                                </td>
+                            `;
+                        }).join('')}
+                    </tr>
+                `;
+            }
+
+            return `
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">${title}</div>
+                    </div>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>${dimension === 'bu' ? 'Business Unit' : dimension === 'market' ? 'Market' : 'Channel'}</th>
+                                ${availableKPIs.map(k => `<th class="center">${config[k]?.name || k}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${otherItems.map(item => renderRow(item, false)).join('')}
+                            ${totalItem ? renderRow(totalItem, true) : ''}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // BU Analysis Tab
+        function renderBUTab() {
+            const kpis = getKPIs();
+            const defaultKPI = kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0];
+
+            return `
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Select KPI</label>
+                        <select class="filter-select" id="buKpiSelect">
+                            ${kpis.map(k => `<option value="${k}" ${k === defaultKPI ? 'selected' : ''}>${getKPIConfig()[k]?.name || k}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div id="buAnalysisContent">
+                    ${renderDimensionAnalysis('bu', defaultKPI)}
+                </div>
+            `;
+        }
+
+        // Channel Analysis Tab
+        function renderChannelTab() {
+            const kpis = getKPIs();
+            const defaultKPI = kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0];
+
+            return `
+                ${renderMCFilters()}
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Select KPI</label>
+                        <select class="filter-select" id="channelKpiSelect">
+                            ${kpis.map(k => `<option value="${k}" ${k === defaultKPI ? 'selected' : ''}>${getKPIConfig()[k]?.name || k}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div id="channelAnalysisContent">
+                    ${renderDimensionAnalysis('channel', defaultKPI)}
+                </div>
+            `;
+        }
+
+        // Render dimension analysis (similar to market analysis)
+        function renderDimensionAnalysis(dimension, kpiKey) {
+            const config = getKPIConfig();
+            const kpiConfig = config[kpiKey];
+            if (!kpiConfig) return '<p>No data available</p>';
+
+            const items = dimension === 'bu' ? getBUs() :
+                          dimension === 'market' ? getMarkets() :
+                          getChannels();
+
+            const hasShare = kpiConfig.hasShare === true;
+
+            // Get data for all items
+            const allData = items.map(item => {
+                const data = getLatestData(
+                    dimension === 'market' ? item : 'All',
+                    kpiKey,
+                    dimension === 'bu' ? item : state.selectedBU,
+                    dimension === 'channel' ? item : state.selectedChannel
+                );
+                return { name: item, data, isTotal: item === 'All' };
+            }).filter(d => d.data);
+
+            const totalData = allData.find(d => d.isTotal);
+            const totalValue = totalData?.data?.YTD || 0;
+
+            const itemData = allData.filter(d => !d.isTotal)
+                .sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
+
+            const hasTargets = allData.some(d => d.data?.Target);
+            const maxShare = Math.max(...itemData.map(d => totalValue > 0 ? (d.data.YTD / totalValue) * 100 : 0));
+
+            function renderShareCell(value, isTotal = false) {
+                if (!hasShare) {
+                    return '<td class="compare-cell"><span class="cell-na">N/A</span></td>';
+                }
+                if (isTotal) {
+                    return '<td class="compare-cell"><span style="font-weight:600;color:var(--navy)">100%</span></td>';
+                }
+                const share = totalValue > 0 ? (value / totalValue) * 100 : 0;
+                const barWidth = maxShare > 0 ? (share / maxShare) * 100 : 0;
+                return `
+                    <td class="compare-cell">
+                        <div class="share-cell">
+                            <span class="share-value">${share.toFixed(0)}%</span>
+                            <div class="share-bar-bg">
+                                <div class="share-bar" style="width: ${barWidth}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+            }
+
+            const dimensionLabel = dimension === 'bu' ? 'Business Unit' :
+                                   dimension === 'market' ? 'Market' : 'Channel';
+
+            return `
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">${kpiConfig?.name || kpiKey} by ${dimensionLabel}</div>
+                    </div>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>${dimensionLabel}</th>
+                                <th class="center">2025</th>
+                                <th class="center">2024</th>
+                                ${hasTargets ? '<th class="center">Target</th>' : ''}
+                                <th class="center">Share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemData.map(({name, data}) => {
+                                const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
+                                const changeClass = getChangeClass(change, kpiConfig.format);
+
+                                let targetHTML = '';
+                                if (hasTargets) {
+                                    if (data.Target) {
+                                        const tGap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
+                                        const tGapClass = getChangeClass(tGap, kpiConfig.format);
+                                        targetHTML = `
+                                            <td class="compare-cell">
+                                                <div class="compare-group">
+                                                    <span class="compare-value">${formatValue(data.Target, kpiConfig.format)}</span>
+                                                    <span class="compare-badge ${tGapClass}">${formatChange(tGap, kpiConfig.format)}</span>
+                                                </div>
+                                            </td>
+                                        `;
+                                    } else {
+                                        targetHTML = '<td class="compare-cell">—</td>';
+                                    }
+                                }
+
+                                return `
+                                    <tr>
+                                        <td class="market-cell">${name}</td>
+                                        <td class="value-cell">${formatValue(data.YTD, kpiConfig.format)}</td>
+                                        <td class="compare-cell">
+                                            <div class="compare-group">
+                                                <span class="compare-value">${formatValue(data.LYTD, kpiConfig.format)}</span>
+                                                <span class="compare-badge ${changeClass}">${formatChange(change, kpiConfig.format)}</span>
+                                            </div>
+                                        </td>
+                                        ${targetHTML}
+                                        ${renderShareCell(data.YTD)}
+                                    </tr>
+                                `;
+                            }).join('')}
+                            ${totalData ? `
+                                <tr class="total-row">
+                                    <td class="market-cell">All</td>
+                                    <td class="value-cell">${formatValue(totalData.data.YTD, kpiConfig.format)}</td>
+                                    <td class="compare-cell">
+                                        <div class="compare-group">
+                                            <span class="compare-value">${formatValue(totalData.data.LYTD, kpiConfig.format)}</span>
+                                            <span class="compare-badge ${getChangeClass(calcChange(totalData.data.YTD, totalData.data.LYTD, kpiConfig.format), kpiConfig.format)}">${formatChange(calcChange(totalData.data.YTD, totalData.data.LYTD, kpiConfig.format), kpiConfig.format)}</span>
+                                        </div>
+                                    </td>
+                                    ${hasTargets && totalData.data.Target ? `
+                                        <td class="compare-cell">
+                                            <div class="compare-group">
+                                                <span class="compare-value">${formatValue(totalData.data.Target, kpiConfig.format)}</span>
+                                                <span class="compare-badge ${getChangeClass(calcTargetGap(totalData.data.YTD, totalData.data.Target, kpiConfig.format), kpiConfig.format)}">${formatChange(calcTargetGap(totalData.data.YTD, totalData.data.Target, kpiConfig.format), kpiConfig.format)}</span>
+                                            </div>
+                                        </td>
+                                    ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
+                                    ${renderShareCell(totalData.data.YTD, true)}
+                                </tr>
+                            ` : ''}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Icons for metrics (both MUSE and MC modes)
         const METRIC_ICONS = {
+            // MUSE mode icons
             'SLS_TTL': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
             'MBR_TTL': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
             'AVG_AOV': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
@@ -1659,11 +2377,23 @@
             'SLS_PEN': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
             'PCT_NBA': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>',
             'PCT_XBP': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
-            'PCT_RDM': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>'
+            'PCT_RDM': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
+            // MC mode icons
+            'TOTAL OWN BRAND SALES': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+            'KNOWN SALES': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+            'CUSTOMER COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+            'NEW CUSTOMER COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>',
+            'RETURNING CUSTOMER COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="23 6 23 1 18 1"/><path d="M16 8l7-7"/></svg>',
+            'AOV': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+            'ACV': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+            'AVERAGE FREQUENCY': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+            'SALES LINKAGE': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+            'UPT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+            'TRANSACTION COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>'
         };
 
         function renderMetricCard(market, kpiKey) {
-            const config = KPI_CONFIG[kpiKey];
+            const config = getKPIConfig()[kpiKey];
             const data = getLatestData(market, kpiKey);
             if (!data || !config) return '';
 
@@ -1727,6 +2457,7 @@
 
         function renderMarketSummaryTable() {
             const markets = getMarkets();
+            const kpiConfig = getKPIConfig();
             const kpis = ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
 
             // Separate individual markets from All Markets, sort by Total Sales value
@@ -1742,7 +2473,7 @@
                     <tr class="${isTotal ? 'total-row' : ''}">
                         <td class="market-cell">${m}</td>
                         ${kpis.map(k => {
-                            const config = KPI_CONFIG[k];
+                            const config = kpiConfig[k];
                             const data = getLatestData(m, k);
                             if (!data) return '<td class="compare-cell">—</td>';
                             const change = calcChange(data.YTD, data.LYTD, config.format);
@@ -1778,7 +2509,7 @@
                         <thead>
                             <tr>
                                 <th>Market</th>
-                                ${kpis.map(k => `<th class="center">${KPI_CONFIG[k]?.name || k}</th>`).join('')}
+                                ${kpis.map(k => `<th class="center">${kpiConfig[k]?.name || k}</th>`).join('')}
                             </tr>
                         </thead>
                         <tbody>
@@ -1792,33 +2523,42 @@
 
         function renderMarketsTab() {
             const kpis = getKPIs();
+            const config = getKPIConfig();
+            const defaultKPI = state.mode === 'MC'
+                ? (kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0])
+                : (kpis.includes('SLS_TTL') ? 'SLS_TTL' : kpis[0]);
 
             return `
+                ${state.mode === 'MC' ? renderMCFilters() : ''}
                 <div class="filter-row">
                     <div class="filter-group">
                         <label>Select KPI</label>
                         <select class="filter-select" id="marketKpiSelect">
-                            ${kpis.map(k => `<option value="${k}" ${k === 'SLS_TTL' ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
+                            ${kpis.map(k => `<option value="${k}" ${k === defaultKPI ? 'selected' : ''}>${config[k]?.name || k}</option>`).join('')}
                         </select>
                     </div>
                 </div>
                 <div id="marketComparisonContent">
-                    ${renderMarketAnalysis('SLS_TTL')}
+                    ${renderMarketAnalysis(defaultKPI)}
                 </div>
             `;
         }
 
         function renderMarketAnalysis(kpiKey) {
-            const config = KPI_CONFIG[kpiKey];
+            const config = getKPIConfig()[kpiKey];
+            if (!config) return '<p>No data available</p>';
+
             const markets = getMarkets();
             const hasShare = config.hasShare === true;
 
-            const totalData = getLatestData('All Markets', kpiKey);
+            // For MC mode, total market is 'All', for MUSE it's 'All Markets'
+            const totalMarketName = state.mode === 'MC' ? 'All' : 'All Markets';
+            const totalData = getLatestData(totalMarketName, kpiKey);
             const totalValue = totalData?.YTD || 0;
 
             const allMarketData = markets.map(m => {
                 const data = getLatestData(m, kpiKey);
-                return { market: m, data, isTotal: m === 'All Markets' };
+                return { market: m, data, isTotal: m === 'All' || m === 'All Markets' };
             }).filter(d => d.data);
 
             const hasTargets = allMarketData.some(d => d.data?.Target);
@@ -1934,22 +2674,52 @@
 
         function renderKPITab() {
             const kpis = getKPIs();
+            const kpiConfig = getKPIConfig();
             const markets = getMarkets();
-            const selectedKPI = state.selectedKPI || 'SLS_TTL';
-            const selectedMarket = state.selectedMarket || 'All Markets';
+            const bus = getBUs();
+            const channels = getChannels();
+
+            const defaultKPI = state.mode === 'MC'
+                ? (kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0])
+                : (kpis.includes('SLS_TTL') ? 'SLS_TTL' : kpis[0]);
+            const defaultMarket = state.mode === 'MC' ? 'All' : 'All Markets';
+
+            const selectedKPI = state.selectedKPI || defaultKPI;
+            const selectedMarket = state.selectedMarket || defaultMarket;
+
+            // For MC mode, show BU, Market, Channel cascade filters
+            const mcFilters = state.mode === 'MC' ? `
+                <div class="filter-group">
+                    <label>Business Unit</label>
+                    <select class="filter-select" id="kpiBUSelect">
+                        ${bus.map(b => `<option value="${b}" ${b === state.selectedBU ? 'selected' : ''}>${b}</option>`).join('')}
+                    </select>
+                </div>
+            ` : '';
+
+            const channelFilter = state.mode === 'MC' ? `
+                <div class="filter-group">
+                    <label>Channel</label>
+                    <select class="filter-select" id="kpiChannelSelect">
+                        ${channels.map(c => `<option value="${c}" ${c === state.selectedChannel ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
+                </div>
+            ` : '';
 
             return `
                 <div class="filter-row">
+                    ${mcFilters}
                     <div class="filter-group">
                         <label>Market</label>
                         <select class="filter-select" id="kpiMarketSelect">
                             ${markets.map(m => `<option value="${m}" ${m === selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
                         </select>
                     </div>
+                    ${channelFilter}
                     <div class="filter-group">
                         <label>KPI Metric</label>
                         <select class="filter-select" id="kpiSelect">
-                            ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
+                            ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${kpiConfig[k]?.name || k}</option>`).join('')}
                         </select>
                     </div>
                 </div>
@@ -1960,7 +2730,7 @@
         }
 
         function renderKPIDetail(market, kpiKey) {
-            const config = KPI_CONFIG[kpiKey];
+            const config = getKPIConfig()[kpiKey];
             const monthlyData = getMonthlyData(market, kpiKey);
             const latestData = getLatestData(market, kpiKey);
 
@@ -2143,12 +2913,13 @@
                             }).join('')}
                         </div>
                         ` : `
-                        <div class="market-breakdown-title">vs All Markets</div>
+                        <div class="market-breakdown-title">vs ${state.mode === 'MC' ? 'All' : 'All Markets'}</div>
                         <div class="market-breakdown-list">
-                            ${['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'].map((k, i) => {
-                                const kConfig = KPI_CONFIG[k];
+                            ${(state.mode === 'MC' ? ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'AVERAGE FREQUENCY'] : ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM']).map((k, i) => {
+                                const kConfig = getKPIConfig()[k];
+                                if (!kConfig) return '';
                                 const marketData = getLatestData(market, k);
-                                const allData = getLatestData('All Markets', k);
+                                const allData = getLatestData(state.mode === 'MC' ? 'All' : 'All Markets', k);
                                 if (!marketData || !allData) return '';
                                 const diff = kConfig.format === 'percent'
                                     ? (marketData.YTD - allData.YTD)
@@ -2202,6 +2973,27 @@
             const fileInput = document.getElementById('fileInput');
             const demoBtn = document.getElementById('demoBtn');
 
+            // Mode selection on upload screen
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.onclick = () => {
+                    state.mode = card.dataset.mode;
+                    render();
+                };
+            });
+
+            // Mode toggle in header
+            document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
+                btn.onclick = () => {
+                    state.mode = btn.dataset.mode;
+                    state.activeTab = 'summary'; // Reset to summary when switching modes
+                    state.selectedBU = 'All';
+                    state.selectedMarket = 'All';
+                    state.selectedChannel = 'All';
+                    state.selectedKPI = null;
+                    render();
+                };
+            });
+
             if (dropzone) {
                 dropzone.onclick = () => fileInput.click();
                 dropzone.ondragover = e => { e.preventDefault(); dropzone.style.borderColor = 'var(--navy)'; };
@@ -2228,6 +3020,54 @@
                 };
             });
 
+            // Cascade filter handlers for MC mode
+            const buFilter = document.getElementById('buFilter');
+            const marketFilter = document.getElementById('marketFilter');
+            const channelFilter = document.getElementById('channelFilter');
+
+            if (buFilter) {
+                buFilter.onchange = () => {
+                    state.selectedBU = buFilter.value;
+                    // Reset dependent filters
+                    state.selectedMarket = 'All';
+                    state.selectedChannel = 'All';
+                    render();
+                };
+            }
+
+            if (marketFilter) {
+                marketFilter.onchange = () => {
+                    state.selectedMarket = marketFilter.value;
+                    // Reset dependent filter
+                    state.selectedChannel = 'All';
+                    render();
+                };
+            }
+
+            if (channelFilter) {
+                channelFilter.onchange = () => {
+                    state.selectedChannel = channelFilter.value;
+                    render();
+                };
+            }
+
+            // BU Analysis tab KPI select
+            const buKpiSelect = document.getElementById('buKpiSelect');
+            if (buKpiSelect) {
+                buKpiSelect.onchange = () => {
+                    document.getElementById('buAnalysisContent').innerHTML = renderDimensionAnalysis('bu', buKpiSelect.value);
+                };
+            }
+
+            // Channel Analysis tab KPI select
+            const channelKpiSelect = document.getElementById('channelKpiSelect');
+            if (channelKpiSelect) {
+                channelKpiSelect.onchange = () => {
+                    document.getElementById('channelAnalysisContent').innerHTML = renderDimensionAnalysis('channel', channelKpiSelect.value);
+                };
+            }
+
+            // Market Analysis tab KPI select
             const marketKpiSelect = document.getElementById('marketKpiSelect');
             if (marketKpiSelect) {
                 marketKpiSelect.onchange = () => {
@@ -2235,22 +3075,52 @@
                 };
             }
 
+            // KPI Deep Dive selectors
+            const kpiBUSelect = document.getElementById('kpiBUSelect');
             const kpiMarketSelect = document.getElementById('kpiMarketSelect');
+            const kpiChannelSelect = document.getElementById('kpiChannelSelect');
             const kpiSelect = document.getElementById('kpiSelect');
+
+            const defaultKPI = state.mode === 'MC' ? 'TOTAL OWN BRAND SALES' : 'SLS_TTL';
+            const defaultMarket = state.mode === 'MC' ? 'All' : 'All Markets';
+
+            if (kpiBUSelect) {
+                kpiBUSelect.onchange = () => {
+                    state.selectedBU = kpiBUSelect.value;
+                    render(); // Full re-render to update cascade options
+                };
+            }
 
             if (kpiMarketSelect) {
                 kpiMarketSelect.onchange = () => {
                     state.selectedMarket = kpiMarketSelect.value;
-                    document.getElementById('kpiDetailContent').innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || 'SLS_TTL');
-                    attachChartTooltips();
+                    const content = document.getElementById('kpiDetailContent');
+                    if (content) {
+                        content.innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || defaultKPI);
+                        attachChartTooltips();
+                    }
+                };
+            }
+
+            if (kpiChannelSelect) {
+                kpiChannelSelect.onchange = () => {
+                    state.selectedChannel = kpiChannelSelect.value;
+                    const content = document.getElementById('kpiDetailContent');
+                    if (content) {
+                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI || defaultKPI);
+                        attachChartTooltips();
+                    }
                 };
             }
 
             if (kpiSelect) {
                 kpiSelect.onchange = () => {
                     state.selectedKPI = kpiSelect.value;
-                    document.getElementById('kpiDetailContent').innerHTML = renderKPIDetail(state.selectedMarket || 'All Markets', state.selectedKPI);
-                    attachChartTooltips();
+                    const content = document.getElementById('kpiDetailContent');
+                    if (content) {
+                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI);
+                        attachChartTooltips();
+                    }
                 };
             }
 
@@ -2298,33 +3168,86 @@
         }
 
         function loadFile(file) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const data = parseCSV(e.target.result);
-                if (data.length > 0) {
-                    state.data = data;
-                    state.showUpload = false;
-                    render();
-                } else {
-                    alert('Could not parse CSV. Please check the format.');
-                }
-            };
-            reader.readAsText(file);
+            const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+            if (isExcel) {
+                // Load Excel file with SheetJS
+                const reader = new FileReader();
+                reader.onload = e => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const result = parseExcel(workbook);
+
+                        if (result.muse && result.muse.length > 0) {
+                            state.museData = result.muse;
+                        }
+                        if (result.mc && result.mc.length > 0) {
+                            state.mcData = result.mc;
+                        }
+
+                        // Auto-select mode based on available data
+                        if (state.mcData && !state.museData) {
+                            state.mode = 'MC';
+                        } else if (state.museData && !state.mcData) {
+                            state.mode = 'MUSE';
+                        }
+                        // If both available, keep user's selection
+
+                        if (state.museData || state.mcData) {
+                            state.showUpload = false;
+                            state.selectedBU = 'All';
+                            state.selectedMarket = 'All';
+                            state.selectedChannel = 'All';
+                            render();
+                        } else {
+                            alert('Could not find MUSE or MC sheets in the workbook.');
+                        }
+                    } catch (err) {
+                        console.error('Excel parse error:', err);
+                        alert('Could not parse Excel file. Please check the format.');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                // Load CSV file
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const data = parseCSV(e.target.result, state.mode);
+                    if (data.length > 0) {
+                        if (state.mode === 'MC') {
+                            state.mcData = data;
+                        } else {
+                            state.museData = data;
+                        }
+                        state.showUpload = false;
+                        state.selectedBU = 'All';
+                        state.selectedMarket = 'All';
+                        state.selectedChannel = 'All';
+                        render();
+                    } else {
+                        alert('Could not parse CSV. Please check the format.');
+                    }
+                };
+                reader.readAsText(file);
+            }
         }
 
         function loadDemoData() {
+            // Load demo CSV data for MUSE mode
             fetch('data.csv')
                 .then(r => r.text())
                 .then(text => {
-                    const data = parseCSV(text);
+                    const data = parseCSV(text, 'MUSE');
                     if (data.length > 0) {
-                        state.data = data;
+                        state.museData = data;
+                        state.mode = 'MUSE';
                         state.showUpload = false;
                         render();
                     }
                 })
                 .catch(() => {
-                    alert('Could not load demo data. Please upload a CSV file.');
+                    alert('Could not load demo data. Please upload a file.');
                 });
         }
 

@@ -147,10 +147,11 @@
         }
 
         .metric-value {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
             color: var(--navy);
-            margin-bottom: 16px;
+            margin-bottom: 18px;
+            letter-spacing: -0.5px;
         }
 
         /* Target comparison - primary */
@@ -158,30 +159,31 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 12px;
+            padding: 12px 14px;
             background: var(--light-bg);
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .metric-target-left {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 13px;
+            gap: 8px;
+            font-size: 14px;
             color: var(--text-muted);
         }
 
         .metric-target-val {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--navy);
+            font-size: 15px;
         }
 
         .metric-target-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 13px;
+            padding: 5px 12px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
         }
 
         .metric-target-badge.up {
@@ -229,13 +231,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .section-title {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 700;
             color: var(--navy);
+            letter-spacing: -0.3px;
         }
 
         .section-subtitle {
@@ -397,27 +400,37 @@
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .filter-select {
             background: var(--white);
-            border: 1px solid var(--light-steel);
+            border: 2px solid var(--light-steel);
             color: var(--navy);
-            padding: 10px 36px 10px 14px;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 12px 44px 12px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%231B365D' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%231B365D' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 12px center;
-            min-width: 200px;
+            background-position: right 14px center;
+            min-width: 220px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(27, 54, 93, 0.08);
+        }
+
+        .filter-select:hover {
+            border-color: var(--steel-blue);
+            box-shadow: 0 4px 8px rgba(27, 54, 93, 0.12);
         }
 
         .filter-select:focus {
             outline: none;
             border-color: var(--navy);
+            box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.15);
         }
 
         /* Upload Overlay */
@@ -476,7 +489,7 @@
         .chart-container {
             background: var(--white);
             border-radius: 12px;
-            padding: 24px;
+            padding: 28px;
             border: 1px solid var(--light-steel);
             margin-bottom: 24px;
         }
@@ -485,13 +498,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--light-steel);
         }
 
         .chart-title {
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: 700;
             color: var(--navy);
+            letter-spacing: -0.3px;
         }
 
         .chart-legend {
@@ -628,8 +644,8 @@
         /* Modern Market Table */
         .market-analysis-grid {
             display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 32px;
+            grid-template-columns: 1fr 320px;
+            gap: 40px;
             align-items: start;
         }
 
@@ -640,20 +656,20 @@
         }
 
         .modern-table th {
-            padding: 12px 16px;
+            padding: 14px 16px;
             text-align: left;
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-weight: 600;
+            font-weight: 700;
             border-bottom: 2px solid var(--light-steel);
         }
 
         .modern-table th.right { text-align: right; }
 
         .modern-table td {
-            padding: 14px 16px;
+            padding: 16px;
             font-size: 14px;
             border-bottom: 1px solid rgba(184, 212, 232, 0.4);
             vertical-align: middle;
@@ -667,13 +683,15 @@
             font-weight: 600;
             color: var(--navy);
             white-space: nowrap;
+            font-size: 15px;
         }
 
         .modern-table .value-cell {
             text-align: right;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--navy);
             font-variant-numeric: tabular-nums;
+            font-size: 18px;
         }
 
         .modern-table .compare-cell {
@@ -683,12 +701,12 @@
         .modern-table .compare-group {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .modern-table .compare-value {
             color: var(--text-muted);
-            font-size: 13px;
+            font-size: 14px;
             font-variant-numeric: tabular-nums;
         }
 
@@ -737,24 +755,30 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 16px;
+            padding: 20px;
             background: var(--light-bg);
             border-radius: 12px;
         }
 
         .donut-title {
-            font-size: 11px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .donut-wrapper {
+            position: relative;
+            width: 240px;
+            height: 240px;
         }
 
         .donut-chart {
             position: relative;
-            width: 180px;
-            height: 180px;
+            width: 100%;
+            height: 100%;
         }
 
         .donut-chart svg {
@@ -770,7 +794,7 @@
         }
 
         .donut-center-value {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--navy);
         }
@@ -778,20 +802,37 @@
         .donut-center-label {
             font-size: 11px;
             color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .donut-callouts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .donut-callout {
+            position: absolute;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .donut-callout-label {
+            color: var(--navy);
+            font-size: 12px;
+        }
+
+        .donut-callout-value {
+            color: var(--text-muted);
+            font-size: 11px;
         }
 
         .donut-legend {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-top: 16px;
-            width: 100%;
-        }
-
-        .donut-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: none;
             font-size: 12px;
         }
 
@@ -1345,8 +1386,8 @@
             const marketData = allMarketData.filter(d => !d.isTotal).sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
             const totalRow = allMarketData.find(d => d.isTotal);
 
-            // Donut chart colors
-            const DONUT_COLORS = ['#1B365D', '#4A6FA5', '#8FAFD4', '#B8D4E8', '#D4E4F1'];
+            // Donut chart colors - more distinct
+            const DONUT_COLORS = ['#1B365D', '#2E7D5A', '#8FAFD4', '#E8A838', '#C4314B'];
 
             // Calculate shares for donut
             const shareData = marketData.map((d, i) => ({
@@ -1356,42 +1397,56 @@
                 color: DONUT_COLORS[i % DONUT_COLORS.length]
             }));
 
-            // Build donut segments
+            // Build donut segments with labels
             let donutSegments = '';
+            let labelElements = '';
             let cumulative = 0;
-            const radius = 70;
+            const svgSize = 240;
+            const center = svgSize / 2;
+            const radius = 85;
             const circumference = 2 * Math.PI * radius;
 
-            shareData.forEach(item => {
+            shareData.forEach((item, idx) => {
                 const segmentLength = (item.share / 100) * circumference;
                 const offset = (cumulative / 100) * circumference;
-                donutSegments += `<circle cx="90" cy="90" r="${radius}" fill="none" stroke="${item.color}" stroke-width="28" stroke-dasharray="${segmentLength} ${circumference}" stroke-dashoffset="-${offset}"/>`;
+                donutSegments += `<circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${item.color}" stroke-width="32" stroke-dasharray="${segmentLength} ${circumference}" stroke-dashoffset="-${offset}"/>`;
+
+                // Calculate label position (middle of segment)
+                const midAngle = ((cumulative + item.share / 2) / 100) * 2 * Math.PI - Math.PI / 2;
+                const labelRadius = radius + 45;
+                const lx = center + Math.cos(midAngle) * labelRadius;
+                const ly = center + Math.sin(midAngle) * labelRadius;
+                const textAnchor = lx > center ? 'start' : 'end';
+
+                // Short market name
+                const shortName = item.market.replace('United Arab Emirates', 'UAE');
+
+                labelElements += `
+                    <text x="${lx}" y="${ly - 6}" text-anchor="${textAnchor}" fill="${item.color}" font-size="13" font-weight="700">${item.share.toFixed(0)}%</text>
+                    <text x="${lx}" y="${ly + 8}" text-anchor="${textAnchor}" fill="var(--text-muted)" font-size="10">${shortName}</text>
+                `;
+
                 cumulative += item.share;
             });
 
-            // Donut legend
-            const legendHTML = shareData.map(item => `
-                <div class="donut-legend-item">
-                    <div class="donut-legend-color" style="background: ${item.color}"></div>
-                    <span class="donut-legend-label">${item.market}</span>
-                    <span class="donut-legend-value">${item.share.toFixed(1)}%</span>
-                </div>
-            `).join('');
-
-            // Donut chart HTML
+            // Donut chart HTML - no legend, labels on chart
             const donutHTML = hasShare ? `
                 <div class="donut-container">
                     <div class="donut-title">Market Share</div>
-                    <div class="donut-chart">
-                        <svg width="180" height="180" viewBox="0 0 180 180">
-                            ${donutSegments}
-                        </svg>
-                        <div class="donut-center">
-                            <div class="donut-center-value">${formatValue(totalValue, config.format)}</div>
-                            <div class="donut-center-label">Total</div>
+                    <div class="donut-wrapper">
+                        <div class="donut-chart">
+                            <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" style="overflow: visible">
+                                ${donutSegments}
+                            </svg>
+                            <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" style="position: absolute; top: 0; left: 0; overflow: visible; transform: none">
+                                ${labelElements}
+                            </svg>
+                            <div class="donut-center">
+                                <div class="donut-center-value">${formatValue(totalValue, config.format)}</div>
+                                <div class="donut-center-label">Total</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="donut-legend">${legendHTML}</div>
                 </div>
             ` : '';
 

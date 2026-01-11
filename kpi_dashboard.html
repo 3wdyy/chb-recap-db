@@ -120,6 +120,7 @@
 
         .metric-card.positive { border-left-color: var(--positive); }
         .metric-card.negative { border-left-color: var(--negative); }
+        .metric-card.neutral { border-left-color: var(--neutral); }
 
         .metric-header {
             display: flex;
@@ -1002,10 +1003,10 @@
             return sign + change.toFixed(1) + '%';
         }
 
-        // Get CSS class for change value: up (>=10%), down (<=-10%), neutral (between)
+        // Get CSS class for change value: up (>=1%), down (<=-1%), neutral (between -1% and 1%)
         function getChangeClass(change) {
             if (change === null) return '';
-            if (Math.abs(change) < 10) return 'neutral';
+            if (Math.abs(change) < 1) return 'neutral';
             return change >= 0 ? 'up' : 'down';
         }
 
@@ -1242,8 +1243,9 @@
             const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
             const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
 
-            // Card accent based on TARGET if available, otherwise vs LY
-            const isGood = targetGap !== null ? targetGap >= 0 : (changeVsLY !== null ? changeVsLY >= 0 : true);
+            // Card accent based on TARGET if available, otherwise vs LY - uses same thresholds as badges
+            const accentChange = targetGap !== null ? targetGap : changeVsLY;
+            const cardAccentClass = getChangeClass(accentChange) || 'neutral';
 
             // Arrow SVGs
             const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
@@ -1279,7 +1281,7 @@
             `;
 
             return `
-                <div class="metric-card ${isGood ? 'positive' : 'negative'}">
+                <div class="metric-card ${cardAccentClass}">
                     <div class="metric-header">
                         <div class="metric-icon">${METRIC_ICONS[kpiKey] || ''}</div>
                         <div class="metric-label">${config.name}</div>

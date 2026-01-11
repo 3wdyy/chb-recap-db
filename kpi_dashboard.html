@@ -776,6 +776,36 @@
             font-weight: 700;
         }
 
+        /* Share Bar */
+        .share-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .share-value {
+            font-weight: 600;
+            color: var(--navy);
+            min-width: 36px;
+            text-align: right;
+        }
+
+        .share-bar-bg {
+            width: 80px;
+            height: 8px;
+            background: rgba(184, 212, 232, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .share-bar {
+            height: 100%;
+            background: var(--navy);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
         /* Donut Chart */
         .donut-container {
             display: flex;
@@ -1447,7 +1477,7 @@
         function renderMarketAnalysis(kpiKey) {
             const config = KPI_CONFIG[kpiKey];
             const markets = getMarkets();
-            const hasShare = config.hasShare !== false;
+            const hasShare = config.hasShare === true;
 
             const totalData = getLatestData('All Markets', kpiKey);
             const totalValue = totalData?.YTD || 0;
@@ -1463,146 +1493,107 @@
             const marketData = allMarketData.filter(d => !d.isTotal).sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
             const totalRow = allMarketData.find(d => d.isTotal);
 
-            // Donut chart colors - more distinct
-            const DONUT_COLORS = ['#1B365D', '#2E7D5A', '#8FAFD4', '#E8A838', '#C4314B'];
+            // Calculate share percentages
+            const maxShare = Math.max(...marketData.map(d => totalValue > 0 ? (d.data.YTD / totalValue) * 100 : 0));
 
-            // Calculate shares for donut
-            const shareData = marketData.map((d, i) => ({
-                market: d.market,
-                value: d.data.YTD,
-                share: totalValue > 0 ? (d.data.YTD / totalValue) * 100 : 0,
-                color: DONUT_COLORS[i % DONUT_COLORS.length]
-            }));
-
-            // Build donut segments with labels
-            let donutSegments = '';
-            let labelElements = '';
-            let cumulative = 0;
-            const svgSize = 280;
-            const center = svgSize / 2;
-            const radius = 75;
-            const circumference = 2 * Math.PI * radius;
-
-            shareData.forEach((item, idx) => {
-                const segmentLength = (item.share / 100) * circumference;
-                const offset = (cumulative / 100) * circumference;
-                donutSegments += `<circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${item.color}" stroke-width="28" stroke-dasharray="${segmentLength} ${circumference}" stroke-dashoffset="-${offset}"/>`;
-
-                // Calculate label position (middle of segment)
-                const midAngle = ((cumulative + item.share / 2) / 100) * 2 * Math.PI - Math.PI / 2;
-                const labelRadius = radius + 55;
-                const lx = center + Math.cos(midAngle) * labelRadius;
-                const ly = center + Math.sin(midAngle) * labelRadius;
-                const textAnchor = lx > center + 10 ? 'start' : (lx < center - 10 ? 'end' : 'middle');
-
-                // Short market name
-                const shortName = item.market.replace('United Arab Emirates', 'UAE');
-
-                labelElements += `
-                    <text x="${lx}" y="${ly}" text-anchor="${textAnchor}" fill="${item.color}" font-size="14" font-weight="700">${item.share.toFixed(0)}%</text>
-                    <text x="${lx}" y="${ly + 14}" text-anchor="${textAnchor}" fill="#64748B" font-size="11">${shortName}</text>
-                `;
-
-                cumulative += item.share;
-            });
-
-            // Donut chart HTML - no legend, labels on chart
-            const donutHTML = hasShare ? `
-                <div class="donut-container">
-                    <div class="donut-title">Market Share</div>
-                    <div class="donut-wrapper">
-                        <div class="donut-chart">
-                            <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" style="overflow: visible">
-                                ${donutSegments}
-                            </svg>
-                            <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" style="position: absolute; top: 0; left: 0; overflow: visible; transform: none">
-                                ${labelElements}
-                            </svg>
-                            <div class="donut-center">
-                                <div class="donut-center-value">${formatValue(totalValue, config.format)}</div>
-                                <div class="donut-center-label">Total</div>
+            // Helper to render share cell with bar
+            function renderShareCell(value, isTotal = false) {
+                if (!hasShare) {
+                    return '<td class="compare-cell"><span class="cell-na">N/A</span></td>';
+                }
+                if (isTotal) {
+                    return '<td class="compare-cell"><span style="font-weight:600;color:var(--navy)">100%</span></td>';
+                }
+                const share = totalValue > 0 ? (value / totalValue) * 100 : 0;
+                const barWidth = maxShare > 0 ? (share / maxShare) * 100 : 0;
+                return `
+                    <td class="compare-cell">
+                        <div class="share-cell">
+                            <span class="share-value">${share.toFixed(0)}%</span>
+                            <div class="share-bar-bg">
+                                <div class="share-bar" style="width: ${barWidth}%"></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            ` : '';
+                    </td>
+                `;
+            }
 
             return `
                 <div class="chart-container">
                     <div class="chart-header">
                         <div class="chart-title">${config?.name || kpiKey} by Market</div>
                     </div>
-                    <div class="${hasShare ? 'market-analysis-grid' : ''}">
-                        <table class="modern-table">
-                            <thead>
-                                <tr>
-                                    <th>Market</th>
-                                    <th class="right">2025 YTD</th>
-                                    <th class="right">2024</th>
-                                    ${hasTargets ? '<th class="right">Target</th>' : ''}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${marketData.map(({market, data}) => {
-                                    const change = calcChange(data.YTD, data.LYTD, config.format);
-                                    const changeClass = getChangeClass(change, config.format);
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Market</th>
+                                <th class="center">2025</th>
+                                <th class="center">2024</th>
+                                ${hasTargets ? '<th class="center">Target</th>' : ''}
+                                <th class="center">Share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${marketData.map(({market, data}) => {
+                                const change = calcChange(data.YTD, data.LYTD, config.format);
+                                const changeClass = getChangeClass(change, config.format);
 
-                                    let targetHTML = '';
-                                    if (hasTargets) {
-                                        if (data.Target) {
-                                            const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                            const tGapClass = getChangeClass(tGap, config.format);
-                                            targetHTML = `
-                                                <td class="compare-cell">
-                                                    <div class="compare-group">
-                                                        <span class="compare-value">${formatValue(data.Target, config.format)}</span>
-                                                        <span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>
-                                                    </div>
-                                                </td>
-                                            `;
-                                        } else {
-                                            targetHTML = '<td class="compare-cell">—</td>';
-                                        }
-                                    }
-
-                                    return `
-                                        <tr>
-                                            <td class="market-cell">${market}</td>
-                                            <td class="value-cell">${formatValue(data.YTD, config.format)}</td>
+                                let targetHTML = '';
+                                if (hasTargets) {
+                                    if (data.Target) {
+                                        const tGap = calcTargetGap(data.YTD, data.Target, config.format);
+                                        const tGapClass = getChangeClass(tGap, config.format);
+                                        targetHTML = `
                                             <td class="compare-cell">
                                                 <div class="compare-group">
-                                                    <span class="compare-value">${formatValue(data.LYTD, config.format)}</span>
-                                                    <span class="compare-badge ${changeClass}">${formatChange(change, config.format)}</span>
+                                                    <span class="compare-value">${formatValue(data.Target, config.format)}</span>
+                                                    <span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>
                                                 </div>
                                             </td>
-                                            ${targetHTML}
-                                        </tr>
-                                    `;
-                                }).join('')}
-                                ${totalRow ? `
-                                    <tr class="total-row">
-                                        <td class="market-cell">All Markets</td>
-                                        <td class="value-cell">${formatValue(totalRow.data.YTD, config.format)}</td>
+                                        `;
+                                    } else {
+                                        targetHTML = '<td class="compare-cell">—</td>';
+                                    }
+                                }
+
+                                return `
+                                    <tr>
+                                        <td class="market-cell">${market}</td>
+                                        <td class="value-cell">${formatValue(data.YTD, config.format)}</td>
                                         <td class="compare-cell">
                                             <div class="compare-group">
-                                                <span class="compare-value">${formatValue(totalRow.data.LYTD, config.format)}</span>
-                                                <span class="compare-badge ${getChangeClass(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
+                                                <span class="compare-value">${formatValue(data.LYTD, config.format)}</span>
+                                                <span class="compare-badge ${changeClass}">${formatChange(change, config.format)}</span>
                                             </div>
                                         </td>
-                                        ${hasTargets && totalRow.data.Target ? `
-                                            <td class="compare-cell">
-                                                <div class="compare-group">
-                                                    <span class="compare-value">${formatValue(totalRow.data.Target, config.format)}</span>
-                                                    <span class="compare-badge ${getChangeClass(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
-                                                </div>
-                                            </td>
-                                        ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
+                                        ${targetHTML}
+                                        ${renderShareCell(data.YTD)}
+                                    </tr>
+                                `;
+                            }).join('')}
+                            ${totalRow ? `
+                                <tr class="total-row">
+                                    <td class="market-cell">All Markets</td>
+                                    <td class="value-cell">${formatValue(totalRow.data.YTD, config.format)}</td>
+                                    <td class="compare-cell">
+                                        <div class="compare-group">
+                                            <span class="compare-value">${formatValue(totalRow.data.LYTD, config.format)}</span>
+                                            <span class="compare-badge ${getChangeClass(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
+                                        </div>
+                                    </td>
+                                    ${hasTargets && totalRow.data.Target ? `
+                                        <td class="compare-cell">
+                                            <div class="compare-group">
+                                                <span class="compare-value">${formatValue(totalRow.data.Target, config.format)}</span>
+                                                <span class="compare-badge ${getChangeClass(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
+                                            </div>
+                                        </td>
+                                    ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
+                                    ${renderShareCell(totalRow.data.YTD, true)}
                                     </tr>
                                 ` : ''}
                             </tbody>
                         </table>
-                        ${donutHTML}
-                    </div>
                 </div>
             `;
         }

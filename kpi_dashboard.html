@@ -112,83 +112,71 @@
             padding: 24px;
             border: 1px solid var(--light-steel);
             border-left: 4px solid var(--navy);
-            position: relative;
         }
 
         .metric-card.positive { border-left-color: var(--positive); }
         .metric-card.negative { border-left-color: var(--negative); }
 
+        .metric-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .metric-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--light-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--navy);
+        }
+
         .metric-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
         }
 
         .metric-value {
             font-size: 32px;
             font-weight: 700;
             color: var(--navy);
-            margin-bottom: 4px;
+            margin-bottom: 16px;
         }
 
-        .metric-comparison {
+        .metric-target-line {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
-            flex-wrap: wrap;
+            font-size: 13px;
+            margin-bottom: 6px;
         }
 
-        .metric-change {
-            padding: 2px 8px;
-            border-radius: 4px;
+        .metric-target-label {
+            color: var(--text-muted);
+        }
+
+        .metric-target-gap {
             font-weight: 600;
-            font-size: 13px;
         }
 
-        .metric-change.up { background: rgba(46, 125, 90, 0.15); color: var(--positive); }
-        .metric-change.down { background: rgba(196, 49, 75, 0.15); color: var(--negative); }
+        .metric-target-gap.up { color: var(--positive); }
+        .metric-target-gap.down { color: var(--negative); }
 
-        .metric-vs { color: var(--text-muted); }
-
-        .metric-target {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--light-steel);
-            font-size: 13px;
+        .metric-vs-line {
+            font-size: 12px;
+            color: var(--text-muted);
         }
 
-        .target-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
+        .metric-vs-value {
+            font-weight: 600;
+            color: var(--steel-blue);
         }
-
-        .target-label { color: var(--text-muted); }
-        .target-value { font-weight: 600; color: var(--navy); }
-        .target-gap { font-weight: 600; }
-        .target-gap.up { color: var(--positive); }
-        .target-gap.down { color: var(--negative); }
-
-        .target-bar {
-            height: 6px;
-            background: var(--light-steel);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .target-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.5s ease;
-        }
-
-        .target-fill.good { background: var(--positive); }
-        .target-fill.ok { background: #f59e0b; }
-        .target-fill.bad { background: var(--negative); }
 
         /* Section Headers */
         .section-header {
@@ -975,90 +963,65 @@
             `;
         }
 
+        // Icons for metrics
+        const METRIC_ICONS = {
+            'SLS_TTL': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+            'MBR_TTL': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+            'AVG_AOV': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+            'AVG_ATF': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+            'SLS_PEN': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+            'PCT_NBA': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+            'PCT_XBP': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+            'PCT_RDM': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>'
+        };
+
         function renderMetricCard(market, kpiKey) {
-            const config = KPI_CONFIG[kpiKey];
-            const data = getLatestData(market, kpiKey);
-            if (!data || !config) return '';
-
-            const change = calcChange(data.YTD, data.LYTD, config.format);
-            const isPositive = change !== null && change >= 0;
-            const isGood = config.good === 'up' ? isPositive : !isPositive;
-
-            let targetHTML = '';
-            if (data.Target) {
-                const gap = calcTargetGap(data.YTD, data.Target, config.format);
-                const gapClass = gap >= 0 ? 'up' : 'down';
-                const attainPct = Math.min((data.YTD / data.Target) * 100, 150);
-                const displayPct = Math.min(attainPct, 100);
-                // Bar color based on gap direction: above target = green, below = red
-                const barClass = gap >= 0 ? 'good' : 'bad';
-                targetHTML = `
-                    <div class="metric-target">
-                        <div class="target-row">
-                            <span class="target-label">Target: ${formatValue(data.Target, config.format)}</span>
-                            <span class="target-gap ${gapClass}">${formatChange(gap, config.format)}</span>
-                        </div>
-                        <div class="target-bar">
-                            <div class="target-fill ${barClass}" style="width:${displayPct}%"></div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            return `
-                <div class="metric-card ${isGood ? 'positive' : 'negative'}">
-                    <div class="metric-label">${config.name}</div>
-                    <div class="metric-value">${formatValue(data.YTD, config.format)}</div>
-                    <div class="metric-comparison">
-                        <span class="metric-change ${isPositive ? 'up' : 'down'}">${formatChange(change, config.format)} vs 2024</span>
-                    </div>
-                    ${targetHTML}
-                </div>
-            `;
-        }
-
-        function renderLoyaltyCard(market, kpiKey) {
             const config = KPI_CONFIG[kpiKey];
             const data = getLatestData(market, kpiKey);
             if (!data || !config) return '';
 
             const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
             const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
-            const isLYPositive = changeVsLY !== null && changeVsLY >= 0;
 
-            // Card accent based on target gap if available, otherwise vs LY
-            const isGood = targetGap !== null ? targetGap >= 0 : isLYPositive;
+            // Card accent based on TARGET if available, otherwise vs LY
+            const isGood = targetGap !== null ? targetGap >= 0 : (changeVsLY !== null ? changeVsLY >= 0 : true);
 
-            // Target progress bar (same style as KPI cards)
-            let targetHTML = '';
+            // Target line (primary comparison)
+            let targetLine = '';
             if (data.Target) {
                 const gapClass = targetGap >= 0 ? 'up' : 'down';
-                const attainPct = Math.min((data.YTD / data.Target) * 100, 150);
-                const displayPct = Math.min(attainPct, 100);
-                const barClass = targetGap >= 0 ? 'good' : 'bad';
-                targetHTML = `
-                    <div class="metric-target">
-                        <div class="target-row">
-                            <span class="target-label">Target: ${formatValue(data.Target, config.format)}</span>
-                            <span class="target-gap ${gapClass}">${formatChange(targetGap, config.format)}</span>
-                        </div>
-                        <div class="target-bar">
-                            <div class="target-fill ${barClass}" style="width:${displayPct}%"></div>
-                        </div>
+                targetLine = `
+                    <div class="metric-target-line">
+                        <span class="metric-target-label">Target: ${formatValue(data.Target, config.format)}</span>
+                        <span class="metric-target-gap ${gapClass}">${formatChange(targetGap, config.format)}</span>
                     </div>
                 `;
             }
 
-            return `
-                <div class="metric-card ${isGood ? 'positive' : 'negative'}">
-                    <div class="metric-label">${config.name}</div>
-                    <div class="metric-value">${formatValue(data.YTD, config.format)}</div>
-                    <div class="metric-comparison">
-                        <span class="metric-change ${isLYPositive ? 'up' : 'down'}">${formatChange(changeVsLY, config.format)} vs 2024</span>
-                    </div>
-                    ${targetHTML}
+            // vs 2024 line (secondary, muted)
+            const vsLYClass = changeVsLY >= 0 ? 'up' : 'down';
+            const vsLine = `
+                <div class="metric-vs-line">
+                    <span class="metric-vs-value">${formatChange(changeVsLY, config.format)}</span> vs 2024
                 </div>
             `;
+
+            return `
+                <div class="metric-card ${isGood ? 'positive' : 'negative'}">
+                    <div class="metric-header">
+                        <div class="metric-icon">${METRIC_ICONS[kpiKey] || ''}</div>
+                        <div class="metric-label">${config.name}</div>
+                    </div>
+                    <div class="metric-value">${formatValue(data.YTD, config.format)}</div>
+                    ${targetLine}
+                    ${vsLine}
+                </div>
+            `;
+        }
+
+        function renderLoyaltyCard(market, kpiKey) {
+            // Use same design as metric cards
+            return renderMetricCard(market, kpiKey);
         }
 
         function renderMarketSummaryTable() {

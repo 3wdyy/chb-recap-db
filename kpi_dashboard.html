@@ -577,75 +577,118 @@
             color: var(--text-muted);
         }
 
-        /* Analysis Table */
-        .analysis-table {
+        /* Modern Market Table */
+        .modern-table {
             width: 100%;
-            background: var(--white);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--light-steel);
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
-        .analysis-table th {
-            background: var(--navy);
-            padding: 14px 16px;
-            text-align: center;
-            font-size: 12px;
-            color: white;
+        .modern-table th {
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 11px;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
+            border-bottom: 2px solid var(--light-steel);
         }
 
-        .analysis-table th.left { text-align: left; }
+        .modern-table th.right { text-align: right; }
+        .modern-table th.center { text-align: center; }
 
-        .analysis-table td {
-            padding: 14px 16px;
-            border-top: 1px solid var(--light-steel);
+        .modern-table td {
+            padding: 16px 20px;
             font-size: 14px;
+            border-bottom: 1px solid rgba(184, 212, 232, 0.5);
+            vertical-align: middle;
+        }
+
+        .modern-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .modern-table .market-cell {
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap;
+        }
+
+        .modern-table .value-cell {
+            text-align: right;
+            font-weight: 600;
+            color: var(--navy);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .modern-table .share-cell {
             text-align: center;
         }
 
-        .analysis-table .market-name {
-            white-space: nowrap;
-            text-align: left;
+        .modern-table .share-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .analysis-table .col-2024 {
-            background: rgba(143, 175, 212, 0.08);
+        .modern-table .share-bar-track {
+            flex: 1;
+            height: 6px;
+            background: var(--light-bg);
+            border-radius: 3px;
+            overflow: hidden;
+            max-width: 80px;
         }
 
-        .analysis-table .col-target {
-            background: rgba(27, 54, 93, 0.06);
+        .modern-table .share-bar-fill {
+            height: 100%;
+            background: var(--steel-blue);
+            border-radius: 3px;
         }
 
-        .analysis-table th.col-2024 {
-            background: rgba(143, 175, 212, 0.25);
-            color: var(--navy);
+        .modern-table .share-value {
+            font-size: 13px;
+            color: var(--text-muted);
+            min-width: 42px;
+            text-align: right;
         }
 
-        .analysis-table th.col-target {
-            background: rgba(27, 54, 93, 0.15);
-            color: var(--navy);
+        .modern-table .change-cell {
+            text-align: right;
         }
 
-        .analysis-table tr:hover td { background: var(--light-bg); }
-        .analysis-table tr:hover td.col-2024 { background: rgba(143, 175, 212, 0.18); }
-        .analysis-table tr:hover td.col-target { background: rgba(27, 54, 93, 0.14); }
-
-        .analysis-table tr.total-row td {
-            background: rgba(27, 54, 93, 0.08);
+        .modern-table .change-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: 600;
+        }
+
+        .modern-table .change-badge.up {
+            background: rgba(46, 125, 90, 0.1);
+            color: var(--positive);
+        }
+
+        .modern-table .change-badge.down {
+            background: rgba(196, 49, 75, 0.1);
+            color: var(--negative);
+        }
+
+        .modern-table .total-row {
+            background: linear-gradient(90deg, rgba(27, 54, 93, 0.06) 0%, rgba(27, 54, 93, 0.02) 100%);
+        }
+
+        .modern-table .total-row td {
             border-top: 2px solid var(--navy);
+            border-bottom: none;
+            padding-top: 18px;
+            padding-bottom: 18px;
         }
 
-        .analysis-table tr.total-row td.col-2024 {
-            background: rgba(143, 175, 212, 0.18);
-        }
-
-        .analysis-table tr.total-row td.col-target {
-            background: rgba(27, 54, 93, 0.14);
+        .modern-table .total-row .market-cell {
+            font-weight: 700;
         }
 
         .cell-na {
@@ -1157,67 +1200,73 @@
                 return { market: m, data, isTotal: m === 'All Markets' };
             }).filter(d => d.data);
 
-            // Check if any market has target data
             const hasTargets = allMarketData.some(d => d.data?.Target);
+
+            // Sort: non-total markets by value descending, then total at end
+            const sortedData = [
+                ...allMarketData.filter(d => !d.isTotal).sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0)),
+                ...allMarketData.filter(d => d.isTotal)
+            ];
 
             return `
                 <div class="chart-container">
                     <div class="chart-header">
                         <div class="chart-title">${config?.name || kpiKey} by Market</div>
                     </div>
-                    <table class="analysis-table">
+                    <table class="modern-table">
                         <thead>
                             <tr>
-                                <th class="left" style="width:160px">Market</th>
-                                <th>2025 YTD</th>
-                                <th>% Share</th>
-                                <th class="col-2024">2024 YTD</th>
-                                <th class="col-2024">vs 2024</th>
-                                ${hasTargets ? '<th class="col-target">Target</th><th class="col-target">vs Target</th>' : ''}
+                                <th>Market</th>
+                                <th class="right">2025 YTD</th>
+                                ${hasShare ? '<th class="center">Share</th>' : ''}
+                                <th class="right">vs 2024</th>
+                                ${hasTargets ? '<th class="right">vs Target</th>' : ''}
                             </tr>
                         </thead>
                         <tbody>
-                            ${allMarketData.map(({market, data, isTotal}) => {
+                            ${sortedData.map(({market, data, isTotal}) => {
                                 const change = calcChange(data.YTD, data.LYTD, config.format);
                                 const isUp = change >= 0;
 
-                                let shareText = '';
-                                if (!hasShare) {
-                                    shareText = '<span class="cell-na">N/A</span>';
-                                } else if (!isTotal && totalValue > 0) {
-                                    const share = (data.YTD / totalValue) * 100;
-                                    shareText = share.toFixed(1) + '%';
-                                } else if (isTotal) {
-                                    shareText = '100%';
-                                } else {
-                                    shareText = '—';
+                                let shareHTML = '';
+                                if (hasShare) {
+                                    if (!isTotal && totalValue > 0) {
+                                        const share = (data.YTD / totalValue) * 100;
+                                        shareHTML = `
+                                            <td class="share-cell">
+                                                <div class="share-bar">
+                                                    <div class="share-bar-track">
+                                                        <div class="share-bar-fill" style="width: ${share}%"></div>
+                                                    </div>
+                                                    <span class="share-value">${share.toFixed(1)}%</span>
+                                                </div>
+                                            </td>
+                                        `;
+                                    } else if (isTotal) {
+                                        shareHTML = '<td class="share-cell"><span class="share-value">100%</span></td>';
+                                    } else {
+                                        shareHTML = '<td class="share-cell">—</td>';
+                                    }
                                 }
 
-                                let targetCols = '';
+                                let targetHTML = '';
                                 if (hasTargets) {
-                                    let targetValue = '—';
-                                    let targetGapText = '—';
-                                    let targetGapClass = '';
                                     if (data.Target) {
-                                        targetValue = formatValue(data.Target, config.format);
                                         const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                        targetGapClass = tGap >= 0 ? 'up' : 'down';
-                                        targetGapText = formatChange(tGap, config.format);
+                                        const tIsUp = tGap >= 0;
+                                        targetHTML = `<td class="change-cell"><span class="change-badge ${tIsUp ? 'up' : 'down'}">${formatChange(tGap, config.format)}</span></td>`;
+                                    } else {
+                                        targetHTML = '<td class="change-cell">—</td>';
                                     }
-                                    targetCols = `
-                                        <td class="cell-value col-target">${targetValue}</td>
-                                        <td class="col-target"><span class="cell-sub ${targetGapClass}" style="font-size:14px">${targetGapText}</span></td>
-                                    `;
                                 }
 
                                 return `
                                     <tr class="${isTotal ? 'total-row' : ''}">
-                                        <td class="market-name">${market}</td>
-                                        <td class="cell-value">${formatValue(data.YTD, config.format)}</td>
-                                        <td>${shareText}</td>
-                                        <td class="cell-value col-2024">${formatValue(data.LYTD, config.format)}</td>
-                                        <td class="col-2024"><span class="cell-sub ${isUp ? 'up' : 'down'}" style="font-size:14px">${formatChange(change, config.format)}</span></td>
-                                        ${targetCols}
+                                        <td class="market-cell">${market}</td>
+                                        <td class="value-cell">${formatValue(data.YTD, config.format)}</td>
+                                        ${shareHTML}
+                                        <td class="change-cell"><span class="change-badge ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span></td>
+                                        ${targetHTML}
                                     </tr>
                                 `;
                             }).join('')}

@@ -773,7 +773,12 @@
 
         function calcDiff(val2025, val2024, isPercent) {
             if (val2025 === null || val2024 === null || val2024 === 0) return null;
-            if (isPercent) return (val2025 - val2024) * 100;
+            if (isPercent) {
+                // Use rounded values to match displayed percentages (avoids visual inconsistency)
+                const rounded2025 = parseFloat((val2025 * 100).toFixed(1));
+                const rounded2024 = parseFloat((val2024 * 100).toFixed(1));
+                return rounded2025 - rounded2024;
+            }
             return ((val2025 / val2024) - 1) * 100;
         }
 

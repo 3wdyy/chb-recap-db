@@ -209,67 +209,6 @@
             font-size: 14px;
         }
 
-        /* Loyalty KPIs */
-        .loyalty-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .loyalty-card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 28px;
-            border: 1px solid var(--light-steel);
-            text-align: center;
-        }
-
-        .loyalty-card.declining { border-top: 4px solid var(--negative); }
-        .loyalty-card.improving { border-top: 4px solid var(--positive); }
-
-        .loyalty-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-            font-size: 24px;
-        }
-
-        .loyalty-icon.red { background: rgba(196, 49, 75, 0.12); }
-        .loyalty-icon.green { background: rgba(46, 125, 90, 0.12); }
-
-        .loyalty-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--navy);
-            margin-bottom: 8px;
-        }
-
-        .loyalty-value {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .loyalty-value.red { color: var(--negative); }
-        .loyalty-value.green { color: var(--positive); }
-
-        .loyalty-detail {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .loyalty-target {
-            font-size: 12px;
-            color: var(--steel-blue);
-            font-weight: 500;
-        }
-
         /* Market Comparison Table */
         .market-table {
             width: 100%;
@@ -710,13 +649,7 @@
 
         @media (max-width: 1200px) {
             .exec-summary { grid-template-columns: repeat(2, 1fr); }
-            .loyalty-grid { grid-template-columns: repeat(2, 1fr); }
             .insights-grid { grid-template-columns: 1fr; }
-            .kpi-detail-grid { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 900px) {
-            .loyalty-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -1022,7 +955,7 @@
                         <div class="section-subtitle">Member engagement metrics</div>
                     </div>
                 </div>
-                <div class="loyalty-grid">
+                <div class="exec-summary">
                     ${loyaltyKPIs.map(key => renderLoyaltyCard(market, key)).join('')}
                 </div>
 
@@ -1091,42 +1024,39 @@
 
             const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
             const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
+            const isLYPositive = changeVsLY !== null && changeVsLY >= 0;
 
-            // Determine card status based on target gap if available, otherwise vs LY
-            const isNegative = targetGap !== null ? targetGap < 0 : (changeVsLY !== null && changeVsLY < 0);
+            // Card accent based on target gap if available, otherwise vs LY
+            const isGood = targetGap !== null ? targetGap >= 0 : isLYPositive;
 
-            const iconMap = {
-                'SLS_PEN': '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
-                'PCT_NBA': '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>',
-                'PCT_XBP': '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
-                'PCT_RDM': '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21M3 12h18M7.5 8V6.5a4.5 4.5 0 019 0V8"/></svg>'
-            };
-
-            // Primary display: vs Target gap
-            let primaryValue = '';
-            let primaryLabel = '';
-            if (targetGap !== null) {
-                primaryValue = `<div class="loyalty-value ${targetGap >= 0 ? 'green' : 'red'}">${formatChange(targetGap, config.format)}</div>`;
-                primaryLabel = `<div class="loyalty-detail">vs Target: ${formatValue(data.Target, config.format)}</div>`;
-            } else if (changeVsLY !== null) {
-                primaryValue = `<div class="loyalty-value ${changeVsLY >= 0 ? 'green' : 'red'}">${formatChange(changeVsLY, config.format)}</div>`;
-                primaryLabel = `<div class="loyalty-detail">vs 2024</div>`;
+            // Target progress bar (same style as KPI cards)
+            let targetHTML = '';
+            if (data.Target) {
+                const gapClass = targetGap >= 0 ? 'up' : 'down';
+                const attainPct = Math.min((data.YTD / data.Target) * 100, 150);
+                const displayPct = Math.min(attainPct, 100);
+                const barClass = targetGap >= 0 ? 'good' : 'bad';
+                targetHTML = `
+                    <div class="metric-target">
+                        <div class="target-row">
+                            <span class="target-label">Target: ${formatValue(data.Target, config.format)}</span>
+                            <span class="target-gap ${gapClass}">${formatChange(targetGap, config.format)}</span>
+                        </div>
+                        <div class="target-bar">
+                            <div class="target-fill ${barClass}" style="width:${displayPct}%"></div>
+                        </div>
+                    </div>
+                `;
             }
-
-            // Secondary info: actual value and vs LY (when target is shown)
-            let secondaryInfo = `<div class="loyalty-target">2025: ${formatValue(data.YTD, config.format)}`;
-            if (targetGap !== null && changeVsLY !== null) {
-                secondaryInfo += ` <span style="color:${changeVsLY >= 0 ? 'var(--positive)' : 'var(--negative)'}">(${formatChange(changeVsLY, config.format)} vs LY)</span>`;
-            }
-            secondaryInfo += '</div>';
 
             return `
-                <div class="loyalty-card ${isNegative ? 'declining' : 'improving'}">
-                    <div class="loyalty-icon ${isNegative ? 'red' : 'green'}" style="color: ${isNegative ? 'var(--negative)' : 'var(--positive)'}">${iconMap[kpiKey] || ''}</div>
-                    <div class="loyalty-title">${config.name}</div>
-                    ${primaryValue}
-                    ${primaryLabel}
-                    ${secondaryInfo}
+                <div class="metric-card ${isGood ? 'positive' : 'negative'}">
+                    <div class="metric-label">${config.name}</div>
+                    <div class="metric-value">${formatValue(data.YTD, config.format)}</div>
+                    <div class="metric-comparison">
+                        <span class="metric-change ${isLYPositive ? 'up' : 'down'}">${formatChange(changeVsLY, config.format)} vs 2024</span>
+                    </div>
+                    ${targetHTML}
                 </div>
             `;
         }

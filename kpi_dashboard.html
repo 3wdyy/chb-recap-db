@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KPI Performance Dashboard</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/recharts@2.10.3/umd/Recharts.js" crossorigin></script>
     <style>
         * {
             margin: 0;
@@ -21,7 +18,6 @@
             line-height: 1.6;
         }
 
-        /* Header Styles */
         .header {
             background: linear-gradient(135deg, #1B365D 0%, #2D4A7C 100%);
             color: white;
@@ -49,14 +45,12 @@
             font-weight: 400;
         }
 
-        /* Main Container */
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 32px 40px;
         }
 
-        /* Filter Section */
         .filter-section {
             display: flex;
             gap: 20px;
@@ -115,6 +109,7 @@
             transform: translateY(-50%);
             pointer-events: none;
             color: #64748B;
+            font-size: 12px;
             transition: transform 0.2s ease;
         }
 
@@ -134,6 +129,7 @@
             max-height: 280px;
             overflow-y: auto;
             display: none;
+            z-index: 100;
         }
 
         .dropdown-menu.open {
@@ -170,7 +166,6 @@
             z-index: 10;
         }
 
-        /* Upload Section */
         .upload-section {
             margin-left: auto;
         }
@@ -195,7 +190,6 @@
             color: #1B365D;
         }
 
-        /* Summary Cards */
         .summary-cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -263,12 +257,9 @@
         }
 
         .trend-icon {
-            display: inline-flex;
-            align-items: center;
             margin-right: 8px;
         }
 
-        /* Chart Section */
         .chart-section {
             background: white;
             border-radius: 12px;
@@ -287,9 +278,43 @@
         .chart-container {
             width: 100%;
             height: 360px;
+            position: relative;
         }
 
-        /* Monthly Badges */
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748B;
+        }
+
+        .legend-line {
+            width: 24px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .legend-line.solid {
+            background: #1B365D;
+        }
+
+        .legend-line.dashed {
+            background: repeating-linear-gradient(90deg, #7EB8DA 0, #7EB8DA 5px, transparent 5px, transparent 10px);
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 300px;
+        }
+
         .monthly-badges {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
@@ -326,7 +351,6 @@
             color: #C4314B;
         }
 
-        /* Table Section */
         .table-section {
             background: white;
             border-radius: 12px;
@@ -408,7 +432,6 @@
             font-weight: 600;
         }
 
-        /* Upload Overlay */
         .upload-overlay {
             position: fixed;
             top: 0;
@@ -427,7 +450,7 @@
             border-radius: 16px;
             padding: 60px 80px;
             text-align: center;
-            max-width: 500px;
+            max-width: 520px;
         }
 
         .upload-icon {
@@ -452,6 +475,7 @@
             padding: 40px;
             cursor: pointer;
             transition: all 0.2s ease;
+            margin-bottom: 20px;
         }
 
         .dropzone:hover, .dropzone.dragover {
@@ -469,35 +493,22 @@
             font-weight: 600;
         }
 
-        /* Loading Spinner */
-        .loading-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 80px;
+        .demo-btn {
+            padding: 14px 28px;
+            background: #1B365D;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
         }
 
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid #E2E8F0;
-            border-top-color: #1B365D;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .demo-btn:hover {
+            background: #2D4A7C;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            margin-top: 16px;
-            color: #64748B;
-            font-size: 14px;
-        }
-
-        /* Empty/Message States */
         .message-state {
             text-align: center;
             padding: 80px 40px;
@@ -515,12 +526,56 @@
             margin-bottom: 8px;
         }
 
-        /* Responsive */
+        .tooltip {
+            position: absolute;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 16px rgba(27, 54, 93, 0.15);
+            pointer-events: none;
+            z-index: 50;
+            font-size: 13px;
+            min-width: 140px;
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            color: #64748B;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .tooltip-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .tooltip-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .tooltip-value {
+            font-weight: 600;
+            color: #1B365D;
+        }
+
+        .tooltip-diff {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #E2E8F0;
+            font-weight: 600;
+        }
+
         @media (max-width: 1024px) {
             .summary-cards {
                 grid-template-columns: 1fr;
             }
-
             .monthly-badges {
                 grid-template-columns: repeat(6, 1fr);
             }
@@ -530,693 +585,723 @@
             .header {
                 padding: 20px;
             }
-
             .main-container {
                 padding: 20px;
             }
-
             .filter-section {
                 flex-direction: column;
             }
-
             .dropdown {
                 min-width: 100%;
             }
-
             .monthly-badges {
                 grid-template-columns: repeat(4, 1fr);
             }
         }
-
-        /* Custom Tooltip */
-        .custom-tooltip {
-            background: white;
-            border: 1px solid #E2E8F0;
-            border-radius: 8px;
-            padding: 16px;
-            box-shadow: 0 4px 16px rgba(27, 54, 93, 0.15);
-        }
-
-        .tooltip-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #64748B;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
-
-        .tooltip-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .tooltip-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .tooltip-label {
-            font-size: 13px;
-            color: #64748B;
-            min-width: 50px;
-        }
-
-        .tooltip-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1B365D;
-        }
-
-        .tooltip-diff {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #E2E8F0;
-            font-size: 13px;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="app"></div>
 
     <script>
-        // Wait for all libraries to load
-        window.onload = function() {
-            const { useState, useEffect, useRef, createElement: h } = React;
-            const {
-                ResponsiveContainer, ComposedChart, Line, Area, XAxis, YAxis,
-                CartesianGrid, Tooltip, Legend, ReferenceLine
-            } = Recharts;
+    (function() {
+        // ============ EMBEDDED SAMPLE DATA ============
+        const SAMPLE_DATA = [
+            {market:"TOTAL",kpi:"Total Sales",month:"JAN",value_2025:150000,value_2024:140000},
+            {market:"TOTAL",kpi:"Total Sales",month:"FEB",value_2025:320000,value_2024:295000},
+            {market:"TOTAL",kpi:"Total Sales",month:"MAR",value_2025:510000,value_2024:460000},
+            {market:"TOTAL",kpi:"Total Sales",month:"APR",value_2025:720000,value_2024:640000},
+            {market:"TOTAL",kpi:"Total Sales",month:"MAY",value_2025:950000,value_2024:830000},
+            {market:"TOTAL",kpi:"Total Sales",month:"JUN",value_2025:1200000,value_2024:1050000},
+            {market:"TOTAL",kpi:"Total Sales",month:"JUL",value_2025:1480000,value_2024:1280000},
+            {market:"TOTAL",kpi:"Total Sales",month:"AUG",value_2025:1780000,value_2024:1530000},
+            {market:"TOTAL",kpi:"Total Sales",month:"SEP",value_2025:2100000,value_2024:1800000},
+            {market:"TOTAL",kpi:"Total Sales",month:"OCT",value_2025:2450000,value_2024:2100000},
+            {market:"TOTAL",kpi:"Total Sales",month:"NOV",value_2025:2820000,value_2024:2420000},
+            {market:"TOTAL",kpi:"Total Sales",month:"DEC",value_2025:3250000,value_2024:2800000},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"JAN",value_2025:0.032,value_2024:0.028},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"FEB",value_2025:0.034,value_2024:0.029},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"MAR",value_2025:0.036,value_2024:0.031},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"APR",value_2025:0.038,value_2024:0.032},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"MAY",value_2025:0.041,value_2024:0.034},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"JUN",value_2025:0.043,value_2024:0.036},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"JUL",value_2025:0.045,value_2024:0.038},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"AUG",value_2025:0.047,value_2024:0.039},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"SEP",value_2025:0.049,value_2024:0.041},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"OCT",value_2025:0.051,value_2024:0.043},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"NOV",value_2025:0.053,value_2024:0.044},
+            {market:"TOTAL",kpi:"Conversion Rate %",month:"DEC",value_2025:0.055,value_2024:0.046},
+            {market:"TOTAL",kpi:"Average Order Value",month:"JAN",value_2025:125,value_2024:118},
+            {market:"TOTAL",kpi:"Average Order Value",month:"FEB",value_2025:128,value_2024:120},
+            {market:"TOTAL",kpi:"Average Order Value",month:"MAR",value_2025:132,value_2024:122},
+            {market:"TOTAL",kpi:"Average Order Value",month:"APR",value_2025:135,value_2024:125},
+            {market:"TOTAL",kpi:"Average Order Value",month:"MAY",value_2025:138,value_2024:127},
+            {market:"TOTAL",kpi:"Average Order Value",month:"JUN",value_2025:142,value_2024:130},
+            {market:"TOTAL",kpi:"Average Order Value",month:"JUL",value_2025:145,value_2024:132},
+            {market:"TOTAL",kpi:"Average Order Value",month:"AUG",value_2025:148,value_2024:135},
+            {market:"TOTAL",kpi:"Average Order Value",month:"SEP",value_2025:152,value_2024:138},
+            {market:"TOTAL",kpi:"Average Order Value",month:"OCT",value_2025:156,value_2024:140},
+            {market:"TOTAL",kpi:"Average Order Value",month:"NOV",value_2025:160,value_2024:143},
+            {market:"TOTAL",kpi:"Average Order Value",month:"DEC",value_2025:165,value_2024:145},
+            {market:"UAE",kpi:"Total Sales",month:"JAN",value_2025:85000,value_2024:78000},
+            {market:"UAE",kpi:"Total Sales",month:"FEB",value_2025:180000,value_2024:162000},
+            {market:"UAE",kpi:"Total Sales",month:"MAR",value_2025:285000,value_2024:252000},
+            {market:"UAE",kpi:"Total Sales",month:"APR",value_2025:400000,value_2024:350000},
+            {market:"UAE",kpi:"Total Sales",month:"MAY",value_2025:530000,value_2024:455000},
+            {market:"UAE",kpi:"Total Sales",month:"JUN",value_2025:670000,value_2024:575000},
+            {market:"UAE",kpi:"Total Sales",month:"JUL",value_2025:820000,value_2024:700000},
+            {market:"UAE",kpi:"Total Sales",month:"AUG",value_2025:980000,value_2024:840000},
+            {market:"UAE",kpi:"Total Sales",month:"SEP",value_2025:1160000,value_2024:990000},
+            {market:"UAE",kpi:"Total Sales",month:"OCT",value_2025:1360000,value_2024:1155000},
+            {market:"UAE",kpi:"Total Sales",month:"NOV",value_2025:1570000,value_2024:1330000},
+            {market:"UAE",kpi:"Total Sales",month:"DEC",value_2025:1800000,value_2024:1520000},
+            {market:"UAE",kpi:"Conversion Rate %",month:"JAN",value_2025:0.035,value_2024:0.030},
+            {market:"UAE",kpi:"Conversion Rate %",month:"FEB",value_2025:0.037,value_2024:0.031},
+            {market:"UAE",kpi:"Conversion Rate %",month:"MAR",value_2025:0.039,value_2024:0.033},
+            {market:"UAE",kpi:"Conversion Rate %",month:"APR",value_2025:0.042,value_2024:0.035},
+            {market:"UAE",kpi:"Conversion Rate %",month:"MAY",value_2025:0.044,value_2024:0.037},
+            {market:"UAE",kpi:"Conversion Rate %",month:"JUN",value_2025:0.046,value_2024:0.039},
+            {market:"UAE",kpi:"Conversion Rate %",month:"JUL",value_2025:0.048,value_2024:0.041},
+            {market:"UAE",kpi:"Conversion Rate %",month:"AUG",value_2025:0.051,value_2024:0.043},
+            {market:"UAE",kpi:"Conversion Rate %",month:"SEP",value_2025:0.053,value_2024:0.045},
+            {market:"UAE",kpi:"Conversion Rate %",month:"OCT",value_2025:0.055,value_2024:0.047},
+            {market:"UAE",kpi:"Conversion Rate %",month:"NOV",value_2025:0.057,value_2024:0.048},
+            {market:"UAE",kpi:"Conversion Rate %",month:"DEC",value_2025:0.059,value_2024:0.050},
+            {market:"UAE",kpi:"Average Order Value",month:"JAN",value_2025:135,value_2024:125},
+            {market:"UAE",kpi:"Average Order Value",month:"FEB",value_2025:138,value_2024:128},
+            {market:"UAE",kpi:"Average Order Value",month:"MAR",value_2025:142,value_2024:130},
+            {market:"UAE",kpi:"Average Order Value",month:"APR",value_2025:146,value_2024:133},
+            {market:"UAE",kpi:"Average Order Value",month:"MAY",value_2025:150,value_2024:136},
+            {market:"UAE",kpi:"Average Order Value",month:"JUN",value_2025:154,value_2024:139},
+            {market:"UAE",kpi:"Average Order Value",month:"JUL",value_2025:158,value_2024:142},
+            {market:"UAE",kpi:"Average Order Value",month:"AUG",value_2025:162,value_2024:145},
+            {market:"UAE",kpi:"Average Order Value",month:"SEP",value_2025:166,value_2024:148},
+            {market:"UAE",kpi:"Average Order Value",month:"OCT",value_2025:170,value_2024:151},
+            {market:"UAE",kpi:"Average Order Value",month:"NOV",value_2025:175,value_2024:154},
+            {market:"UAE",kpi:"Average Order Value",month:"DEC",value_2025:180,value_2024:158},
+            {market:"KSA",kpi:"Total Sales",month:"JAN",value_2025:65000,value_2024:62000},
+            {market:"KSA",kpi:"Total Sales",month:"FEB",value_2025:140000,value_2024:133000},
+            {market:"KSA",kpi:"Total Sales",month:"MAR",value_2025:225000,value_2024:208000},
+            {market:"KSA",kpi:"Total Sales",month:"APR",value_2025:320000,value_2024:290000},
+            {market:"KSA",kpi:"Total Sales",month:"MAY",value_2025:420000,value_2024:375000},
+            {market:"KSA",kpi:"Total Sales",month:"JUN",value_2025:530000,value_2024:475000},
+            {market:"KSA",kpi:"Total Sales",month:"JUL",value_2025:660000,value_2024:580000},
+            {market:"KSA",kpi:"Total Sales",month:"AUG",value_2025:800000,value_2024:690000},
+            {market:"KSA",kpi:"Total Sales",month:"SEP",value_2025:940000,value_2024:810000},
+            {market:"KSA",kpi:"Total Sales",month:"OCT",value_2025:1090000,value_2024:945000},
+            {market:"KSA",kpi:"Total Sales",month:"NOV",value_2025:1250000,value_2024:1090000},
+            {market:"KSA",kpi:"Total Sales",month:"DEC",value_2025:1450000,value_2024:1280000},
+            {market:"KSA",kpi:"Conversion Rate %",month:"JAN",value_2025:0.028,value_2024:0.026},
+            {market:"KSA",kpi:"Conversion Rate %",month:"FEB",value_2025:0.030,value_2024:0.027},
+            {market:"KSA",kpi:"Conversion Rate %",month:"MAR",value_2025:0.032,value_2024:0.029},
+            {market:"KSA",kpi:"Conversion Rate %",month:"APR",value_2025:0.034,value_2024:0.030},
+            {market:"KSA",kpi:"Conversion Rate %",month:"MAY",value_2025:0.036,value_2024:0.032},
+            {market:"KSA",kpi:"Conversion Rate %",month:"JUN",value_2025:0.038,value_2024:0.033},
+            {market:"KSA",kpi:"Conversion Rate %",month:"JUL",value_2025:0.040,value_2024:0.035},
+            {market:"KSA",kpi:"Conversion Rate %",month:"AUG",value_2025:0.042,value_2024:0.037},
+            {market:"KSA",kpi:"Conversion Rate %",month:"SEP",value_2025:0.044,value_2024:0.038},
+            {market:"KSA",kpi:"Conversion Rate %",month:"OCT",value_2025:0.046,value_2024:0.040},
+            {market:"KSA",kpi:"Conversion Rate %",month:"NOV",value_2025:0.048,value_2024:0.041},
+            {market:"KSA",kpi:"Conversion Rate %",month:"DEC",value_2025:0.050,value_2024:0.043},
+            {market:"KSA",kpi:"Average Order Value",month:"JAN",value_2025:115,value_2024:110},
+            {market:"KSA",kpi:"Average Order Value",month:"FEB",value_2025:118,value_2024:112},
+            {market:"KSA",kpi:"Average Order Value",month:"MAR",value_2025:121,value_2024:115},
+            {market:"KSA",kpi:"Average Order Value",month:"APR",value_2025:124,value_2024:117},
+            {market:"KSA",kpi:"Average Order Value",month:"MAY",value_2025:127,value_2024:120},
+            {market:"KSA",kpi:"Average Order Value",month:"JUN",value_2025:130,value_2024:122},
+            {market:"KSA",kpi:"Average Order Value",month:"JUL",value_2025:133,value_2024:125},
+            {market:"KSA",kpi:"Average Order Value",month:"AUG",value_2025:136,value_2024:128},
+            {market:"KSA",kpi:"Average Order Value",month:"SEP",value_2025:140,value_2024:130},
+            {market:"KSA",kpi:"Average Order Value",month:"OCT",value_2025:143,value_2024:133},
+            {market:"KSA",kpi:"Average Order Value",month:"NOV",value_2025:147,value_2024:136},
+            {market:"KSA",kpi:"Average Order Value",month:"DEC",value_2025:150,value_2024:140}
+        ];
 
-            // Brand Colors
-            const COLORS = {
-                navyDark: '#1B365D',
-                navyMid: '#2D4A7C',
-                steelBlue: '#8FAFD4',
-                steelLight: '#B8D4E8',
-                year2025: '#1B365D',
-                year2024: '#7EB8DA',
-                positive: '#2E7D5A',
-                negative: '#C4314B',
-                background: '#F8FAFC',
-                white: '#FFFFFF',
-                gray: '#64748B',
-                grayLight: '#E2E8F0',
-            };
-
-            // Month order
-            const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-
-            // Logo as base64 (placeholder - simple KPI text logo)
-            const LOGO_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjU2IiB2aWV3Qm94PSIwIDAgMTIwIDU2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjU2IiByeD0iOCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC4xNSIvPgo8dGV4dCB4PSIxNSIgeT0iMzgiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjgiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IndoaXRlIj5LUEk8L3RleHQ+Cjwvc3ZnPg==';
-
-            // Utility Functions
-            function isPercentKPI(kpiName) {
-                return kpiName && kpiName.trim().endsWith('%');
-            }
-
-            function isUSDKPI(kpiName) {
-                if (!kpiName) return false;
-                const lower = kpiName.toLowerCase();
-                return lower.includes('sales') || lower.includes('order value') || lower.includes('value');
-            }
-
-            function formatValue(value, kpiName) {
-                if (value === null || value === undefined || isNaN(value)) return '—';
-
-                const isPercent = isPercentKPI(kpiName);
-                const isUSD = isUSDKPI(kpiName);
-
-                if (isPercent) {
-                    return (value * 100).toFixed(1) + '%';
-                }
-
-                if (isUSD) {
-                    if (Math.abs(value) >= 1000000) {
-                        return '$' + (value / 1000000).toFixed(1) + 'M';
-                    } else if (Math.abs(value) >= 1000) {
-                        return '$' + (value / 1000).toFixed(1) + 'K';
-                    }
-                    return '$' + value.toLocaleString('en-US', { maximumFractionDigits: 0 });
-                }
-
-                if (Math.abs(value) >= 1000000) {
-                    return (value / 1000000).toFixed(1) + 'M';
-                } else if (Math.abs(value) >= 1000) {
-                    return (value / 1000).toFixed(1) + 'K';
-                }
-                return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
-            }
-
-            function calcDiff(val2025, val2024, isPercent) {
-                if (val2025 === null || val2024 === null || val2024 === 0) return null;
-
-                if (isPercent) {
-                    return (val2025 - val2024) * 100; // Returns PP
-                }
-                return ((val2025 / val2024) - 1) * 100; // Returns %
-            }
-
-            function formatDiff(diff, isPercent) {
-                if (diff === null || isNaN(diff)) return '—';
-                const sign = diff >= 0 ? '+' : '';
-                if (isPercent) {
-                    return sign + diff.toFixed(1) + ' PP';
-                }
-                return sign + diff.toFixed(1) + '%';
-            }
-
-            function parseCSV(text) {
-                const lines = text.trim().split('\n');
-                if (lines.length < 2) return [];
-
-                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-                const marketIdx = headers.indexOf('market');
-                const kpiIdx = headers.indexOf('kpi');
-                const monthIdx = headers.indexOf('month');
-                const val2025Idx = headers.indexOf('value_2025');
-                const val2024Idx = headers.indexOf('value_2024');
-
-                if (marketIdx === -1 || kpiIdx === -1 || monthIdx === -1 || val2025Idx === -1 || val2024Idx === -1) {
-                    console.error('Invalid CSV headers. Expected: Market, KPI, Month, value_2025, value_2024');
-                    return [];
-                }
-
-                const data = [];
-                for (let i = 1; i < lines.length; i++) {
-                    const values = lines[i].split(',').map(v => v.trim());
-                    if (values.length < 5) continue;
-
-                    const val2025 = values[val2025Idx] === '' ? null : parseFloat(values[val2025Idx]);
-                    const val2024 = values[val2024Idx] === '' ? null : parseFloat(values[val2024Idx]);
-
-                    data.push({
-                        market: values[marketIdx],
-                        kpi: values[kpiIdx],
-                        month: values[monthIdx].toUpperCase(),
-                        value_2025: isNaN(val2025) ? null : val2025,
-                        value_2024: isNaN(val2024) ? null : val2024
-                    });
-                }
-                return data;
-            }
-
-            function sortMarkets(markets) {
-                const order = { 'TOTAL': 0, 'UAE': 1, 'KSA': 2 };
-                return [...markets].sort((a, b) => {
-                    const orderA = order[a] !== undefined ? order[a] : 100;
-                    const orderB = order[b] !== undefined ? order[b] : 100;
-                    if (orderA !== orderB) return orderA - orderB;
-                    return a.localeCompare(b);
-                });
-            }
-
-            // Components
-            function Header() {
-                return h('header', { className: 'header' },
-                    h('img', { src: LOGO_BASE64, alt: 'Logo', className: 'header-logo' }),
-                    h('div', { className: 'header-text' },
-                        h('h1', null, 'KPI Performance Dashboard'),
-                        h('p', null, 'Year-over-Year Comparison Analysis')
-                    )
-                );
-            }
-
-            function Dropdown({ label, options, value, onChange, className, zIndex }) {
-                const [isOpen, setIsOpen] = useState(false);
-                const dropdownRef = useRef(null);
-
-                useEffect(() => {
-                    function handleClickOutside(event) {
-                        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                            setIsOpen(false);
-                        }
-                    }
-                    document.addEventListener('mousedown', handleClickOutside);
-                    return () => document.removeEventListener('mousedown', handleClickOutside);
-                }, []);
-
-                return h('div', { className: 'filter-group', style: { zIndex } },
-                    h('label', { className: 'filter-label' }, label),
-                    h('div', { className: 'dropdown ' + className, ref: dropdownRef },
-                        h('button', {
-                            className: 'dropdown-button',
-                            onClick: () => setIsOpen(!isOpen)
-                        }, value || 'Select...'),
-                        h('span', { className: 'dropdown-arrow' + (isOpen ? ' open' : '') }, '▼'),
-                        h('div', { className: 'dropdown-menu' + (isOpen ? ' open' : '') },
-                            options.map(opt =>
-                                h('div', {
-                                    key: opt,
-                                    className: 'dropdown-item' + (opt === value ? ' selected' : ''),
-                                    onClick: () => {
-                                        onChange(opt);
-                                        setIsOpen(false);
-                                    }
-                                }, opt)
-                            )
-                        )
-                    )
-                );
-            }
-
-            function SummaryCards({ data, selectedKPI }) {
-                const isPercent = isPercentKPI(selectedKPI);
-
-                // Get December (full year) values
-                const decData = data.find(d => d.month === 'DEC');
-                const val2025 = decData ? decData.value_2025 : null;
-                const val2024 = decData ? decData.value_2024 : null;
-                const diff = calcDiff(val2025, val2024, isPercent);
-                const isPositive = diff !== null && diff >= 0;
-
-                return h('div', { className: 'summary-cards' },
-                    h('div', { className: 'summary-card year-2025' },
-                        h('div', { className: 'card-label' }, '2025 Full Year'),
-                        h('div', { className: 'card-value' }, formatValue(val2025, selectedKPI)),
-                        h('div', { className: 'card-sublabel' }, 'Year-to-Date (December)')
-                    ),
-                    h('div', { className: 'summary-card year-2024' },
-                        h('div', { className: 'card-label' }, '2024 Full Year'),
-                        h('div', { className: 'card-value' }, formatValue(val2024, selectedKPI)),
-                        h('div', { className: 'card-sublabel' }, 'Year-to-Date (December)')
-                    ),
-                    h('div', { className: 'summary-card ' + (isPositive ? 'yoy-positive' : 'yoy-negative') },
-                        h('div', { className: 'card-label' }, 'YoY Change'),
-                        h('div', { className: 'card-value ' + (isPositive ? 'positive' : 'negative') },
-                            h('span', { className: 'trend-icon' }, isPositive ? '↑' : '↓'),
-                            formatDiff(diff, isPercent)
-                        ),
-                        h('div', { className: 'card-sublabel' }, 'vs Previous Year')
-                    )
-                );
-            }
-
-            function CustomTooltip({ active, payload, label, selectedKPI }) {
-                if (!active || !payload || !payload.length) return null;
-
-                const isPercent = isPercentKPI(selectedKPI);
-                const val2025 = payload.find(p => p.dataKey === 'value_2025')?.value;
-                const val2024 = payload.find(p => p.dataKey === 'value_2024')?.value;
-                const diff = calcDiff(val2025, val2024, isPercent);
-
-                return h('div', { className: 'custom-tooltip' },
-                    h('div', { className: 'tooltip-title' }, label),
-                    h('div', { className: 'tooltip-row' },
-                        h('div', { className: 'tooltip-dot', style: { background: COLORS.year2025 } }),
-                        h('span', { className: 'tooltip-label' }, '2025:'),
-                        h('span', { className: 'tooltip-value' }, formatValue(val2025, selectedKPI))
-                    ),
-                    h('div', { className: 'tooltip-row' },
-                        h('div', { className: 'tooltip-dot', style: { background: COLORS.year2024 } }),
-                        h('span', { className: 'tooltip-label' }, '2024:'),
-                        h('span', { className: 'tooltip-value' }, formatValue(val2024, selectedKPI))
-                    ),
-                    h('div', {
-                        className: 'tooltip-diff',
-                        style: { color: diff >= 0 ? COLORS.positive : COLORS.negative }
-                    }, 'YoY: ' + formatDiff(diff, isPercent))
-                );
-            }
-
-            function ChartSection({ data, selectedKPI }) {
-                const isPercent = isPercentKPI(selectedKPI);
-
-                // Prepare chart data
-                const chartData = MONTHS.map(month => {
-                    const monthData = data.find(d => d.month === month);
-                    return {
-                        month,
-                        value_2025: monthData ? monthData.value_2025 : null,
-                        value_2024: monthData ? monthData.value_2024 : null
-                    };
-                });
-
-                // Calculate min/max for Y axis
-                const allValues = chartData.flatMap(d => [d.value_2025, d.value_2024]).filter(v => v !== null);
-                const minVal = allValues.length ? Math.min(...allValues) : 0;
-                const maxVal = allValues.length ? Math.max(...allValues) : 100;
-                const padding = (maxVal - minVal) * 0.1;
-
-                const formatYAxis = (value) => {
-                    if (isPercent) return (value * 100).toFixed(0) + '%';
-                    if (Math.abs(value) >= 1000000) return (value / 1000000).toFixed(0) + 'M';
-                    if (Math.abs(value) >= 1000) return (value / 1000).toFixed(0) + 'K';
-                    return value;
-                };
-
-                return h('div', { className: 'chart-section' },
-                    h('h3', { className: 'chart-title' }, 'Monthly Trend Comparison'),
-                    h('div', { className: 'chart-container' },
-                        h(ResponsiveContainer, { width: '100%', height: 360 },
-                            h(ComposedChart, { data: chartData, margin: { top: 20, right: 30, left: 20, bottom: 20 } },
-                                h('defs', null,
-                                    h('linearGradient', { id: 'gradient2025', x1: 0, y1: 0, x2: 0, y2: 1 },
-                                        h('stop', { offset: '5%', stopColor: COLORS.year2025, stopOpacity: 0.15 }),
-                                        h('stop', { offset: '95%', stopColor: COLORS.year2025, stopOpacity: 0 })
-                                    ),
-                                    h('linearGradient', { id: 'gradient2024', x1: 0, y1: 0, x2: 0, y2: 1 },
-                                        h('stop', { offset: '5%', stopColor: COLORS.year2024, stopOpacity: 0.1 }),
-                                        h('stop', { offset: '95%', stopColor: COLORS.year2024, stopOpacity: 0 })
-                                    )
-                                ),
-                                h(CartesianGrid, { strokeDasharray: '3 3', stroke: COLORS.grayLight }),
-                                h(XAxis, {
-                                    dataKey: 'month',
-                                    tick: { fill: COLORS.gray, fontSize: 12 },
-                                    axisLine: { stroke: COLORS.grayLight }
-                                }),
-                                h(YAxis, {
-                                    tickFormatter: formatYAxis,
-                                    tick: { fill: COLORS.gray, fontSize: 12 },
-                                    axisLine: { stroke: COLORS.grayLight },
-                                    domain: [minVal - padding, maxVal + padding]
-                                }),
-                                h(Tooltip, {
-                                    content: (props) => h(CustomTooltip, { ...props, selectedKPI })
-                                }),
-                                h(Legend, {
-                                    verticalAlign: 'top',
-                                    height: 36,
-                                    formatter: (value) => value === 'value_2025' ? '2025' : '2024'
-                                }),
-                                h(Area, {
-                                    type: 'monotone',
-                                    dataKey: 'value_2025',
-                                    fill: 'url(#gradient2025)',
-                                    stroke: 'transparent',
-                                    legendType: 'none'
-                                }),
-                                h(Area, {
-                                    type: 'monotone',
-                                    dataKey: 'value_2024',
-                                    fill: 'url(#gradient2024)',
-                                    stroke: 'transparent',
-                                    legendType: 'none'
-                                }),
-                                h(Line, {
-                                    type: 'monotone',
-                                    dataKey: 'value_2025',
-                                    name: 'value_2025',
-                                    stroke: COLORS.year2025,
-                                    strokeWidth: 3,
-                                    dot: { fill: COLORS.year2025, strokeWidth: 2, r: 5 },
-                                    activeDot: { r: 7 }
-                                }),
-                                h(Line, {
-                                    type: 'monotone',
-                                    dataKey: 'value_2024',
-                                    name: 'value_2024',
-                                    stroke: COLORS.year2024,
-                                    strokeWidth: 3,
-                                    strokeDasharray: '5 5',
-                                    dot: { fill: COLORS.year2024, strokeWidth: 2, r: 5 },
-                                    activeDot: { r: 7 }
-                                })
-                            )
-                        )
-                    ),
-                    h('div', { className: 'monthly-badges' },
-                        chartData.map(d => {
-                            const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
-                            const isPositive = diff !== null && diff >= 0;
-                            return h('div', { key: d.month, className: 'month-badge' },
-                                h('div', { className: 'month-badge-label' }, d.month),
-                                h('div', {
-                                    className: 'month-badge-value ' + (isPositive ? 'positive' : 'negative')
-                                }, formatDiff(diff, isPercent))
-                            );
-                        })
-                    )
-                );
-            }
-
-            function ComparisonTable({ data, selectedKPI }) {
-                const isPercent = isPercentKPI(selectedKPI);
-
-                const tableData = MONTHS.map(month => {
-                    const monthData = data.find(d => d.month === month);
-                    return {
-                        month,
-                        value_2025: monthData ? monthData.value_2025 : null,
-                        value_2024: monthData ? monthData.value_2024 : null
-                    };
-                });
-
-                return h('div', { className: 'table-section' },
-                    h('h3', { className: 'table-title' }, 'Monthly Comparison Table'),
-                    h('table', { className: 'comparison-table' },
-                        h('thead', null,
-                            h('tr', null,
-                                h('th', null, 'Year'),
-                                MONTHS.map(m => h('th', { key: m }, m))
-                            )
-                        ),
-                        h('tbody', null,
-                            // 2025 row (first)
-                            h('tr', { className: 'row-2025' },
-                                h('td', null, '2025'),
-                                tableData.map(d => h('td', { key: d.month }, formatValue(d.value_2025, selectedKPI)))
-                            ),
-                            // 2024 row (second)
-                            h('tr', { className: 'row-2024' },
-                                h('td', null, '2024'),
-                                tableData.map(d => h('td', { key: d.month }, formatValue(d.value_2024, selectedKPI)))
-                            ),
-                            // YoY row (third)
-                            h('tr', { className: 'row-yoy' },
-                                h('td', null, 'YoY Δ'),
-                                tableData.map(d => {
-                                    const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
-                                    const isPositive = diff !== null && diff >= 0;
-                                    return h('td', {
-                                        key: d.month,
-                                        className: isPositive ? 'value-positive' : 'value-negative'
-                                    }, formatDiff(diff, isPercent));
-                                })
-                            )
-                        )
-                    )
-                );
-            }
-
-            function UploadOverlay({ onDataLoaded }) {
-                const [isDragOver, setIsDragOver] = useState(false);
-                const fileInputRef = useRef(null);
-
-                const handleFile = (file) => {
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const data = parseCSV(e.target.result);
-                        if (data.length > 0) {
-                            onDataLoaded(data);
-                        } else {
-                            alert('Invalid CSV format. Please check the file structure.');
-                        }
-                    };
-                    reader.readAsText(file);
-                };
-
-                const handleDrop = (e) => {
-                    e.preventDefault();
-                    setIsDragOver(false);
-                    const file = e.dataTransfer.files[0];
-                    if (file && file.name.endsWith('.csv')) {
-                        handleFile(file);
-                    }
-                };
-
-                const handleDragOver = (e) => {
-                    e.preventDefault();
-                    setIsDragOver(true);
-                };
-
-                const handleDragLeave = () => {
-                    setIsDragOver(false);
-                };
-
-                return h('div', { className: 'upload-overlay' },
-                    h('div', { className: 'upload-box' },
-                        h('div', { className: 'upload-icon' }, '📊'),
-                        h('h2', null, 'Upload KPI Data'),
-                        h('p', null, 'Upload a CSV file to get started with your KPI analysis'),
-                        h('div', {
-                            className: 'dropzone' + (isDragOver ? ' dragover' : ''),
-                            onDrop: handleDrop,
-                            onDragOver: handleDragOver,
-                            onDragLeave: handleDragLeave,
-                            onClick: () => fileInputRef.current.click()
-                        },
-                            h('p', { className: 'dropzone-text' },
-                                h('span', null, 'Click to upload'),
-                                ' or drag and drop your CSV file here'
-                            ),
-                            h('input', {
-                                ref: fileInputRef,
-                                type: 'file',
-                                accept: '.csv',
-                                style: { display: 'none' },
-                                onChange: (e) => handleFile(e.target.files[0])
-                            })
-                        )
-                    )
-                );
-            }
-
-            function LoadingState() {
-                return h('div', { className: 'loading-container' },
-                    h('div', { className: 'spinner' }),
-                    h('p', { className: 'loading-text' }, 'Loading data...')
-                );
-            }
-
-            function MessageState({ icon, title, message }) {
-                return h('div', { className: 'message-state' },
-                    h('div', { className: 'message-state-icon' }, icon),
-                    h('h3', null, title),
-                    h('p', null, message)
-                );
-            }
-
-            // Main App
-            function App() {
-                const [data, setData] = useState(null);
-                const [loading, setLoading] = useState(true);
-                const [selectedMarket, setSelectedMarket] = useState('');
-                const [selectedKPI, setSelectedKPI] = useState('');
-                const fileInputRef = useRef(null);
-
-                // Try to load data.csv on startup
-                useEffect(() => {
-                    fetch('data.csv')
-                        .then(res => {
-                            if (!res.ok) throw new Error('Not found');
-                            return res.text();
-                        })
-                        .then(text => {
-                            const parsed = parseCSV(text);
-                            if (parsed.length > 0) {
-                                setData(parsed);
-                            }
-                            setLoading(false);
-                        })
-                        .catch(() => {
-                            setLoading(false);
-                        });
-                }, []);
-
-                const handleDataLoaded = (newData) => {
-                    setData(newData);
-                    setSelectedMarket('');
-                    setSelectedKPI('');
-                };
-
-                const handleFileUpload = (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = (evt) => {
-                        const parsed = parseCSV(evt.target.result);
-                        if (parsed.length > 0) {
-                            handleDataLoaded(parsed);
-                        } else {
-                            alert('Invalid CSV format');
-                        }
-                    };
-                    reader.readAsText(file);
-                };
-
-                // Extract unique markets and KPIs
-                const markets = data ? sortMarkets([...new Set(data.map(d => d.market))]) : [];
-                const kpis = data ? [...new Set(data.map(d => d.kpi))].sort() : [];
-
-                // Filter data for selected market and KPI
-                const filteredData = data && selectedMarket && selectedKPI
-                    ? data.filter(d => d.market === selectedMarket && d.kpi === selectedKPI)
-                    : [];
-
-                if (loading) {
-                    return h('div', null,
-                        h(Header),
-                        h('div', { className: 'main-container' },
-                            h(LoadingState)
-                        )
-                    );
-                }
-
-                if (!data) {
-                    return h('div', null,
-                        h(Header),
-                        h(UploadOverlay, { onDataLoaded: handleDataLoaded })
-                    );
-                }
-
-                return h('div', null,
-                    h(Header),
-                    h('div', { className: 'main-container' },
-                        // Filters
-                        h('div', { className: 'filter-section' },
-                            h(Dropdown, {
-                                label: 'Market',
-                                options: markets,
-                                value: selectedMarket,
-                                onChange: setSelectedMarket,
-                                className: 'market-dropdown',
-                                zIndex: 20
-                            }),
-                            h(Dropdown, {
-                                label: 'KPI Metric',
-                                options: kpis,
-                                value: selectedKPI,
-                                onChange: setSelectedKPI,
-                                className: 'kpi-dropdown',
-                                zIndex: 10
-                            }),
-                            h('div', { className: 'upload-section' },
-                                h('button', {
-                                    className: 'upload-btn',
-                                    onClick: () => fileInputRef.current.click()
-                                }, '📁 Upload New CSV'),
-                                h('input', {
-                                    ref: fileInputRef,
-                                    type: 'file',
-                                    accept: '.csv',
-                                    style: { display: 'none' },
-                                    onChange: handleFileUpload
-                                })
-                            )
-                        ),
-
-                        // Content based on selection
-                        !selectedMarket || !selectedKPI
-                            ? h(MessageState, {
-                                icon: '📈',
-                                title: 'Select Market & KPI',
-                                message: 'Please select a market and KPI metric from the dropdowns above to view the comparison analysis.'
-                            })
-                            : filteredData.length === 0
-                                ? h(MessageState, {
-                                    icon: '🔍',
-                                    title: 'No Data Available',
-                                    message: 'No data found for the selected Market and KPI combination. Please try a different selection.'
-                                })
-                                : h('div', null,
-                                    h(SummaryCards, { data: filteredData, selectedKPI }),
-                                    h(ChartSection, { data: filteredData, selectedKPI }),
-                                    h(ComparisonTable, { data: filteredData, selectedKPI })
-                                )
-                    )
-                );
-            }
-
-            // Render the app
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(h(App));
+        // ============ CONSTANTS ============
+        const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const COLORS = {
+            navyDark: '#1B365D',
+            navyMid: '#2D4A7C',
+            year2025: '#1B365D',
+            year2024: '#7EB8DA',
+            positive: '#2E7D5A',
+            negative: '#C4314B',
+            gray: '#64748B',
+            grayLight: '#E2E8F0'
         };
+
+        const LOGO_SVG = `<svg width="120" height="56" viewBox="0 0 120 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="120" height="56" rx="8" fill="white" fill-opacity="0.15"/>
+            <text x="15" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="28" font-weight="700" fill="white">KPI</text>
+        </svg>`;
+
+        // ============ STATE ============
+        let state = {
+            data: null,
+            selectedMarket: '',
+            selectedKPI: '',
+            showUpload: true,
+            marketDropdownOpen: false,
+            kpiDropdownOpen: false
+        };
+
+        // ============ UTILITY FUNCTIONS ============
+        function isPercentKPI(kpiName) {
+            return kpiName && kpiName.trim().endsWith('%');
+        }
+
+        function isUSDKPI(kpiName) {
+            if (!kpiName) return false;
+            const lower = kpiName.toLowerCase();
+            return lower.includes('sales') || lower.includes('order value') || lower.includes('value');
+        }
+
+        function formatValue(value, kpiName) {
+            if (value === null || value === undefined || isNaN(value)) return '—';
+            if (isPercentKPI(kpiName)) {
+                return (value * 100).toFixed(1) + '%';
+            }
+            if (isUSDKPI(kpiName)) {
+                if (Math.abs(value) >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
+                if (Math.abs(value) >= 1000) return '$' + (value / 1000).toFixed(1) + 'K';
+                return '$' + value.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            }
+            if (Math.abs(value) >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+            if (Math.abs(value) >= 1000) return (value / 1000).toFixed(1) + 'K';
+            return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        }
+
+        function calcDiff(val2025, val2024, isPercent) {
+            if (val2025 === null || val2024 === null || val2024 === 0) return null;
+            if (isPercent) return (val2025 - val2024) * 100;
+            return ((val2025 / val2024) - 1) * 100;
+        }
+
+        function formatDiff(diff, isPercent) {
+            if (diff === null || isNaN(diff)) return '—';
+            const sign = diff >= 0 ? '+' : '';
+            if (isPercent) return sign + diff.toFixed(1) + ' PP';
+            return sign + diff.toFixed(1) + '%';
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const marketIdx = headers.indexOf('market');
+            const kpiIdx = headers.indexOf('kpi');
+            const monthIdx = headers.indexOf('month');
+            const val2025Idx = headers.indexOf('value_2025');
+            const val2024Idx = headers.indexOf('value_2024');
+            if (marketIdx === -1 || kpiIdx === -1 || monthIdx === -1 || val2025Idx === -1 || val2024Idx === -1) {
+                return [];
+            }
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                if (values.length < 5) continue;
+                const val2025 = values[val2025Idx] === '' ? null : parseFloat(values[val2025Idx]);
+                const val2024 = values[val2024Idx] === '' ? null : parseFloat(values[val2024Idx]);
+                data.push({
+                    market: values[marketIdx],
+                    kpi: values[kpiIdx],
+                    month: values[monthIdx].toUpperCase(),
+                    value_2025: isNaN(val2025) ? null : val2025,
+                    value_2024: isNaN(val2024) ? null : val2024
+                });
+            }
+            return data;
+        }
+
+        function sortMarkets(markets) {
+            const order = { 'TOTAL': 0, 'UAE': 1, 'KSA': 2 };
+            return [...markets].sort((a, b) => {
+                const orderA = order[a] !== undefined ? order[a] : 100;
+                const orderB = order[b] !== undefined ? order[b] : 100;
+                if (orderA !== orderB) return orderA - orderB;
+                return a.localeCompare(b);
+            });
+        }
+
+        function getMarkets() {
+            if (!state.data) return [];
+            return sortMarkets([...new Set(state.data.map(d => d.market))]);
+        }
+
+        function getKPIs() {
+            if (!state.data) return [];
+            return [...new Set(state.data.map(d => d.kpi))].sort();
+        }
+
+        function getFilteredData() {
+            if (!state.data || !state.selectedMarket || !state.selectedKPI) return [];
+            return state.data.filter(d => d.market === state.selectedMarket && d.kpi === state.selectedKPI);
+        }
+
+        // ============ RENDER FUNCTIONS ============
+        function render() {
+            const app = document.getElementById('app');
+            if (state.showUpload) {
+                app.innerHTML = renderHeader() + renderUploadOverlay();
+            } else {
+                app.innerHTML = renderHeader() + renderMainContent();
+            }
+            attachEventListeners();
+        }
+
+        function renderHeader() {
+            return `
+                <header class="header">
+                    <div class="header-logo">${LOGO_SVG}</div>
+                    <div class="header-text">
+                        <h1>KPI Performance Dashboard</h1>
+                        <p>Year-over-Year Comparison Analysis</p>
+                    </div>
+                </header>
+            `;
+        }
+
+        function renderUploadOverlay() {
+            return `
+                <div class="upload-overlay">
+                    <div class="upload-box">
+                        <div class="upload-icon">📊</div>
+                        <h2>KPI Performance Dashboard</h2>
+                        <p>Upload your CSV file or use demo data to explore the dashboard</p>
+                        <div class="dropzone" id="dropzone">
+                            <p class="dropzone-text"><span>Click to upload</span> or drag and drop your CSV file here</p>
+                            <input type="file" id="fileInput" accept=".csv" style="display:none">
+                        </div>
+                        <button class="demo-btn" id="demoBtn">Use Demo Data</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMainContent() {
+            const markets = getMarkets();
+            const kpis = getKPIs();
+            const filteredData = getFilteredData();
+
+            let content = `<div class="main-container">`;
+            content += renderFilters(markets, kpis);
+
+            if (!state.selectedMarket || !state.selectedKPI) {
+                content += renderMessageState('📈', 'Select Market & KPI', 'Please select a market and KPI metric from the dropdowns above to view the comparison analysis.');
+            } else if (filteredData.length === 0) {
+                content += renderMessageState('🔍', 'No Data Available', 'No data found for the selected Market and KPI combination.');
+            } else {
+                content += renderSummaryCards(filteredData);
+                content += renderChart(filteredData);
+                content += renderTable(filteredData);
+            }
+
+            content += `</div>`;
+            return content;
+        }
+
+        function renderFilters(markets, kpis) {
+            return `
+                <div class="filter-section">
+                    <div class="filter-group" style="z-index:20">
+                        <label class="filter-label">Market</label>
+                        <div class="dropdown market-dropdown">
+                            <button class="dropdown-button" id="marketBtn">${state.selectedMarket || 'Select...'}</button>
+                            <span class="dropdown-arrow ${state.marketDropdownOpen ? 'open' : ''}" id="marketArrow">▼</span>
+                            <div class="dropdown-menu ${state.marketDropdownOpen ? 'open' : ''}" id="marketMenu">
+                                ${markets.map(m => `<div class="dropdown-item ${m === state.selectedMarket ? 'selected' : ''}" data-market="${m}">${m}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group" style="z-index:10">
+                        <label class="filter-label">KPI Metric</label>
+                        <div class="dropdown kpi-dropdown">
+                            <button class="dropdown-button" id="kpiBtn">${state.selectedKPI || 'Select...'}</button>
+                            <span class="dropdown-arrow ${state.kpiDropdownOpen ? 'open' : ''}" id="kpiArrow">▼</span>
+                            <div class="dropdown-menu ${state.kpiDropdownOpen ? 'open' : ''}" id="kpiMenu">
+                                ${kpis.map(k => `<div class="dropdown-item ${k === state.selectedKPI ? 'selected' : ''}" data-kpi="${k}">${k}</div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="upload-section">
+                        <button class="upload-btn" id="uploadNewBtn">📁 Upload New CSV</button>
+                        <input type="file" id="newFileInput" accept=".csv" style="display:none">
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMessageState(icon, title, message) {
+            return `
+                <div class="message-state">
+                    <div class="message-state-icon">${icon}</div>
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function renderSummaryCards(data) {
+            const isPercent = isPercentKPI(state.selectedKPI);
+            const decData = data.find(d => d.month === 'DEC');
+            const val2025 = decData ? decData.value_2025 : null;
+            const val2024 = decData ? decData.value_2024 : null;
+            const diff = calcDiff(val2025, val2024, isPercent);
+            const isPositive = diff !== null && diff >= 0;
+
+            return `
+                <div class="summary-cards">
+                    <div class="summary-card year-2025">
+                        <div class="card-label">2025 Full Year</div>
+                        <div class="card-value">${formatValue(val2025, state.selectedKPI)}</div>
+                        <div class="card-sublabel">Year-to-Date (December)</div>
+                    </div>
+                    <div class="summary-card year-2024">
+                        <div class="card-label">2024 Full Year</div>
+                        <div class="card-value">${formatValue(val2024, state.selectedKPI)}</div>
+                        <div class="card-sublabel">Year-to-Date (December)</div>
+                    </div>
+                    <div class="summary-card ${isPositive ? 'yoy-positive' : 'yoy-negative'}">
+                        <div class="card-label">YoY Change</div>
+                        <div class="card-value ${isPositive ? 'positive' : 'negative'}">
+                            <span class="trend-icon">${isPositive ? '↑' : '↓'}</span>${formatDiff(diff, isPercent)}
+                        </div>
+                        <div class="card-sublabel">vs Previous Year</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderChart(data) {
+            const isPercent = isPercentKPI(state.selectedKPI);
+            const chartData = MONTHS.map(month => {
+                const monthData = data.find(d => d.month === month);
+                return {
+                    month,
+                    value_2025: monthData ? monthData.value_2025 : null,
+                    value_2024: monthData ? monthData.value_2024 : null
+                };
+            });
+
+            const allValues = chartData.flatMap(d => [d.value_2025, d.value_2024]).filter(v => v !== null);
+            const minVal = allValues.length ? Math.min(...allValues) : 0;
+            const maxVal = allValues.length ? Math.max(...allValues) : 100;
+            const padding = (maxVal - minVal) * 0.15;
+            const yMin = minVal - padding;
+            const yMax = maxVal + padding;
+
+            // SVG dimensions
+            const width = 900;
+            const height = 280;
+            const marginLeft = 70;
+            const marginRight = 30;
+            const marginTop = 20;
+            const marginBottom = 40;
+            const chartWidth = width - marginLeft - marginRight;
+            const chartHeight = height - marginTop - marginBottom;
+
+            // Scale functions
+            const xScale = (i) => marginLeft + (i * chartWidth / 11);
+            const yScale = (v) => marginTop + chartHeight - ((v - yMin) / (yMax - yMin)) * chartHeight;
+
+            // Create path data
+            let path2025 = '';
+            let path2024 = '';
+            let dots2025 = '';
+            let dots2024 = '';
+
+            chartData.forEach((d, i) => {
+                const x = xScale(i);
+                if (d.value_2025 !== null) {
+                    const y = yScale(d.value_2025);
+                    path2025 += (path2025 ? ' L' : 'M') + `${x},${y}`;
+                    dots2025 += `<circle cx="${x}" cy="${y}" r="5" fill="${COLORS.year2025}" data-idx="${i}" class="chart-dot"/>`;
+                }
+                if (d.value_2024 !== null) {
+                    const y = yScale(d.value_2024);
+                    path2024 += (path2024 ? ' L' : 'M') + `${x},${y}`;
+                    dots2024 += `<circle cx="${x}" cy="${y}" r="5" fill="${COLORS.year2024}" data-idx="${i}" class="chart-dot"/>`;
+                }
+            });
+
+            // Y-axis ticks
+            const yTicks = 5;
+            let yAxisHTML = '';
+            for (let i = 0; i <= yTicks; i++) {
+                const v = yMin + (yMax - yMin) * (i / yTicks);
+                const y = yScale(v);
+                let label;
+                if (isPercent) {
+                    label = (v * 100).toFixed(0) + '%';
+                } else if (Math.abs(v) >= 1000000) {
+                    label = (v / 1000000).toFixed(1) + 'M';
+                } else if (Math.abs(v) >= 1000) {
+                    label = (v / 1000).toFixed(0) + 'K';
+                } else {
+                    label = v.toFixed(0);
+                }
+                yAxisHTML += `<text x="${marginLeft - 10}" y="${y + 4}" text-anchor="end" fill="${COLORS.gray}" font-size="12">${label}</text>`;
+                yAxisHTML += `<line x1="${marginLeft}" y1="${y}" x2="${width - marginRight}" y2="${y}" stroke="${COLORS.grayLight}" stroke-dasharray="3,3"/>`;
+            }
+
+            // X-axis labels
+            let xAxisHTML = '';
+            MONTHS.forEach((m, i) => {
+                const x = xScale(i);
+                xAxisHTML += `<text x="${x}" y="${height - 10}" text-anchor="middle" fill="${COLORS.gray}" font-size="12">${m}</text>`;
+            });
+
+            // Monthly badges
+            let badgesHTML = chartData.map(d => {
+                const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
+                const isPositive = diff !== null && diff >= 0;
+                return `
+                    <div class="month-badge">
+                        <div class="month-badge-label">${d.month}</div>
+                        <div class="month-badge-value ${isPositive ? 'positive' : 'negative'}">${formatDiff(diff, isPercent)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="chart-section">
+                    <h3 class="chart-title">Monthly Trend Comparison</h3>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-line solid"></div>
+                            <span>2025</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line dashed"></div>
+                            <span>2024</span>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="chartContainer">
+                        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
+                            ${yAxisHTML}
+                            ${xAxisHTML}
+                            <path d="${path2024}" fill="none" stroke="${COLORS.year2024}" stroke-width="3" stroke-dasharray="5,5"/>
+                            <path d="${path2025}" fill="none" stroke="${COLORS.year2025}" stroke-width="3"/>
+                            ${dots2024}
+                            ${dots2025}
+                        </svg>
+                        <div class="tooltip" id="chartTooltip" style="display:none"></div>
+                    </div>
+                    <div class="monthly-badges">${badgesHTML}</div>
+                </div>
+            `;
+        }
+
+        function renderTable(data) {
+            const isPercent = isPercentKPI(state.selectedKPI);
+            const tableData = MONTHS.map(month => {
+                const monthData = data.find(d => d.month === month);
+                return {
+                    month,
+                    value_2025: monthData ? monthData.value_2025 : null,
+                    value_2024: monthData ? monthData.value_2024 : null
+                };
+            });
+
+            const row2025 = tableData.map(d => `<td>${formatValue(d.value_2025, state.selectedKPI)}</td>`).join('');
+            const row2024 = tableData.map(d => `<td>${formatValue(d.value_2024, state.selectedKPI)}</td>`).join('');
+            const rowYoY = tableData.map(d => {
+                const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
+                const isPositive = diff !== null && diff >= 0;
+                return `<td class="${isPositive ? 'value-positive' : 'value-negative'}">${formatDiff(diff, isPercent)}</td>`;
+            }).join('');
+
+            return `
+                <div class="table-section">
+                    <h3 class="table-title">Monthly Comparison Table</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                ${MONTHS.map(m => `<th>${m}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-2025"><td>2025</td>${row2025}</tr>
+                            <tr class="row-2024"><td>2024</td>${row2024}</tr>
+                            <tr class="row-yoy"><td>YoY Δ</td>${rowYoY}</tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // ============ EVENT LISTENERS ============
+        function attachEventListeners() {
+            // Upload overlay
+            const dropzone = document.getElementById('dropzone');
+            const fileInput = document.getElementById('fileInput');
+            const demoBtn = document.getElementById('demoBtn');
+
+            if (dropzone) {
+                dropzone.addEventListener('click', () => fileInput.click());
+                dropzone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('dragover');
+                });
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.classList.remove('dragover');
+                });
+                dropzone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('dragover');
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.name.endsWith('.csv')) handleFile(file);
+                });
+            }
+
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files[0]) handleFile(e.target.files[0]);
+                });
+            }
+
+            if (demoBtn) {
+                demoBtn.addEventListener('click', () => {
+                    state.data = SAMPLE_DATA;
+                    state.showUpload = false;
+                    render();
+                });
+            }
+
+            // Main content
+            const marketBtn = document.getElementById('marketBtn');
+            const kpiBtn = document.getElementById('kpiBtn');
+            const uploadNewBtn = document.getElementById('uploadNewBtn');
+            const newFileInput = document.getElementById('newFileInput');
+
+            if (marketBtn) {
+                marketBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    state.marketDropdownOpen = !state.marketDropdownOpen;
+                    state.kpiDropdownOpen = false;
+                    render();
+                });
+            }
+
+            if (kpiBtn) {
+                kpiBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    state.kpiDropdownOpen = !state.kpiDropdownOpen;
+                    state.marketDropdownOpen = false;
+                    render();
+                });
+            }
+
+            document.querySelectorAll('[data-market]').forEach(el => {
+                el.addEventListener('click', () => {
+                    state.selectedMarket = el.dataset.market;
+                    state.marketDropdownOpen = false;
+                    render();
+                });
+            });
+
+            document.querySelectorAll('[data-kpi]').forEach(el => {
+                el.addEventListener('click', () => {
+                    state.selectedKPI = el.dataset.kpi;
+                    state.kpiDropdownOpen = false;
+                    render();
+                });
+            });
+
+            if (uploadNewBtn) {
+                uploadNewBtn.addEventListener('click', () => newFileInput.click());
+            }
+
+            if (newFileInput) {
+                newFileInput.addEventListener('change', (e) => {
+                    if (e.target.files[0]) handleFile(e.target.files[0]);
+                });
+            }
+
+            // Click outside to close dropdowns
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown')) {
+                    if (state.marketDropdownOpen || state.kpiDropdownOpen) {
+                        state.marketDropdownOpen = false;
+                        state.kpiDropdownOpen = false;
+                        render();
+                    }
+                }
+            });
+
+            // Chart tooltip
+            const chartContainer = document.getElementById('chartContainer');
+            const chartTooltip = document.getElementById('chartTooltip');
+            if (chartContainer && chartTooltip) {
+                const dots = chartContainer.querySelectorAll('.chart-dot');
+                const filteredData = getFilteredData();
+                const chartData = MONTHS.map(month => {
+                    const monthData = filteredData.find(d => d.month === month);
+                    return {
+                        month,
+                        value_2025: monthData ? monthData.value_2025 : null,
+                        value_2024: monthData ? monthData.value_2024 : null
+                    };
+                });
+
+                dots.forEach(dot => {
+                    dot.addEventListener('mouseenter', (e) => {
+                        const idx = parseInt(e.target.dataset.idx);
+                        const d = chartData[idx];
+                        const isPercent = isPercentKPI(state.selectedKPI);
+                        const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
+                        const diffColor = diff >= 0 ? COLORS.positive : COLORS.negative;
+
+                        chartTooltip.innerHTML = `
+                            <div class="tooltip-title">${d.month}</div>
+                            <div class="tooltip-row">
+                                <div class="tooltip-dot" style="background:${COLORS.year2025}"></div>
+                                <span>2025:</span>
+                                <span class="tooltip-value">${formatValue(d.value_2025, state.selectedKPI)}</span>
+                            </div>
+                            <div class="tooltip-row">
+                                <div class="tooltip-dot" style="background:${COLORS.year2024}"></div>
+                                <span>2024:</span>
+                                <span class="tooltip-value">${formatValue(d.value_2024, state.selectedKPI)}</span>
+                            </div>
+                            <div class="tooltip-diff" style="color:${diffColor}">YoY: ${formatDiff(diff, isPercent)}</div>
+                        `;
+                        chartTooltip.style.display = 'block';
+
+                        const rect = chartContainer.getBoundingClientRect();
+                        const dotRect = e.target.getBoundingClientRect();
+                        chartTooltip.style.left = (dotRect.left - rect.left + 15) + 'px';
+                        chartTooltip.style.top = (dotRect.top - rect.top - 80) + 'px';
+                    });
+
+                    dot.addEventListener('mouseleave', () => {
+                        chartTooltip.style.display = 'none';
+                    });
+                });
+            }
+        }
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const parsed = parseCSV(e.target.result);
+                if (parsed.length > 0) {
+                    state.data = parsed;
+                    state.selectedMarket = '';
+                    state.selectedKPI = '';
+                    state.showUpload = false;
+                    render();
+                } else {
+                    alert('Invalid CSV format. Expected headers: Market, KPI, Month, value_2025, value_2024');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ============ INIT ============
+        render();
+    })();
     </script>
 </body>
 </html>

@@ -718,10 +718,6 @@
             margin-bottom: 0;
         }
 
-        .kpi-hero-row.single-market .kpi-hero-card {
-            flex: 1;
-        }
-
         /* Market breakdown tile */
         .market-breakdown-card {
             flex: 1;
@@ -2087,7 +2083,7 @@
             const maxMarketValue = marketBreakdown[0]?.value || 1;
 
             return `
-                <div class="kpi-hero-row ${!isAllMarkets ? 'single-market' : ''}">
+                <div class="kpi-hero-row">
                     <div class="kpi-hero-card ${overallPositive ? 'positive' : 'negative'}">
                         <div class="kpi-hero-label">${config.name} — 2025 YTD${!isAllMarkets ? ` (${market})` : ''}</div>
                         <div class="kpi-hero-content">
@@ -2115,7 +2111,7 @@
                                 <div class="kpi-secondary-item">
                                     <div class="kpi-secondary-info">
                                         <span class="kpi-secondary-label">R12M Momentum</span>
-                                        <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)}</span>
+                                        <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)} vs LR12M: ${formatValue(latestData?.LR12M, config.format)}</span>
                                     </div>
                                     <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
                                 </div>
@@ -2123,8 +2119,8 @@
                             </div>
                         </div>
                     </div>
-                    ${isAllMarkets ? `
                     <div class="market-breakdown-card">
+                        ${isAllMarkets ? `
                         <div class="market-breakdown-title">By Market</div>
                         <div class="market-breakdown-list">
                             ${marketBreakdown.map((m, i) => {
@@ -2143,8 +2139,33 @@
                                 `;
                             }).join('')}
                         </div>
+                        ` : `
+                        <div class="market-breakdown-title">vs All Markets</div>
+                        <div class="market-breakdown-list">
+                            ${['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'].map((k, i) => {
+                                const kConfig = KPI_CONFIG[k];
+                                const marketData = getLatestData(market, k);
+                                const allData = getLatestData('All Markets', k);
+                                if (!marketData || !allData) return '';
+                                const diff = kConfig.format === 'percent'
+                                    ? (marketData.YTD - allData.YTD)
+                                    : ((marketData.YTD - allData.YTD) / allData.YTD) * 100;
+                                const diffClass = getChangeClass(diff, kConfig.format);
+                                return `
+                                    <div class="market-breakdown-item">
+                                        <div class="market-breakdown-header">
+                                            <span class="market-breakdown-name">${kConfig.name}</span>
+                                            <span class="market-breakdown-value ${diffClass}">${diff >= 0 ? '+' : ''}${kConfig.format === 'percent' ? diff.toFixed(1) + ' PP' : diff.toFixed(1) + '%'}</span>
+                                        </div>
+                                        <div class="market-breakdown-bar-bg">
+                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: ${Math.min(Math.abs(diff) * 5, 100)}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        `}
                     </div>
-                    ` : ''}
                 </div>
 
                 <div class="chart-with-badges">

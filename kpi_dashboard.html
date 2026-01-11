@@ -1813,6 +1813,28 @@
 
             let pathYTD = '', pathLYTD = '', pathTarget = '';
             let dotsYTD = '', dotsLYTD = '';
+            let fillAreas = '';
+
+            // Build fill areas between 2025 and 2024 lines
+            for (let i = 0; i < chartData.length - 1; i++) {
+                const d1 = chartData[i];
+                const d2 = chartData[i + 1];
+                if (d1.ytd !== null && d1.lytd !== null && d2.ytd !== null && d2.lytd !== null) {
+                    const x1 = xScale(i);
+                    const x2 = xScale(i + 1);
+                    const y1_ytd = yScale(d1.ytd);
+                    const y1_lytd = yScale(d1.lytd);
+                    const y2_ytd = yScale(d2.ytd);
+                    const y2_lytd = yScale(d2.lytd);
+
+                    // Determine color based on average performance in segment
+                    const avgYtd = (d1.ytd + d2.ytd) / 2;
+                    const avgLytd = (d1.lytd + d2.lytd) / 2;
+                    const fillColor = avgYtd >= avgLytd ? 'rgba(46, 125, 90, 0.15)' : 'rgba(196, 49, 75, 0.15)';
+
+                    fillAreas += `<path d="M${x1},${y1_ytd} L${x2},${y2_ytd} L${x2},${y2_lytd} L${x1},${y1_lytd} Z" fill="${fillColor}"/>`;
+                }
+            }
 
             chartData.forEach((d, i) => {
                 const x = xScale(i);
@@ -1911,6 +1933,7 @@
                     <svg class="chart-svg" viewBox="0 0 ${width} ${height}">
                         ${yAxisHTML}
                         ${xAxisHTML}
+                        ${fillAreas}
                         ${pathTarget ? `<path d="${pathTarget}" fill="none" stroke="var(--positive)" stroke-width="2" stroke-dasharray="4,4"/>` : ''}
                         <path d="${pathLYTD}" fill="none" stroke="var(--steel-blue)" stroke-width="2" stroke-dasharray="5,5"/>
                         <path d="${pathYTD}" fill="none" stroke="var(--navy)" stroke-width="3"/>

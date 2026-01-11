@@ -612,20 +612,40 @@
             text-align: left;
         }
 
-        .analysis-table .col-group-start {
-            border-left: 2px solid rgba(255,255,255,0.3);
+        .analysis-table .col-2024 {
+            background: rgba(143, 175, 212, 0.08);
         }
 
-        .analysis-table td.col-group-start {
-            border-left: 2px solid var(--light-steel);
+        .analysis-table .col-target {
+            background: rgba(27, 54, 93, 0.06);
+        }
+
+        .analysis-table th.col-2024 {
+            background: rgba(143, 175, 212, 0.25);
+            color: var(--navy);
+        }
+
+        .analysis-table th.col-target {
+            background: rgba(27, 54, 93, 0.15);
+            color: var(--navy);
         }
 
         .analysis-table tr:hover td { background: var(--light-bg); }
+        .analysis-table tr:hover td.col-2024 { background: rgba(143, 175, 212, 0.18); }
+        .analysis-table tr:hover td.col-target { background: rgba(27, 54, 93, 0.14); }
 
         .analysis-table tr.total-row td {
             background: rgba(27, 54, 93, 0.08);
             font-weight: 600;
             border-top: 2px solid var(--navy);
+        }
+
+        .analysis-table tr.total-row td.col-2024 {
+            background: rgba(143, 175, 212, 0.18);
+        }
+
+        .analysis-table tr.total-row td.col-target {
+            background: rgba(27, 54, 93, 0.14);
         }
 
         .cell-na {
@@ -1151,9 +1171,9 @@
                                 <th class="left" style="width:160px">Market</th>
                                 <th>2025 YTD</th>
                                 <th>% Share</th>
-                                <th class="col-group-start">2024 YTD</th>
-                                <th>vs 2024</th>
-                                ${hasTargets ? '<th class="col-group-start">Target</th><th>vs Target</th>' : ''}
+                                <th class="col-2024">2024 YTD</th>
+                                <th class="col-2024">vs 2024</th>
+                                ${hasTargets ? '<th class="col-target">Target</th><th class="col-target">vs Target</th>' : ''}
                             </tr>
                         </thead>
                         <tbody>
@@ -1185,8 +1205,8 @@
                                         targetGapText = formatChange(tGap, config.format);
                                     }
                                     targetCols = `
-                                        <td class="cell-value col-group-start">${targetValue}</td>
-                                        <td><span class="cell-sub ${targetGapClass}" style="font-size:14px">${targetGapText}</span></td>
+                                        <td class="cell-value col-target">${targetValue}</td>
+                                        <td class="col-target"><span class="cell-sub ${targetGapClass}" style="font-size:14px">${targetGapText}</span></td>
                                     `;
                                 }
 
@@ -1195,8 +1215,8 @@
                                         <td class="market-name">${market}</td>
                                         <td class="cell-value">${formatValue(data.YTD, config.format)}</td>
                                         <td>${shareText}</td>
-                                        <td class="cell-value col-group-start">${formatValue(data.LYTD, config.format)}</td>
-                                        <td><span class="cell-sub ${isUp ? 'up' : 'down'}" style="font-size:14px">${formatChange(change, config.format)}</span></td>
+                                        <td class="cell-value col-2024">${formatValue(data.LYTD, config.format)}</td>
+                                        <td class="col-2024"><span class="cell-sub ${isUp ? 'up' : 'down'}" style="font-size:14px">${formatChange(change, config.format)}</span></td>
                                         ${targetCols}
                                     </tr>
                                 `;

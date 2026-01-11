@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Performance Dashboard</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/recharts@2.10.3/umd/Recharts.js" crossorigin></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #F8FAFC;
+            color: #1B365D;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #1B365D 0%, #2D4A7C 100%);
+            color: white;
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 4px 12px rgba(27, 54, 93, 0.15);
+        }
+
+        .header-logo {
+            height: 56px;
+            width: auto;
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 40px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .filter-group {
+            position: relative;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .dropdown {
+            position: relative;
+            min-width: 220px;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #1B365D;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .dropdown-button:hover {
+            border-color: #8FAFD4;
+        }
+
+        .dropdown-button:focus {
+            outline: none;
+            border-color: #1B365D;
+            box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.1);
+        }
+
+        .dropdown-arrow {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #64748B;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-arrow.open {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(27, 54, 93, 0.15);
+            max-height: 280px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .dropdown-menu.open {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #F1F5F9;
+        }
+
+        .dropdown-item.selected {
+            background: #E8F4FD;
+            color: #1B365D;
+            font-weight: 600;
+        }
+
+        .market-dropdown {
+            z-index: 20;
+        }
+
+        .kpi-dropdown {
+            z-index: 10;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            margin-left: auto;
+        }
+
+        .upload-btn {
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #64748B;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .upload-btn:hover {
+            border-color: #1B365D;
+            color: #1B365D;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.08);
+            border-left: 4px solid;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(27, 54, 93, 0.12);
+        }
+
+        .summary-card.year-2025 {
+            border-left-color: #1B365D;
+        }
+
+        .summary-card.year-2024 {
+            border-left-color: #7EB8DA;
+        }
+
+        .summary-card.yoy-positive {
+            border-left-color: #2E7D5A;
+        }
+
+        .summary-card.yoy-negative {
+            border-left-color: #C4314B;
+        }
+
+        .card-label {
+            font-size: 13px;
+            color: #64748B;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1B365D;
+            margin-bottom: 4px;
+        }
+
+        .card-sublabel {
+            font-size: 12px;
+            color: #94A3B8;
+        }
+
+        .card-value.positive {
+            color: #2E7D5A;
+        }
+
+        .card-value.negative {
+            color: #C4314B;
+        }
+
+        .trend-icon {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+
+        /* Chart Section */
+        .chart-section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.08);
+            margin-bottom: 32px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1B365D;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 360px;
+        }
+
+        /* Monthly Badges */
+        .monthly-badges {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 8px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .month-badge {
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 6px;
+            background: #F8FAFC;
+        }
+
+        .month-badge-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748B;
+            margin-bottom: 4px;
+        }
+
+        .month-badge-value {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .month-badge-value.positive {
+            color: #2E7D5A;
+        }
+
+        .month-badge-value.negative {
+            color: #C4314B;
+        }
+
+        /* Table Section */
+        .table-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.08);
+            overflow: hidden;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1B365D;
+            padding: 24px 32px 16px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: #1B365D;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px 12px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+
+        .comparison-table th:first-child {
+            text-align: left;
+            padding-left: 32px;
+        }
+
+        .comparison-table td {
+            padding: 14px 12px;
+            text-align: center;
+            font-size: 14px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            padding-left: 32px;
+            color: #1B365D;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #F8FAFC;
+        }
+
+        .row-2025 td:first-child {
+            color: #1B365D;
+        }
+
+        .row-2024 td:first-child {
+            color: #7EB8DA;
+        }
+
+        .row-yoy td:first-child {
+            color: #64748B;
+        }
+
+        .value-positive {
+            color: #2E7D5A;
+            font-weight: 600;
+        }
+
+        .value-negative {
+            color: #C4314B;
+            font-weight: 600;
+        }
+
+        /* Upload Overlay */
+        .upload-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(27, 54, 93, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .upload-box {
+            background: white;
+            border-radius: 16px;
+            padding: 60px 80px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .upload-box h2 {
+            font-size: 24px;
+            color: #1B365D;
+            margin-bottom: 12px;
+        }
+
+        .upload-box p {
+            color: #64748B;
+            margin-bottom: 24px;
+        }
+
+        .dropzone {
+            border: 3px dashed #E2E8F0;
+            border-radius: 12px;
+            padding: 40px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: #1B365D;
+            background: #F8FAFC;
+        }
+
+        .dropzone-text {
+            color: #64748B;
+            font-size: 15px;
+        }
+
+        .dropzone-text span {
+            color: #1B365D;
+            font-weight: 600;
+        }
+
+        /* Loading Spinner */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #E2E8F0;
+            border-top-color: #1B365D;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        /* Empty/Message States */
+        .message-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: #64748B;
+        }
+
+        .message-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .message-state h3 {
+            font-size: 20px;
+            color: #1B365D;
+            margin-bottom: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .monthly-badges {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .main-container {
+                padding: 20px;
+            }
+
+            .filter-section {
+                flex-direction: column;
+            }
+
+            .dropdown {
+                min-width: 100%;
+            }
+
+            .monthly-badges {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Custom Tooltip */
+        .custom-tooltip {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 4px 16px rgba(27, 54, 93, 0.15);
+        }
+
+        .tooltip-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .tooltip-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .tooltip-label {
+            font-size: 13px;
+            color: #64748B;
+            min-width: 50px;
+        }
+
+        .tooltip-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1B365D;
+        }
+
+        .tooltip-diff {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #E2E8F0;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // Wait for all libraries to load
+        window.onload = function() {
+            const { useState, useEffect, useRef, createElement: h } = React;
+            const {
+                ResponsiveContainer, ComposedChart, Line, Area, XAxis, YAxis,
+                CartesianGrid, Tooltip, Legend, ReferenceLine
+            } = Recharts;
+
+            // Brand Colors
+            const COLORS = {
+                navyDark: '#1B365D',
+                navyMid: '#2D4A7C',
+                steelBlue: '#8FAFD4',
+                steelLight: '#B8D4E8',
+                year2025: '#1B365D',
+                year2024: '#7EB8DA',
+                positive: '#2E7D5A',
+                negative: '#C4314B',
+                background: '#F8FAFC',
+                white: '#FFFFFF',
+                gray: '#64748B',
+                grayLight: '#E2E8F0',
+            };
+
+            // Month order
+            const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+            // Logo as base64 (placeholder - simple KPI text logo)
+            const LOGO_BASE64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjU2IiB2aWV3Qm94PSIwIDAgMTIwIDU2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTIwIiBoZWlnaHQ9IjU2IiByeD0iOCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC4xNSIvPgo8dGV4dCB4PSIxNSIgeT0iMzgiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjgiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IndoaXRlIj5LUEk8L3RleHQ+Cjwvc3ZnPg==';
+
+            // Utility Functions
+            function isPercentKPI(kpiName) {
+                return kpiName && kpiName.trim().endsWith('%');
+            }
+
+            function isUSDKPI(kpiName) {
+                if (!kpiName) return false;
+                const lower = kpiName.toLowerCase();
+                return lower.includes('sales') || lower.includes('order value') || lower.includes('value');
+            }
+
+            function formatValue(value, kpiName) {
+                if (value === null || value === undefined || isNaN(value)) return '—';
+
+                const isPercent = isPercentKPI(kpiName);
+                const isUSD = isUSDKPI(kpiName);
+
+                if (isPercent) {
+                    return (value * 100).toFixed(1) + '%';
+                }
+
+                if (isUSD) {
+                    if (Math.abs(value) >= 1000000) {
+                        return '$' + (value / 1000000).toFixed(1) + 'M';
+                    } else if (Math.abs(value) >= 1000) {
+                        return '$' + (value / 1000).toFixed(1) + 'K';
+                    }
+                    return '$' + value.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                }
+
+                if (Math.abs(value) >= 1000000) {
+                    return (value / 1000000).toFixed(1) + 'M';
+                } else if (Math.abs(value) >= 1000) {
+                    return (value / 1000).toFixed(1) + 'K';
+                }
+                return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+            }
+
+            function calcDiff(val2025, val2024, isPercent) {
+                if (val2025 === null || val2024 === null || val2024 === 0) return null;
+
+                if (isPercent) {
+                    return (val2025 - val2024) * 100; // Returns PP
+                }
+                return ((val2025 / val2024) - 1) * 100; // Returns %
+            }
+
+            function formatDiff(diff, isPercent) {
+                if (diff === null || isNaN(diff)) return '—';
+                const sign = diff >= 0 ? '+' : '';
+                if (isPercent) {
+                    return sign + diff.toFixed(1) + ' PP';
+                }
+                return sign + diff.toFixed(1) + '%';
+            }
+
+            function parseCSV(text) {
+                const lines = text.trim().split('\n');
+                if (lines.length < 2) return [];
+
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                const marketIdx = headers.indexOf('market');
+                const kpiIdx = headers.indexOf('kpi');
+                const monthIdx = headers.indexOf('month');
+                const val2025Idx = headers.indexOf('value_2025');
+                const val2024Idx = headers.indexOf('value_2024');
+
+                if (marketIdx === -1 || kpiIdx === -1 || monthIdx === -1 || val2025Idx === -1 || val2024Idx === -1) {
+                    console.error('Invalid CSV headers. Expected: Market, KPI, Month, value_2025, value_2024');
+                    return [];
+                }
+
+                const data = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',').map(v => v.trim());
+                    if (values.length < 5) continue;
+
+                    const val2025 = values[val2025Idx] === '' ? null : parseFloat(values[val2025Idx]);
+                    const val2024 = values[val2024Idx] === '' ? null : parseFloat(values[val2024Idx]);
+
+                    data.push({
+                        market: values[marketIdx],
+                        kpi: values[kpiIdx],
+                        month: values[monthIdx].toUpperCase(),
+                        value_2025: isNaN(val2025) ? null : val2025,
+                        value_2024: isNaN(val2024) ? null : val2024
+                    });
+                }
+                return data;
+            }
+
+            function sortMarkets(markets) {
+                const order = { 'TOTAL': 0, 'UAE': 1, 'KSA': 2 };
+                return [...markets].sort((a, b) => {
+                    const orderA = order[a] !== undefined ? order[a] : 100;
+                    const orderB = order[b] !== undefined ? order[b] : 100;
+                    if (orderA !== orderB) return orderA - orderB;
+                    return a.localeCompare(b);
+                });
+            }
+
+            // Components
+            function Header() {
+                return h('header', { className: 'header' },
+                    h('img', { src: LOGO_BASE64, alt: 'Logo', className: 'header-logo' }),
+                    h('div', { className: 'header-text' },
+                        h('h1', null, 'KPI Performance Dashboard'),
+                        h('p', null, 'Year-over-Year Comparison Analysis')
+                    )
+                );
+            }
+
+            function Dropdown({ label, options, value, onChange, className, zIndex }) {
+                const [isOpen, setIsOpen] = useState(false);
+                const dropdownRef = useRef(null);
+
+                useEffect(() => {
+                    function handleClickOutside(event) {
+                        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                            setIsOpen(false);
+                        }
+                    }
+                    document.addEventListener('mousedown', handleClickOutside);
+                    return () => document.removeEventListener('mousedown', handleClickOutside);
+                }, []);
+
+                return h('div', { className: 'filter-group', style: { zIndex } },
+                    h('label', { className: 'filter-label' }, label),
+                    h('div', { className: 'dropdown ' + className, ref: dropdownRef },
+                        h('button', {
+                            className: 'dropdown-button',
+                            onClick: () => setIsOpen(!isOpen)
+                        }, value || 'Select...'),
+                        h('span', { className: 'dropdown-arrow' + (isOpen ? ' open' : '') }, '▼'),
+                        h('div', { className: 'dropdown-menu' + (isOpen ? ' open' : '') },
+                            options.map(opt =>
+                                h('div', {
+                                    key: opt,
+                                    className: 'dropdown-item' + (opt === value ? ' selected' : ''),
+                                    onClick: () => {
+                                        onChange(opt);
+                                        setIsOpen(false);
+                                    }
+                                }, opt)
+                            )
+                        )
+                    )
+                );
+            }
+
+            function SummaryCards({ data, selectedKPI }) {
+                const isPercent = isPercentKPI(selectedKPI);
+
+                // Get December (full year) values
+                const decData = data.find(d => d.month === 'DEC');
+                const val2025 = decData ? decData.value_2025 : null;
+                const val2024 = decData ? decData.value_2024 : null;
+                const diff = calcDiff(val2025, val2024, isPercent);
+                const isPositive = diff !== null && diff >= 0;
+
+                return h('div', { className: 'summary-cards' },
+                    h('div', { className: 'summary-card year-2025' },
+                        h('div', { className: 'card-label' }, '2025 Full Year'),
+                        h('div', { className: 'card-value' }, formatValue(val2025, selectedKPI)),
+                        h('div', { className: 'card-sublabel' }, 'Year-to-Date (December)')
+                    ),
+                    h('div', { className: 'summary-card year-2024' },
+                        h('div', { className: 'card-label' }, '2024 Full Year'),
+                        h('div', { className: 'card-value' }, formatValue(val2024, selectedKPI)),
+                        h('div', { className: 'card-sublabel' }, 'Year-to-Date (December)')
+                    ),
+                    h('div', { className: 'summary-card ' + (isPositive ? 'yoy-positive' : 'yoy-negative') },
+                        h('div', { className: 'card-label' }, 'YoY Change'),
+                        h('div', { className: 'card-value ' + (isPositive ? 'positive' : 'negative') },
+                            h('span', { className: 'trend-icon' }, isPositive ? '↑' : '↓'),
+                            formatDiff(diff, isPercent)
+                        ),
+                        h('div', { className: 'card-sublabel' }, 'vs Previous Year')
+                    )
+                );
+            }
+
+            function CustomTooltip({ active, payload, label, selectedKPI }) {
+                if (!active || !payload || !payload.length) return null;
+
+                const isPercent = isPercentKPI(selectedKPI);
+                const val2025 = payload.find(p => p.dataKey === 'value_2025')?.value;
+                const val2024 = payload.find(p => p.dataKey === 'value_2024')?.value;
+                const diff = calcDiff(val2025, val2024, isPercent);
+
+                return h('div', { className: 'custom-tooltip' },
+                    h('div', { className: 'tooltip-title' }, label),
+                    h('div', { className: 'tooltip-row' },
+                        h('div', { className: 'tooltip-dot', style: { background: COLORS.year2025 } }),
+                        h('span', { className: 'tooltip-label' }, '2025:'),
+                        h('span', { className: 'tooltip-value' }, formatValue(val2025, selectedKPI))
+                    ),
+                    h('div', { className: 'tooltip-row' },
+                        h('div', { className: 'tooltip-dot', style: { background: COLORS.year2024 } }),
+                        h('span', { className: 'tooltip-label' }, '2024:'),
+                        h('span', { className: 'tooltip-value' }, formatValue(val2024, selectedKPI))
+                    ),
+                    h('div', {
+                        className: 'tooltip-diff',
+                        style: { color: diff >= 0 ? COLORS.positive : COLORS.negative }
+                    }, 'YoY: ' + formatDiff(diff, isPercent))
+                );
+            }
+
+            function ChartSection({ data, selectedKPI }) {
+                const isPercent = isPercentKPI(selectedKPI);
+
+                // Prepare chart data
+                const chartData = MONTHS.map(month => {
+                    const monthData = data.find(d => d.month === month);
+                    return {
+                        month,
+                        value_2025: monthData ? monthData.value_2025 : null,
+                        value_2024: monthData ? monthData.value_2024 : null
+                    };
+                });
+
+                // Calculate min/max for Y axis
+                const allValues = chartData.flatMap(d => [d.value_2025, d.value_2024]).filter(v => v !== null);
+                const minVal = allValues.length ? Math.min(...allValues) : 0;
+                const maxVal = allValues.length ? Math.max(...allValues) : 100;
+                const padding = (maxVal - minVal) * 0.1;
+
+                const formatYAxis = (value) => {
+                    if (isPercent) return (value * 100).toFixed(0) + '%';
+                    if (Math.abs(value) >= 1000000) return (value / 1000000).toFixed(0) + 'M';
+                    if (Math.abs(value) >= 1000) return (value / 1000).toFixed(0) + 'K';
+                    return value;
+                };
+
+                return h('div', { className: 'chart-section' },
+                    h('h3', { className: 'chart-title' }, 'Monthly Trend Comparison'),
+                    h('div', { className: 'chart-container' },
+                        h(ResponsiveContainer, { width: '100%', height: 360 },
+                            h(ComposedChart, { data: chartData, margin: { top: 20, right: 30, left: 20, bottom: 20 } },
+                                h('defs', null,
+                                    h('linearGradient', { id: 'gradient2025', x1: 0, y1: 0, x2: 0, y2: 1 },
+                                        h('stop', { offset: '5%', stopColor: COLORS.year2025, stopOpacity: 0.15 }),
+                                        h('stop', { offset: '95%', stopColor: COLORS.year2025, stopOpacity: 0 })
+                                    ),
+                                    h('linearGradient', { id: 'gradient2024', x1: 0, y1: 0, x2: 0, y2: 1 },
+                                        h('stop', { offset: '5%', stopColor: COLORS.year2024, stopOpacity: 0.1 }),
+                                        h('stop', { offset: '95%', stopColor: COLORS.year2024, stopOpacity: 0 })
+                                    )
+                                ),
+                                h(CartesianGrid, { strokeDasharray: '3 3', stroke: COLORS.grayLight }),
+                                h(XAxis, {
+                                    dataKey: 'month',
+                                    tick: { fill: COLORS.gray, fontSize: 12 },
+                                    axisLine: { stroke: COLORS.grayLight }
+                                }),
+                                h(YAxis, {
+                                    tickFormatter: formatYAxis,
+                                    tick: { fill: COLORS.gray, fontSize: 12 },
+                                    axisLine: { stroke: COLORS.grayLight },
+                                    domain: [minVal - padding, maxVal + padding]
+                                }),
+                                h(Tooltip, {
+                                    content: (props) => h(CustomTooltip, { ...props, selectedKPI })
+                                }),
+                                h(Legend, {
+                                    verticalAlign: 'top',
+                                    height: 36,
+                                    formatter: (value) => value === 'value_2025' ? '2025' : '2024'
+                                }),
+                                h(Area, {
+                                    type: 'monotone',
+                                    dataKey: 'value_2025',
+                                    fill: 'url(#gradient2025)',
+                                    stroke: 'transparent',
+                                    legendType: 'none'
+                                }),
+                                h(Area, {
+                                    type: 'monotone',
+                                    dataKey: 'value_2024',
+                                    fill: 'url(#gradient2024)',
+                                    stroke: 'transparent',
+                                    legendType: 'none'
+                                }),
+                                h(Line, {
+                                    type: 'monotone',
+                                    dataKey: 'value_2025',
+                                    name: 'value_2025',
+                                    stroke: COLORS.year2025,
+                                    strokeWidth: 3,
+                                    dot: { fill: COLORS.year2025, strokeWidth: 2, r: 5 },
+                                    activeDot: { r: 7 }
+                                }),
+                                h(Line, {
+                                    type: 'monotone',
+                                    dataKey: 'value_2024',
+                                    name: 'value_2024',
+                                    stroke: COLORS.year2024,
+                                    strokeWidth: 3,
+                                    strokeDasharray: '5 5',
+                                    dot: { fill: COLORS.year2024, strokeWidth: 2, r: 5 },
+                                    activeDot: { r: 7 }
+                                })
+                            )
+                        )
+                    ),
+                    h('div', { className: 'monthly-badges' },
+                        chartData.map(d => {
+                            const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
+                            const isPositive = diff !== null && diff >= 0;
+                            return h('div', { key: d.month, className: 'month-badge' },
+                                h('div', { className: 'month-badge-label' }, d.month),
+                                h('div', {
+                                    className: 'month-badge-value ' + (isPositive ? 'positive' : 'negative')
+                                }, formatDiff(diff, isPercent))
+                            );
+                        })
+                    )
+                );
+            }
+
+            function ComparisonTable({ data, selectedKPI }) {
+                const isPercent = isPercentKPI(selectedKPI);
+
+                const tableData = MONTHS.map(month => {
+                    const monthData = data.find(d => d.month === month);
+                    return {
+                        month,
+                        value_2025: monthData ? monthData.value_2025 : null,
+                        value_2024: monthData ? monthData.value_2024 : null
+                    };
+                });
+
+                return h('div', { className: 'table-section' },
+                    h('h3', { className: 'table-title' }, 'Monthly Comparison Table'),
+                    h('table', { className: 'comparison-table' },
+                        h('thead', null,
+                            h('tr', null,
+                                h('th', null, 'Year'),
+                                MONTHS.map(m => h('th', { key: m }, m))
+                            )
+                        ),
+                        h('tbody', null,
+                            // 2025 row (first)
+                            h('tr', { className: 'row-2025' },
+                                h('td', null, '2025'),
+                                tableData.map(d => h('td', { key: d.month }, formatValue(d.value_2025, selectedKPI)))
+                            ),
+                            // 2024 row (second)
+                            h('tr', { className: 'row-2024' },
+                                h('td', null, '2024'),
+                                tableData.map(d => h('td', { key: d.month }, formatValue(d.value_2024, selectedKPI)))
+                            ),
+                            // YoY row (third)
+                            h('tr', { className: 'row-yoy' },
+                                h('td', null, 'YoY Δ'),
+                                tableData.map(d => {
+                                    const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
+                                    const isPositive = diff !== null && diff >= 0;
+                                    return h('td', {
+                                        key: d.month,
+                                        className: isPositive ? 'value-positive' : 'value-negative'
+                                    }, formatDiff(diff, isPercent));
+                                })
+                            )
+                        )
+                    )
+                );
+            }
+
+            function UploadOverlay({ onDataLoaded }) {
+                const [isDragOver, setIsDragOver] = useState(false);
+                const fileInputRef = useRef(null);
+
+                const handleFile = (file) => {
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const data = parseCSV(e.target.result);
+                        if (data.length > 0) {
+                            onDataLoaded(data);
+                        } else {
+                            alert('Invalid CSV format. Please check the file structure.');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+
+                const handleDrop = (e) => {
+                    e.preventDefault();
+                    setIsDragOver(false);
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.name.endsWith('.csv')) {
+                        handleFile(file);
+                    }
+                };
+
+                const handleDragOver = (e) => {
+                    e.preventDefault();
+                    setIsDragOver(true);
+                };
+
+                const handleDragLeave = () => {
+                    setIsDragOver(false);
+                };
+
+                return h('div', { className: 'upload-overlay' },
+                    h('div', { className: 'upload-box' },
+                        h('div', { className: 'upload-icon' }, '📊'),
+                        h('h2', null, 'Upload KPI Data'),
+                        h('p', null, 'Upload a CSV file to get started with your KPI analysis'),
+                        h('div', {
+                            className: 'dropzone' + (isDragOver ? ' dragover' : ''),
+                            onDrop: handleDrop,
+                            onDragOver: handleDragOver,
+                            onDragLeave: handleDragLeave,
+                            onClick: () => fileInputRef.current.click()
+                        },
+                            h('p', { className: 'dropzone-text' },
+                                h('span', null, 'Click to upload'),
+                                ' or drag and drop your CSV file here'
+                            ),
+                            h('input', {
+                                ref: fileInputRef,
+                                type: 'file',
+                                accept: '.csv',
+                                style: { display: 'none' },
+                                onChange: (e) => handleFile(e.target.files[0])
+                            })
+                        )
+                    )
+                );
+            }
+
+            function LoadingState() {
+                return h('div', { className: 'loading-container' },
+                    h('div', { className: 'spinner' }),
+                    h('p', { className: 'loading-text' }, 'Loading data...')
+                );
+            }
+
+            function MessageState({ icon, title, message }) {
+                return h('div', { className: 'message-state' },
+                    h('div', { className: 'message-state-icon' }, icon),
+                    h('h3', null, title),
+                    h('p', null, message)
+                );
+            }
+
+            // Main App
+            function App() {
+                const [data, setData] = useState(null);
+                const [loading, setLoading] = useState(true);
+                const [selectedMarket, setSelectedMarket] = useState('');
+                const [selectedKPI, setSelectedKPI] = useState('');
+                const fileInputRef = useRef(null);
+
+                // Try to load data.csv on startup
+                useEffect(() => {
+                    fetch('data.csv')
+                        .then(res => {
+                            if (!res.ok) throw new Error('Not found');
+                            return res.text();
+                        })
+                        .then(text => {
+                            const parsed = parseCSV(text);
+                            if (parsed.length > 0) {
+                                setData(parsed);
+                            }
+                            setLoading(false);
+                        })
+                        .catch(() => {
+                            setLoading(false);
+                        });
+                }, []);
+
+                const handleDataLoaded = (newData) => {
+                    setData(newData);
+                    setSelectedMarket('');
+                    setSelectedKPI('');
+                };
+
+                const handleFileUpload = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        const parsed = parseCSV(evt.target.result);
+                        if (parsed.length > 0) {
+                            handleDataLoaded(parsed);
+                        } else {
+                            alert('Invalid CSV format');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+
+                // Extract unique markets and KPIs
+                const markets = data ? sortMarkets([...new Set(data.map(d => d.market))]) : [];
+                const kpis = data ? [...new Set(data.map(d => d.kpi))].sort() : [];
+
+                // Filter data for selected market and KPI
+                const filteredData = data && selectedMarket && selectedKPI
+                    ? data.filter(d => d.market === selectedMarket && d.kpi === selectedKPI)
+                    : [];
+
+                if (loading) {
+                    return h('div', null,
+                        h(Header),
+                        h('div', { className: 'main-container' },
+                            h(LoadingState)
+                        )
+                    );
+                }
+
+                if (!data) {
+                    return h('div', null,
+                        h(Header),
+                        h(UploadOverlay, { onDataLoaded: handleDataLoaded })
+                    );
+                }
+
+                return h('div', null,
+                    h(Header),
+                    h('div', { className: 'main-container' },
+                        // Filters
+                        h('div', { className: 'filter-section' },
+                            h(Dropdown, {
+                                label: 'Market',
+                                options: markets,
+                                value: selectedMarket,
+                                onChange: setSelectedMarket,
+                                className: 'market-dropdown',
+                                zIndex: 20
+                            }),
+                            h(Dropdown, {
+                                label: 'KPI Metric',
+                                options: kpis,
+                                value: selectedKPI,
+                                onChange: setSelectedKPI,
+                                className: 'kpi-dropdown',
+                                zIndex: 10
+                            }),
+                            h('div', { className: 'upload-section' },
+                                h('button', {
+                                    className: 'upload-btn',
+                                    onClick: () => fileInputRef.current.click()
+                                }, '📁 Upload New CSV'),
+                                h('input', {
+                                    ref: fileInputRef,
+                                    type: 'file',
+                                    accept: '.csv',
+                                    style: { display: 'none' },
+                                    onChange: handleFileUpload
+                                })
+                            )
+                        ),
+
+                        // Content based on selection
+                        !selectedMarket || !selectedKPI
+                            ? h(MessageState, {
+                                icon: '📈',
+                                title: 'Select Market & KPI',
+                                message: 'Please select a market and KPI metric from the dropdowns above to view the comparison analysis.'
+                            })
+                            : filteredData.length === 0
+                                ? h(MessageState, {
+                                    icon: '🔍',
+                                    title: 'No Data Available',
+                                    message: 'No data found for the selected Market and KPI combination. Please try a different selection.'
+                                })
+                                : h('div', null,
+                                    h(SummaryCards, { data: filteredData, selectedKPI }),
+                                    h(ChartSection, { data: filteredData, selectedKPI }),
+                                    h(ComparisonTable, { data: filteredData, selectedKPI })
+                                )
+                    )
+                );
+            }
+
+            // Render the app
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(h(App));
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+Market,KPI,Month,value_2025,value_2024
+TOTAL,Total Sales,JAN,150000,140000
+TOTAL,Total Sales,FEB,320000,295000
+TOTAL,Total Sales,MAR,510000,460000
+TOTAL,Total Sales,APR,720000,640000
+TOTAL,Total Sales,MAY,950000,830000
+TOTAL,Total Sales,JUN,1200000,1050000
+TOTAL,Total Sales,JUL,1480000,1280000
+TOTAL,Total Sales,AUG,1780000,1530000
+TOTAL,Total Sales,SEP,2100000,1800000
+TOTAL,Total Sales,OCT,2450000,2100000
+TOTAL,Total Sales,NOV,2820000,2420000
+TOTAL,Total Sales,DEC,3250000,2800000
+TOTAL,Conversion Rate %,JAN,0.032,0.028
+TOTAL,Conversion Rate %,FEB,0.034,0.029
+TOTAL,Conversion Rate %,MAR,0.036,0.031
+TOTAL,Conversion Rate %,APR,0.038,0.032
+TOTAL,Conversion Rate %,MAY,0.041,0.034
+TOTAL,Conversion Rate %,JUN,0.043,0.036
+TOTAL,Conversion Rate %,JUL,0.045,0.038
+TOTAL,Conversion Rate %,AUG,0.047,0.039
+TOTAL,Conversion Rate %,SEP,0.049,0.041
+TOTAL,Conversion Rate %,OCT,0.051,0.043
+TOTAL,Conversion Rate %,NOV,0.053,0.044
+TOTAL,Conversion Rate %,DEC,0.055,0.046
+TOTAL,Average Order Value,JAN,125,118
+TOTAL,Average Order Value,FEB,128,120
+TOTAL,Average Order Value,MAR,132,122
+TOTAL,Average Order Value,APR,135,125
+TOTAL,Average Order Value,MAY,138,127
+TOTAL,Average Order Value,JUN,142,130
+TOTAL,Average Order Value,JUL,145,132
+TOTAL,Average Order Value,AUG,148,135
+TOTAL,Average Order Value,SEP,152,138
+TOTAL,Average Order Value,OCT,156,140
+TOTAL,Average Order Value,NOV,160,143
+TOTAL,Average Order Value,DEC,165,145
+UAE,Total Sales,JAN,85000,78000
+UAE,Total Sales,FEB,180000,162000
+UAE,Total Sales,MAR,285000,252000
+UAE,Total Sales,APR,400000,350000
+UAE,Total Sales,MAY,530000,455000
+UAE,Total Sales,JUN,670000,575000
+UAE,Total Sales,JUL,820000,700000
+UAE,Total Sales,AUG,980000,840000
+UAE,Total Sales,SEP,1160000,990000
+UAE,Total Sales,OCT,1360000,1155000
+UAE,Total Sales,NOV,1570000,1330000
+UAE,Total Sales,DEC,1800000,1520000
+UAE,Conversion Rate %,JAN,0.035,0.030
+UAE,Conversion Rate %,FEB,0.037,0.031
+UAE,Conversion Rate %,MAR,0.039,0.033
+UAE,Conversion Rate %,APR,0.042,0.035
+UAE,Conversion Rate %,MAY,0.044,0.037
+UAE,Conversion Rate %,JUN,0.046,0.039
+UAE,Conversion Rate %,JUL,0.048,0.041
+UAE,Conversion Rate %,AUG,0.051,0.043
+UAE,Conversion Rate %,SEP,0.053,0.045
+UAE,Conversion Rate %,OCT,0.055,0.047
+UAE,Conversion Rate %,NOV,0.057,0.048
+UAE,Conversion Rate %,DEC,0.059,0.050
+UAE,Average Order Value,JAN,135,125
+UAE,Average Order Value,FEB,138,128
+UAE,Average Order Value,MAR,142,130
+UAE,Average Order Value,APR,146,133
+UAE,Average Order Value,MAY,150,136
+UAE,Average Order Value,JUN,154,139
+UAE,Average Order Value,JUL,158,142
+UAE,Average Order Value,AUG,162,145
+UAE,Average Order Value,SEP,166,148
+UAE,Average Order Value,OCT,170,151
+UAE,Average Order Value,NOV,175,154
+UAE,Average Order Value,DEC,180,158
+KSA,Total Sales,JAN,65000,62000
+KSA,Total Sales,FEB,140000,133000
+KSA,Total Sales,MAR,225000,208000
+KSA,Total Sales,APR,320000,290000
+KSA,Total Sales,MAY,420000,375000
+KSA,Total Sales,JUN,530000,475000
+KSA,Total Sales,JUL,660000,580000
+KSA,Total Sales,AUG,800000,690000
+KSA,Total Sales,SEP,940000,810000
+KSA,Total Sales,OCT,1090000,945000
+KSA,Total Sales,NOV,1250000,1090000
+KSA,Total Sales,DEC,1450000,1280000
+KSA,Conversion Rate %,JAN,0.028,0.026
+KSA,Conversion Rate %,FEB,0.030,0.027
+KSA,Conversion Rate %,MAR,0.032,0.029
+KSA,Conversion Rate %,APR,0.034,0.030
+KSA,Conversion Rate %,MAY,0.036,0.032
+KSA,Conversion Rate %,JUN,0.038,0.033
+KSA,Conversion Rate %,JUL,0.040,0.035
+KSA,Conversion Rate %,AUG,0.042,0.037
+KSA,Conversion Rate %,SEP,0.044,0.038
+KSA,Conversion Rate %,OCT,0.046,0.040
+KSA,Conversion Rate %,NOV,0.048,0.041
+KSA,Conversion Rate %,DEC,0.050,0.043
+KSA,Average Order Value,JAN,115,110
+KSA,Average Order Value,FEB,118,112
+KSA,Average Order Value,MAR,121,115
+KSA,Average Order Value,APR,124,117
+KSA,Average Order Value,MAY,127,120
+KSA,Average Order Value,JUN,130,122
+KSA,Average Order Value,JUL,133,125
+KSA,Average Order Value,AUG,136,128
+KSA,Average Order Value,SEP,140,130
+KSA,Average Order Value,OCT,143,133
+KSA,Average Order Value,NOV,147,136
+KSA,Average Order Value,DEC,150,140

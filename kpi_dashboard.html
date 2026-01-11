@@ -1501,52 +1501,64 @@
             const markets = getMarkets();
             const kpis = ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
 
-            return `
-                <div class="section-header">
-                    <div class="section-title">Market Comparison</div>
-                </div>
-                <table class="market-table">
-                    <thead>
-                        <tr>
-                            <th class="left">Market</th>
-                            ${kpis.map(k => `<th>${KPI_CONFIG[k]?.name || k}</th>`).join('')}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${markets.map((m, idx) => {
-                            const isTotal = m === 'All Markets';
+            // Separate individual markets from All Markets, sort by Total Sales value
+            const individualMarkets = markets.filter(m => m !== 'All Markets')
+                .map(m => ({ market: m, data: getLatestData(m, 'SLS_TTL') }))
+                .sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0))
+                .map(d => d.market);
+            const totalMarket = markets.find(m => m === 'All Markets');
+
+            // Helper to render a market row
+            function renderMarketRow(m, isTotal = false) {
+                return `
+                    <tr class="${isTotal ? 'total-row' : ''}">
+                        <td class="market-cell">${m}</td>
+                        ${kpis.map(k => {
+                            const config = KPI_CONFIG[k];
+                            const data = getLatestData(m, k);
+                            if (!data) return '<td class="compare-cell">—</td>';
+                            const change = calcChange(data.YTD, data.LYTD, config.format);
+                            const changeClass = getChangeClass(change, config.format);
+
+                            let targetBadge = '';
+                            if (data.Target) {
+                                const tGap = calcTargetGap(data.YTD, data.Target, config.format);
+                                const tGapClass = getChangeClass(tGap, config.format);
+                                targetBadge = `<span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>`;
+                            }
+
                             return `
-                                <tr class="${isTotal ? 'total-row' : ''}">
-                                    <td class="market-name ${isTotal ? 'total' : ''}">${m}</td>
-                                    ${kpis.map(k => {
-                                        const config = KPI_CONFIG[k];
-                                        const data = getLatestData(m, k);
-                                        if (!data) return '<td>—</td>';
-                                        const change = calcChange(data.YTD, data.LYTD, config.format);
-                                        const changeClass = getChangeClass(change, config.format);
-
-                                        let targetGapHTML = '';
-                                        if (data.Target) {
-                                            const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                            const tGapClass = getChangeClass(tGap, config.format);
-                                            targetGapHTML = `<span class="cell-divider">|</span><span style="color:var(--text-muted);font-weight:400">vs TGT:</span> <span class="cell-change-item ${tGapClass}">${formatChange(tGap, config.format)}</span>`;
-                                        }
-
-                                        return `
-                                            <td>
-                                                <span class="cell-value">${formatValue(data.YTD, config.format)}</span>
-                                                <div class="cell-changes">
-                                                    <span style="color:var(--text-muted);font-weight:400">vs LY:</span> <span class="cell-change-item ${changeClass}">${formatChange(change, config.format)}</span>
-                                                    ${targetGapHTML}
-                                                </div>
-                                            </td>
-                                        `;
-                                    }).join('')}
-                                </tr>
+                                <td class="compare-cell">
+                                    <div class="value-cell" style="margin-bottom:4px">${formatValue(data.YTD, config.format)}</div>
+                                    <div class="compare-group" style="justify-content:center">
+                                        <span class="compare-badge ${changeClass}">${formatChange(change, config.format)}</span>
+                                        ${targetBadge}
+                                    </div>
+                                </td>
                             `;
                         }).join('')}
-                    </tbody>
-                </table>
+                    </tr>
+                `;
+            }
+
+            return `
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Market Comparison</div>
+                    </div>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Market</th>
+                                ${kpis.map(k => `<th class="center">${KPI_CONFIG[k]?.name || k}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${individualMarkets.map(m => renderMarketRow(m, false)).join('')}
+                            ${totalMarket ? renderMarketRow(totalMarket, true) : ''}
+                        </tbody>
+                    </table>
+                </div>
             `;
         }
 

@@ -448,6 +448,22 @@
             background: var(--light-steel);
         }
 
+        .filter-select optgroup {
+            font-weight: 700;
+            color: var(--navy);
+            background: var(--light-bg);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select optgroup option {
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: normal;
+            padding-left: 16px;
+        }
+
         /* Upload Overlay */
         .upload-overlay {
             position: fixed;
@@ -1402,6 +1418,213 @@
         .upload-hint strong {
             color: var(--navy);
         }
+
+        /* Segmentation Tab Styles */
+        .segment-comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .segment-card {
+            background: var(--white);
+            border: 1px solid var(--light-steel);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .segment-card.total { border-left: 4px solid var(--navy); }
+        .segment-card.new { border-left: 4px solid var(--positive); }
+        .segment-card.returning { border-left: 4px solid var(--steel-blue); }
+
+        .segment-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .segment-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light-bg);
+        }
+
+        .segment-metric:last-child { border-bottom: none; }
+
+        .segment-metric-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .segment-metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .segment-metric-change {
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        /* Target Scorecard Styles */
+        .scorecard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .scorecard-item {
+            background: var(--white);
+            border: 1px solid var(--light-steel);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .scorecard-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .scorecard-indicator.green { background: rgba(46, 125, 90, 0.15); }
+        .scorecard-indicator.amber { background: rgba(184, 134, 11, 0.15); }
+        .scorecard-indicator.red { background: rgba(196, 49, 75, 0.15); }
+        .scorecard-indicator.na { background: var(--light-bg); }
+
+        .scorecard-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .scorecard-kpi {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scorecard-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .scorecard-gap {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .scorecard-gap.up { color: var(--positive); }
+        .scorecard-gap.down { color: var(--negative); }
+        .scorecard-gap.neutral { color: var(--neutral); }
+
+        /* BU Portfolio Styles */
+        .portfolio-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-bg);
+        }
+
+        .portfolio-item:last-child { border-bottom: none; }
+
+        .portfolio-name {
+            width: 150px;
+            font-weight: 500;
+            color: var(--navy);
+            flex-shrink: 0;
+        }
+
+        .portfolio-bar-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .portfolio-bar-bg {
+            flex: 1;
+            height: 24px;
+            background: var(--light-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .portfolio-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--navy), var(--steel-blue));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .portfolio-value {
+            width: 100px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .portfolio-change {
+            width: 70px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        /* Channel Mix Styles */
+        .channel-mix-container {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .channel-mix-chart {
+            flex: 1;
+        }
+
+        .channel-mix-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .channel-mix-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .channel-mix-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .channel-mix-dot.retail { background: var(--navy); }
+        .channel-mix-dot.ecom { background: var(--steel-blue); }
+        .channel-mix-dot.other { background: var(--light-steel); }
+
+        @media (max-width: 1200px) {
+            .segment-comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1464,6 +1687,41 @@
             'SALES LINKAGE': { name: 'Sales Linkage', format: 'percent', good: 'up', hasShare: false, hero: true }
         };
 
+        // KPI Groups for organized dropdown (MC mode)
+        const MC_KPI_GROUPS = [
+            { name: 'Sales', kpis: ['TOTAL OWN BRAND SALES', 'KNOWN SALES', 'NEW CUSTOMERS KNOWN SALES', 'RETURNING CUSTOMERS KNOWN SALES'] },
+            { name: 'Customers', kpis: ['CUSTOMER COUNT', 'NEW CUSTOMER COUNT', 'RETURNING CUSTOMER COUNT'] },
+            { name: 'Transactions', kpis: ['TRANSACTION COUNT', 'NEW CUSTOMERS TRANSACTION COUNT', 'RETURNING CUSTOMERS TRANSACTION COUNT'] },
+            { name: 'Average Order Value', kpis: ['AOV', 'NEW CUSTOMERS AOV', 'RETURNING CUSTOMERS AOV'] },
+            { name: 'Average Customer Value', kpis: ['ACV', 'NEW CUSTOMERS ACV', 'RETURNING CUSTOMERS ACV'] },
+            { name: 'Frequency', kpis: ['AVERAGE FREQUENCY', 'NEW CUSTOMERS AVERAGE FREQUENCY', 'RETURNING CUSTOMERS AVERAGE FREQUENCY'] },
+            { name: 'Units Per Transaction', kpis: ['UPT', 'NEW CUSTOMERS UPT', 'RETURNING CUSTOMERS UPT'] },
+            { name: 'Other', kpis: ['SALES LINKAGE'] }
+        ];
+
+        // Helper to render KPI dropdown with optional grouping
+        function renderKPIDropdown(kpis, selectedKPI, selectId = 'kpiSelect') {
+            const kpiConfig = getKPIConfig();
+
+            if (state.mode === 'MC') {
+                // Grouped dropdown for MC mode
+                return `<select class="filter-select" id="${selectId}">
+                    ${MC_KPI_GROUPS.map(group => {
+                        const groupKpis = group.kpis.filter(k => kpis.includes(k));
+                        if (groupKpis.length === 0) return '';
+                        return `<optgroup label="${group.name}">
+                            ${groupKpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${kpiConfig[k]?.name || k}</option>`).join('')}
+                        </optgroup>`;
+                    }).join('')}
+                </select>`;
+            } else {
+                // Flat dropdown for MUSE mode
+                return `<select class="filter-select" id="${selectId}">
+                    ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${kpiConfig[k]?.name || k}</option>`).join('')}
+                </select>`;
+            }
+        }
+
         // Get current KPI config based on mode
         function getKPIConfig() {
             return state.mode === 'MC' ? MC_KPI_CONFIG : MUSE_KPI_CONFIG;
@@ -1493,7 +1751,46 @@
             'Points Burned': 'PTS_BRN'
         };
 
-        const MARKET_ORDER = ['All', 'All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
+        // Preferred market order (for sorting), but list is dynamic
+        const PREFERRED_MARKET_ORDER = ['All', 'All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain', 'Qatar', 'Oman', 'Egypt', 'Jordan', 'Lebanon'];
+
+        // Helper to check if a value is an aggregate/total
+        function isAggregateValue(value, dimension) {
+            if (dimension === 'bu') {
+                return value === 'MC' || value === 'All' || value === 'MUSE';
+            }
+            if (dimension === 'market') {
+                return value === 'All' || value === 'All Markets';
+            }
+            if (dimension === 'channel') {
+                return value === 'All';
+            }
+            return false;
+        }
+
+        // Get the aggregate/total value for a dimension from data
+        function getAggregateValue(dimension) {
+            const data = getData();
+            if (!data) return 'All';
+
+            if (dimension === 'bu') {
+                const bus = [...new Set(data.map(d => d.BU))];
+                // MC mode: "MC" is the total
+                if (bus.includes('MC')) return 'MC';
+                if (bus.includes('All')) return 'All';
+                return bus[0];
+            }
+            if (dimension === 'market') {
+                const markets = [...new Set(data.map(d => d.Market))];
+                if (markets.includes('All')) return 'All';
+                if (markets.includes('All Markets')) return 'All Markets';
+                return markets[0];
+            }
+            if (dimension === 'channel') {
+                return 'All';
+            }
+            return 'All';
+        }
 
         // Company Logo SVG - simplified clean design on white background
         const LOGO_SVG = `<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
@@ -1534,10 +1831,12 @@
             const data = getData();
             if (!data) return [];
             const bus = [...new Set(data.map(d => d.BU))].filter(b => b);
-            // Sort with 'All' first
+            // Sort with aggregate first (MC for MC mode, All/MUSE for MUSE mode)
             return bus.sort((a, b) => {
-                if (a === 'All') return -1;
-                if (b === 'All') return 1;
+                const aIsAgg = isAggregateValue(a, 'bu');
+                const bIsAgg = isAggregateValue(b, 'bu');
+                if (aIsAgg && !bIsAgg) return -1;
+                if (!aIsAgg && bIsAgg) return 1;
                 return a.localeCompare(b);
             });
         }
@@ -1547,11 +1846,28 @@
             const data = getData();
             if (!data) return [];
             let filtered = data;
-            if (state.mode === 'MC' && state.selectedBU !== 'All') {
+            const buAgg = getAggregateValue('bu');
+            if (state.mode === 'MC' && state.selectedBU !== buAgg && !isAggregateValue(state.selectedBU, 'bu')) {
                 filtered = data.filter(d => d.BU === state.selectedBU);
             }
             const markets = [...new Set(filtered.map(d => d.Market))].filter(m => m);
-            return MARKET_ORDER.filter(m => markets.includes(m));
+
+            // Sort: aggregates first, then by preferred order, then alphabetically
+            return markets.sort((a, b) => {
+                const aIsAgg = isAggregateValue(a, 'market');
+                const bIsAgg = isAggregateValue(b, 'market');
+                if (aIsAgg && !bIsAgg) return -1;
+                if (!aIsAgg && bIsAgg) return 1;
+
+                // Use preferred order if both are in it
+                const aIdx = PREFERRED_MARKET_ORDER.indexOf(a);
+                const bIdx = PREFERRED_MARKET_ORDER.indexOf(b);
+                if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                if (aIdx !== -1) return -1;
+                if (bIdx !== -1) return 1;
+
+                return a.localeCompare(b);
+            });
         }
 
         // Get available channels for selected BU and Market
@@ -1560,18 +1876,22 @@
             if (!data) return [];
             let filtered = data;
             if (state.mode === 'MC') {
-                if (state.selectedBU !== 'All') {
+                const buAgg = getAggregateValue('bu');
+                const marketAgg = getAggregateValue('market');
+                if (!isAggregateValue(state.selectedBU, 'bu')) {
                     filtered = filtered.filter(d => d.BU === state.selectedBU);
                 }
-                if (state.selectedMarket !== 'All') {
+                if (!isAggregateValue(state.selectedMarket, 'market')) {
                     filtered = filtered.filter(d => d.Market === state.selectedMarket);
                 }
             }
             const channels = [...new Set(filtered.map(d => d.Channel))].filter(c => c);
-            // Sort with 'All' first
+            // Sort with aggregate first, then alphabetically
             return channels.sort((a, b) => {
-                if (a === 'All') return -1;
-                if (b === 'All') return 1;
+                const aIsAgg = isAggregateValue(a, 'channel');
+                const bIsAgg = isAggregateValue(b, 'channel');
+                if (aIsAgg && !bIsAgg) return -1;
+                if (!aIsAgg && bIsAgg) return 1;
                 return a.localeCompare(b);
             });
         }
@@ -1743,14 +2063,16 @@
             let rows = data.filter(d => d.Market === market && d.Key === kpiKey);
 
             if (state.mode === 'MC') {
-                if (bu && bu !== 'All') {
+                // Filter by BU if specified and not an aggregate
+                if (bu && !isAggregateValue(bu, 'bu')) {
                     rows = rows.filter(d => d.BU === bu);
-                } else if (state.selectedBU !== 'All') {
+                } else if (!isAggregateValue(state.selectedBU, 'bu')) {
                     rows = rows.filter(d => d.BU === state.selectedBU);
                 }
-                if (channel && channel !== 'All') {
+                // Filter by channel if specified and not an aggregate
+                if (channel && !isAggregateValue(channel, 'channel')) {
                     rows = rows.filter(d => d.Channel === channel);
-                } else if (state.selectedChannel !== 'All') {
+                } else if (!isAggregateValue(state.selectedChannel, 'channel')) {
                     rows = rows.filter(d => d.Channel === state.selectedChannel);
                 }
             }
@@ -1772,14 +2094,14 @@
             let rows = data.filter(d => d.Market === market && d.Key === kpiKey);
 
             if (state.mode === 'MC') {
-                if (bu && bu !== 'All') {
+                if (bu && !isAggregateValue(bu, 'bu')) {
                     rows = rows.filter(d => d.BU === bu);
-                } else if (state.selectedBU !== 'All') {
+                } else if (!isAggregateValue(state.selectedBU, 'bu')) {
                     rows = rows.filter(d => d.BU === state.selectedBU);
                 }
-                if (channel && channel !== 'All') {
+                if (channel && !isAggregateValue(channel, 'channel')) {
                     rows = rows.filter(d => d.Channel === channel);
-                } else if (state.selectedChannel !== 'All') {
+                } else if (!isAggregateValue(state.selectedChannel, 'channel')) {
                     rows = rows.filter(d => d.Channel === state.selectedChannel);
                 }
             }
@@ -1794,30 +2116,30 @@
             if (!data || !config[kpiKey]) return [];
 
             let items = [];
-            let groupBy;
 
             if (dimension === 'bu') {
-                groupBy = 'BU';
                 items = getBUs();
             } else if (dimension === 'market') {
-                groupBy = 'Market';
                 items = getMarkets();
             } else if (dimension === 'channel') {
-                groupBy = 'Channel';
                 items = getChannels();
             }
 
+            const marketAgg = getAggregateValue('market');
+            const buAgg = getAggregateValue('bu');
+            const channelAgg = getAggregateValue('channel');
+
             return items.map(item => {
                 const latest = getLatestData(
-                    dimension === 'market' ? item : state.selectedMarket,
+                    dimension === 'market' ? item : (isAggregateValue(state.selectedMarket, 'market') ? marketAgg : state.selectedMarket),
                     kpiKey,
-                    dimension === 'bu' ? item : state.selectedBU,
-                    dimension === 'channel' ? item : state.selectedChannel
+                    dimension === 'bu' ? item : (isAggregateValue(state.selectedBU, 'bu') ? buAgg : state.selectedBU),
+                    dimension === 'channel' ? item : (isAggregateValue(state.selectedChannel, 'channel') ? channelAgg : state.selectedChannel)
                 );
                 return {
                     name: item,
                     data: latest,
-                    isTotal: item === 'All'
+                    isTotal: isAggregateValue(item, dimension)
                 };
             }).filter(d => d.data);
         }
@@ -1948,6 +2270,7 @@
             // Different tabs for MC mode
             const mcTabs = `
                 <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
+                <div class="nav-tab ${state.activeTab === 'segmentation' ? 'active' : ''}" data-tab="segmentation">Customer Segments</div>
                 <div class="nav-tab ${state.activeTab === 'bu' ? 'active' : ''}" data-tab="bu">BU Analysis</div>
                 <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
                 <div class="nav-tab ${state.activeTab === 'channel' ? 'active' : ''}" data-tab="channel">Channel Analysis</div>
@@ -1986,6 +2309,7 @@
                 </nav>
                 <main class="main">
                     ${state.activeTab === 'summary' ? renderSummaryTab() : ''}
+                    ${state.activeTab === 'segmentation' && state.mode === 'MC' ? renderSegmentationTab() : ''}
                     ${state.activeTab === 'bu' && state.mode === 'MC' ? renderBUTab() : ''}
                     ${state.activeTab === 'markets' ? renderMarketsTab() : ''}
                     ${state.activeTab === 'channel' && state.mode === 'MC' ? renderChannelTab() : ''}
@@ -2049,18 +2373,26 @@
             const heroKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'AVERAGE FREQUENCY', 'SALES LINKAGE', 'NEW CUSTOMER COUNT'];
             const comparisonKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV'];
 
+            const buAgg = getAggregateValue('bu');
+            const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
+
+            const buLabel = isAggregateValue(state.selectedBU, 'bu') ? 'All BUs' : state.selectedBU;
+            const marketLabel = isAggregateValue(state.selectedMarket, 'market') ? 'All Markets' : state.selectedMarket;
+            const channelLabel = isAggregateValue(state.selectedChannel, 'channel') ? 'All Channels' : state.selectedChannel;
+
             return `
                 <div class="section-header">
                     <div>
                         <div class="section-title">Key Performance Indicators</div>
-                        <div class="section-subtitle">Full Year 2025 vs 2024 | ${state.selectedBU === 'All' ? 'All BUs' : state.selectedBU} | ${state.selectedMarket === 'All' ? 'All Markets' : state.selectedMarket} | ${state.selectedChannel === 'All' ? 'All Channels' : state.selectedChannel}</div>
+                        <div class="section-subtitle">Full Year 2025 vs 2024 | ${buLabel} | ${marketLabel} | ${channelLabel}</div>
                     </div>
                 </div>
 
                 ${renderMCFilters()}
 
                 <div class="exec-summary" style="grid-template-columns: repeat(3, 1fr);">
-                    ${heroKPIs.map(key => renderMetricCard('All', key)).join('')}
+                    ${heroKPIs.map(key => renderMetricCard(marketAgg, key)).join('')}
                 </div>
 
                 <div class="comparison-grid" style="margin-top: 32px;">
@@ -2113,18 +2445,22 @@
             const availableKPIs = kpis.filter(k => config[k]);
             if (availableKPIs.length === 0) return '';
 
+            const marketAgg = getAggregateValue('market');
+            const buAgg = getAggregateValue('bu');
+            const channelAgg = getAggregateValue('channel');
+
             // Get data for each item
             const itemsData = items.map(item => {
                 const kpiData = {};
                 availableKPIs.forEach(kpi => {
                     kpiData[kpi] = getLatestData(
-                        dimension === 'market' ? item : 'All',
+                        dimension === 'market' ? item : marketAgg,
                         kpi,
-                        dimension === 'bu' ? item : 'All',
-                        dimension === 'channel' ? item : 'All'
+                        dimension === 'bu' ? item : buAgg,
+                        dimension === 'channel' ? item : channelAgg
                     );
                 });
-                return { name: item, kpiData, isTotal: item === 'All' };
+                return { name: item, kpiData, isTotal: isAggregateValue(item, dimension) };
             }).filter(d => Object.values(d.kpiData).some(v => v));
 
             // Separate total row
@@ -2231,6 +2567,264 @@
             `;
         }
 
+        // Customer Segmentation Tab - New vs Returning analysis
+        function renderSegmentationTab() {
+            // KPI groups with Total/New/Returning variants
+            const kpiGroups = [
+                { base: 'CUSTOMER COUNT', new: 'NEW CUSTOMER COUNT', returning: 'RETURNING CUSTOMER COUNT', label: 'Customers' },
+                { base: 'TRANSACTION COUNT', new: 'NEW CUSTOMERS TRANSACTION COUNT', returning: 'RETURNING CUSTOMERS TRANSACTION COUNT', label: 'Transactions' },
+                { base: 'KNOWN SALES', new: 'NEW CUSTOMERS KNOWN SALES', returning: 'RETURNING CUSTOMERS KNOWN SALES', label: 'Known Sales' },
+                { base: 'AOV', new: 'NEW CUSTOMERS AOV', returning: 'RETURNING CUSTOMERS AOV', label: 'Avg Order Value' },
+                { base: 'ACV', new: 'NEW CUSTOMERS ACV', returning: 'RETURNING CUSTOMERS ACV', label: 'Avg Customer Value' },
+                { base: 'AVERAGE FREQUENCY', new: 'NEW CUSTOMERS AVERAGE FREQUENCY', returning: 'RETURNING CUSTOMERS AVERAGE FREQUENCY', label: 'Frequency' },
+                { base: 'UPT', new: 'NEW CUSTOMERS UPT', returning: 'RETURNING CUSTOMERS UPT', label: 'Units Per Transaction' }
+            ];
+
+            const marketAgg = getAggregateValue('market');
+            const config = getKPIConfig();
+
+            // Get data for each segment
+            function getSegmentData(kpiKey) {
+                const kpiConfig = config[kpiKey];
+                if (!kpiConfig) return null;
+                const data = getLatestData(marketAgg, kpiKey);
+                if (!data) return null;
+                const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
+                const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, kpiConfig.format) : null;
+                return { data, change, targetGap, format: kpiConfig.format };
+            }
+
+            function renderSegmentCard(title, type, getKpiKey) {
+                const metrics = kpiGroups.map(g => {
+                    const kpiKey = getKpiKey(g);
+                    const segData = getSegmentData(kpiKey);
+                    if (!segData) return null;
+                    return { label: g.label, ...segData };
+                }).filter(Boolean);
+
+                if (metrics.length === 0) return '';
+
+                return \`
+                    <div class="segment-card \${type}">
+                        <div class="segment-card-title">\${title}</div>
+                        \${metrics.map(m => \`
+                            <div class="segment-metric">
+                                <span class="segment-metric-name">\${m.label}</span>
+                                <span>
+                                    <span class="segment-metric-value">\${formatValue(m.data.YTD, m.format)}</span>
+                                    <span class="segment-metric-change \${getChangeClass(m.change, m.format)}">\${formatChange(m.change, m.format)}</span>
+                                </span>
+                            </div>
+                        \`).join('')}
+                    </div>
+                \`;
+            }
+
+            return \`
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Customer Segment Analysis</div>
+                        <div class="section-subtitle">Comparing Total, New, and Returning Customer Performance</div>
+                    </div>
+                </div>
+
+                \${renderMCFilters()}
+
+                <div class="segment-comparison-grid">
+                    \${renderSegmentCard('Total Customers', 'total', g => g.base)}
+                    \${renderSegmentCard('New Customers', 'new', g => g.new)}
+                    \${renderSegmentCard('Returning Customers', 'returning', g => g.returning)}
+                </div>
+
+                \${renderTargetScorecard()}
+
+                \${renderBUPortfolio()}
+
+                \${renderChannelMix()}
+            \`;
+        }
+
+        // Target Scorecard with traffic lights
+        function renderTargetScorecard() {
+            const marketAgg = getAggregateValue('market');
+            const config = getKPIConfig();
+            const kpis = getKPIs();
+
+            // Get KPIs that have targets
+            const kpisWithTargets = kpis.filter(k => {
+                const data = getLatestData(marketAgg, k);
+                return data && data.Target;
+            });
+
+            if (kpisWithTargets.length === 0) {
+                return '';
+            }
+
+            function getIndicator(gap, format) {
+                const threshold = format === 'percent' ? 0.5 : 2;
+                if (gap >= 0) return { class: 'green', icon: '✓' };
+                if (gap >= -threshold) return { class: 'amber', icon: '~' };
+                return { class: 'red', icon: '✗' };
+            }
+
+            const items = kpisWithTargets.map(k => {
+                const kpiConfig = config[k];
+                const data = getLatestData(marketAgg, k);
+                const gap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
+                const indicator = getIndicator(gap, kpiConfig.format);
+                return {
+                    name: kpiConfig.name,
+                    value: formatValue(data.YTD, kpiConfig.format),
+                    target: formatValue(data.Target, kpiConfig.format),
+                    gap,
+                    gapFormatted: formatChange(gap, kpiConfig.format),
+                    gapClass: getChangeClass(gap, kpiConfig.format),
+                    indicator,
+                    format: kpiConfig.format
+                };
+            });
+
+            // Sort by gap (worst first)
+            items.sort((a, b) => a.gap - b.gap);
+
+            return \`
+                <div class="chart-container" style="margin-top: 24px;">
+                    <div class="chart-header">
+                        <div class="chart-title">Target Achievement Scorecard</div>
+                    </div>
+                    <div class="scorecard-grid">
+                        \${items.map(item => \`
+                            <div class="scorecard-item">
+                                <div class="scorecard-indicator \${item.indicator.class}">\${item.indicator.icon}</div>
+                                <div class="scorecard-details">
+                                    <div class="scorecard-kpi">\${item.name}</div>
+                                    <div class="scorecard-value">\${item.value}</div>
+                                    <div class="scorecard-gap \${item.gapClass}">vs Target: \${item.gapFormatted}</div>
+                                </div>
+                            </div>
+                        \`).join('')}
+                    </div>
+                </div>
+            \`;
+        }
+
+        // BU Portfolio Contribution view
+        function renderBUPortfolio() {
+            const bus = getBUs();
+            const buAgg = getAggregateValue('bu');
+            const nonAggBUs = bus.filter(b => !isAggregateValue(b, 'bu'));
+
+            if (nonAggBUs.length === 0) return '';
+
+            const config = getKPIConfig();
+            const kpiKey = 'TOTAL OWN BRAND SALES';
+            const kpiConfig = config[kpiKey];
+            if (!kpiConfig) return '';
+
+            const marketAgg = getAggregateValue('market');
+            const totalData = getLatestData(marketAgg, kpiKey, buAgg);
+            const totalValue = totalData?.YTD || 1;
+
+            const buData = nonAggBUs.map(bu => {
+                const data = getLatestData(marketAgg, kpiKey, bu);
+                if (!data) return null;
+                const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
+                const share = (data.YTD / totalValue) * 100;
+                return { bu, value: data.YTD, change, share };
+            }).filter(Boolean).sort((a, b) => b.value - a.value);
+
+            if (buData.length === 0) return '';
+
+            const maxValue = buData[0]?.value || 1;
+
+            return \`
+                <div class="chart-container" style="margin-top: 24px;">
+                    <div class="chart-header">
+                        <div class="chart-title">BU Portfolio Contribution</div>
+                    </div>
+                    <div class="portfolio-list">
+                        \${buData.map(item => \`
+                            <div class="portfolio-item">
+                                <div class="portfolio-name">\${item.bu}</div>
+                                <div class="portfolio-bar-container">
+                                    <div class="portfolio-bar-bg">
+                                        <div class="portfolio-bar" style="width: \${(item.value / maxValue) * 100}%"></div>
+                                    </div>
+                                </div>
+                                <div class="portfolio-value">\${formatValue(item.value, kpiConfig.format)} (\${item.share.toFixed(0)}%)</div>
+                                <div class="portfolio-change \${getChangeClass(item.change, kpiConfig.format)}">\${formatChange(item.change, kpiConfig.format)}</div>
+                            </div>
+                        \`).join('')}
+                    </div>
+                </div>
+            \`;
+        }
+
+        // Channel Mix Analysis
+        function renderChannelMix() {
+            const channels = getChannels();
+            const channelAgg = getAggregateValue('channel');
+            const nonAggChannels = channels.filter(c => !isAggregateValue(c, 'channel'));
+
+            if (nonAggChannels.length === 0) return '';
+
+            const config = getKPIConfig();
+            const kpiKey = 'TOTAL OWN BRAND SALES';
+            const kpiConfig = config[kpiKey];
+            if (!kpiConfig) return '';
+
+            const marketAgg = getAggregateValue('market');
+            const buAgg = getAggregateValue('bu');
+
+            // Get current year and last year data
+            const totalData = getLatestData(marketAgg, kpiKey, buAgg, channelAgg);
+            const totalYTD = totalData?.YTD || 1;
+            const totalLYTD = totalData?.LYTD || 1;
+
+            const channelData = nonAggChannels.map(ch => {
+                const data = getLatestData(marketAgg, kpiKey, buAgg, ch);
+                if (!data) return null;
+                const shareYTD = (data.YTD / totalYTD) * 100;
+                const shareLYTD = data.LYTD ? (data.LYTD / totalLYTD) * 100 : 0;
+                const shift = shareYTD - shareLYTD;
+                return { channel: ch, value: data.YTD, shareYTD, shareLYTD, shift };
+            }).filter(Boolean).sort((a, b) => b.shareYTD - a.shareYTD);
+
+            if (channelData.length === 0) return '';
+
+            return \`
+                <div class="chart-container" style="margin-top: 24px;">
+                    <div class="chart-header">
+                        <div class="chart-title">Channel Mix Analysis</div>
+                    </div>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Channel</th>
+                                <th class="center">2025 Share</th>
+                                <th class="center">2024 Share</th>
+                                <th class="center">Shift</th>
+                                <th class="center">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            \${channelData.map(item => \`
+                                <tr>
+                                    <td class="market-cell">\${item.channel}</td>
+                                    <td class="value-cell">\${item.shareYTD.toFixed(1)}%</td>
+                                    <td class="compare-cell">\${item.shareLYTD.toFixed(1)}%</td>
+                                    <td class="compare-cell">
+                                        <span class="\${item.shift >= 0 ? 'up' : 'down'}">\${item.shift >= 0 ? '+' : ''}\${item.shift.toFixed(1)} PP</span>
+                                    </td>
+                                    <td class="value-cell">\${formatValue(item.value, kpiConfig.format)}</td>
+                                </tr>
+                            \`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            \`;
+        }
+
         // Render dimension analysis (similar to market analysis)
         function renderDimensionAnalysis(dimension, kpiKey) {
             const config = getKPIConfig();
@@ -2242,16 +2836,19 @@
                           getChannels();
 
             const hasShare = kpiConfig.hasShare === true;
+            const marketAgg = getAggregateValue('market');
+            const buAgg = getAggregateValue('bu');
+            const channelAgg = getAggregateValue('channel');
 
             // Get data for all items
             const allData = items.map(item => {
                 const data = getLatestData(
-                    dimension === 'market' ? item : 'All',
+                    dimension === 'market' ? item : marketAgg,
                     kpiKey,
-                    dimension === 'bu' ? item : state.selectedBU,
-                    dimension === 'channel' ? item : state.selectedChannel
+                    dimension === 'bu' ? item : (isAggregateValue(state.selectedBU, 'bu') ? buAgg : state.selectedBU),
+                    dimension === 'channel' ? item : (isAggregateValue(state.selectedChannel, 'channel') ? channelAgg : state.selectedChannel)
                 );
-                return { name: item, data, isTotal: item === 'All' };
+                return { name: item, data, isTotal: isAggregateValue(item, dimension) };
             }).filter(d => d.data);
 
             const totalData = allData.find(d => d.isTotal);
@@ -2460,12 +3057,12 @@
             const kpiConfig = getKPIConfig();
             const kpis = ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
 
-            // Separate individual markets from All Markets, sort by Total Sales value
-            const individualMarkets = markets.filter(m => m !== 'All Markets')
+            // Separate individual markets from aggregate, sort by Total Sales value
+            const individualMarkets = markets.filter(m => !isAggregateValue(m, 'market'))
                 .map(m => ({ market: m, data: getLatestData(m, 'SLS_TTL') }))
                 .sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0))
                 .map(d => d.market);
-            const totalMarket = markets.find(m => m === 'All Markets');
+            const totalMarket = markets.find(m => isAggregateValue(m, 'market'));
 
             // Helper to render a market row
             function renderMarketRow(m, isTotal = false) {
@@ -2551,14 +3148,14 @@
             const markets = getMarkets();
             const hasShare = config.hasShare === true;
 
-            // For MC mode, total market is 'All', for MUSE it's 'All Markets'
-            const totalMarketName = state.mode === 'MC' ? 'All' : 'All Markets';
+            // Use helper to get market aggregate
+            const totalMarketName = getAggregateValue('market');
             const totalData = getLatestData(totalMarketName, kpiKey);
             const totalValue = totalData?.YTD || 0;
 
             const allMarketData = markets.map(m => {
                 const data = getLatestData(m, kpiKey);
-                return { market: m, data, isTotal: m === 'All' || m === 'All Markets' };
+                return { market: m, data, isTotal: isAggregateValue(m, 'market') };
             }).filter(d => d.data);
 
             const hasTargets = allMarketData.some(d => d.data?.Target);
@@ -2682,7 +3279,7 @@
             const defaultKPI = state.mode === 'MC'
                 ? (kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0])
                 : (kpis.includes('SLS_TTL') ? 'SLS_TTL' : kpis[0]);
-            const defaultMarket = state.mode === 'MC' ? 'All' : 'All Markets';
+            const defaultMarket = getAggregateValue('market');
 
             const selectedKPI = state.selectedKPI || defaultKPI;
             const selectedMarket = state.selectedMarket || defaultMarket;
@@ -2718,9 +3315,7 @@
                     ${channelFilter}
                     <div class="filter-group">
                         <label>KPI Metric</label>
-                        <select class="filter-select" id="kpiSelect">
-                            ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${kpiConfig[k]?.name || k}</option>`).join('')}
-                        </select>
+                        ${renderKPIDropdown(kpis, selectedKPI, 'kpiSelect')}
                     </div>
                 </div>
                 <div id="kpiDetailContent">
@@ -2842,10 +3437,10 @@
             const accentValue = ytdVsTarget !== null ? ytdVsTarget : ytdVsLytd;
             const accentClass = getChangeClass(accentValue, config.format);
 
-            // Get market breakdown data (only show for All Markets)
-            const isAllMarkets = market === 'All Markets';
+            // Get market breakdown data (only show for aggregate market)
+            const isAllMarkets = isAggregateValue(market, 'market');
             const marketBreakdown = isAllMarkets ? getMarkets()
-                .filter(m => m !== 'All Markets')
+                .filter(m => !isAggregateValue(m, 'market'))
                 .map(m => {
                     const data = getLatestData(m, kpiKey);
                     return { market: m, value: data?.YTD || 0 };
@@ -2913,13 +3508,13 @@
                             }).join('')}
                         </div>
                         ` : `
-                        <div class="market-breakdown-title">vs ${state.mode === 'MC' ? 'All' : 'All Markets'}</div>
+                        <div class="market-breakdown-title">vs ${getAggregateValue('market')}</div>
                         <div class="market-breakdown-list">
                             ${(state.mode === 'MC' ? ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'AVERAGE FREQUENCY'] : ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM']).map((k, i) => {
                                 const kConfig = getKPIConfig()[k];
                                 if (!kConfig) return '';
                                 const marketData = getLatestData(market, k);
-                                const allData = getLatestData(state.mode === 'MC' ? 'All' : 'All Markets', k);
+                                const allData = getLatestData(getAggregateValue('market'), k);
                                 if (!marketData || !allData) return '';
                                 const diff = kConfig.format === 'percent'
                                     ? (marketData.YTD - allData.YTD)
@@ -3082,7 +3677,7 @@
             const kpiSelect = document.getElementById('kpiSelect');
 
             const defaultKPI = state.mode === 'MC' ? 'TOTAL OWN BRAND SALES' : 'SLS_TTL';
-            const defaultMarket = state.mode === 'MC' ? 'All' : 'All Markets';
+            const defaultMarket = getAggregateValue('market');
 
             if (kpiBUSelect) {
                 kpiBUSelect.onchange = () => {

@@ -1734,7 +1734,9 @@
                 return markets[0];
             }
             if (dimension === 'channel') {
-                return 'All';
+                const channels = [...new Set(data.map(d => d.Channel))];
+                if (channels.includes('All')) return 'All';
+                return channels[0] || 'All';
             }
             return 'All';
         }
@@ -2063,7 +2065,7 @@
         // Generate insights without suggestions
         function generateInsights() {
             const insights = [];
-            const market = 'All Markets';
+            const market = getAggregateValue('market');
 
             const sales = getLatestData(market, 'SLS_TTL');
             if (sales) {
@@ -2240,7 +2242,7 @@
         }
 
         function renderMUSESummaryTab() {
-            const market = 'All Markets';
+            const market = getAggregateValue('market');
             const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF'];
             const loyaltyKPIs = ['SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
             const insights = generateInsights();
@@ -2249,7 +2251,7 @@
                 <div class="section-header">
                     <div>
                         <div class="section-title">Key Performance Indicators</div>
-                        <div class="section-subtitle">Full Year 2025 vs 2024 | All Markets</div>
+                        <div class="section-subtitle">Full Year 2025 vs 2024 | ${market}</div>
                     </div>
                 </div>
                 <div class="exec-summary">
@@ -2290,8 +2292,8 @@
             const marketAgg = getAggregateValue('market');
             const channelAgg = getAggregateValue('channel');
 
-            const marketLabel = isAggregateValue(state.selectedMarket, 'market') ? 'All Markets' : state.selectedMarket;
-            const channelLabel = isAggregateValue(state.selectedChannel, 'channel') ? 'All Channels' : state.selectedChannel;
+            const marketLabel = isAggregateValue(state.selectedMarket, 'market') ? marketAgg : state.selectedMarket;
+            const channelLabel = isAggregateValue(state.selectedChannel, 'channel') ? channelAgg : state.selectedChannel;
 
             return `
                 <div class="section-header">
@@ -2308,11 +2310,9 @@
                 </div>
 
                 <div class="comparison-grid" style="margin-top: 32px;">
-                    ${renderDimensionComparisonTable('bu', 'BU Comparison', comparisonKPIs)}
+                    ${renderDimensionComparisonTable('market', 'Market Comparison', comparisonKPIs)}
                     ${renderDimensionComparisonTable('channel', 'Channel Comparison', comparisonKPIs)}
                 </div>
-
-                ${renderDimensionComparisonTable('market', 'Market Comparison', comparisonKPIs)}
             `;
         }
 
@@ -2414,7 +2414,7 @@
                     <table class="modern-table">
                         <thead>
                             <tr>
-                                <th>${dimension === 'bu' ? 'Business Unit' : dimension === 'market' ? 'Market' : 'Channel'}</th>
+                                <th>${dimension === 'market' ? 'Market' : 'Channel'}</th>
                                 ${availableKPIs.map(k => `<th class="center">${config[k]?.name || k}</th>`).join('')}
                             </tr>
                         </thead>
@@ -2485,23 +2485,23 @@
 
                 if (metrics.length === 0) return '';
 
-                return \`
-                    <div class="segment-card \${type}">
-                        <div class="segment-card-title">\${title}</div>
-                        \${metrics.map(m => \`
+                return `
+                    <div class="segment-card ${type}">
+                        <div class="segment-card-title">${title}</div>
+                        ${metrics.map(m => `
                             <div class="segment-metric">
-                                <span class="segment-metric-name">\${m.label}</span>
+                                <span class="segment-metric-name">${m.label}</span>
                                 <span>
-                                    <span class="segment-metric-value">\${formatValue(m.data.YTD, m.format)}</span>
-                                    <span class="segment-metric-change \${getChangeClass(m.change, m.format)}">\${formatChange(m.change, m.format)}</span>
+                                    <span class="segment-metric-value">${formatValue(m.data.YTD, m.format)}</span>
+                                    <span class="segment-metric-change ${getChangeClass(m.change, m.format)}">${formatChange(m.change, m.format)}</span>
                                 </span>
                             </div>
-                        \`).join('')}
+                        `).join('')}
                     </div>
-                \`;
+                `;
             }
 
-            return \`
+            return `
                 <div class="section-header">
                     <div>
                         <div class="section-title">Customer Segment Analysis</div>
@@ -2509,18 +2509,18 @@
                     </div>
                 </div>
 
-                \${renderMCFilters()}
+                ${renderMCFilters()}
 
                 <div class="segment-comparison-grid">
-                    \${renderSegmentCard('Total Customers', 'total', g => g.base)}
-                    \${renderSegmentCard('New Customers', 'new', g => g.new)}
-                    \${renderSegmentCard('Returning Customers', 'returning', g => g.returning)}
+                    ${renderSegmentCard('Total Customers', 'total', g => g.base)}
+                    ${renderSegmentCard('New Customers', 'new', g => g.new)}
+                    ${renderSegmentCard('Returning Customers', 'returning', g => g.returning)}
                 </div>
 
-                \${renderTargetScorecard()}
+                ${renderTargetScorecard()}
 
-                \${renderChannelMix()}
-            \`;
+                ${renderChannelMix()}
+            `;
         }
 
         // Target Scorecard with traffic lights
@@ -2566,25 +2566,25 @@
             // Sort by gap (worst first)
             items.sort((a, b) => a.gap - b.gap);
 
-            return \`
+            return `
                 <div class="chart-container" style="margin-top: 24px;">
                     <div class="chart-header">
                         <div class="chart-title">Target Achievement Scorecard</div>
                     </div>
                     <div class="scorecard-grid">
-                        \${items.map(item => \`
+                        ${items.map(item => `
                             <div class="scorecard-item">
-                                <div class="scorecard-indicator \${item.indicator.class}">\${item.indicator.icon}</div>
+                                <div class="scorecard-indicator ${item.indicator.class}">${item.indicator.icon}</div>
                                 <div class="scorecard-details">
-                                    <div class="scorecard-kpi">\${item.name}</div>
-                                    <div class="scorecard-value">\${item.value}</div>
-                                    <div class="scorecard-gap \${item.gapClass}">vs Target: \${item.gapFormatted}</div>
+                                    <div class="scorecard-kpi">${item.name}</div>
+                                    <div class="scorecard-value">${item.value}</div>
+                                    <div class="scorecard-gap ${item.gapClass}">vs Target: ${item.gapFormatted}</div>
                                 </div>
                             </div>
-                        \`).join('')}
+                        `).join('')}
                     </div>
                 </div>
-            \`;
+            `;
         }
 
         // Channel Mix Analysis
@@ -2618,7 +2618,7 @@
 
             if (channelData.length === 0) return '';
 
-            return \`
+            return `
                 <div class="chart-container" style="margin-top: 24px;">
                     <div class="chart-header">
                         <div class="chart-title">Channel Mix Analysis</div>
@@ -2634,21 +2634,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            \${channelData.map(item => \`
+                            ${channelData.map(item => `
                                 <tr>
-                                    <td class="market-cell">\${item.channel}</td>
-                                    <td class="value-cell">\${item.shareYTD.toFixed(1)}%</td>
-                                    <td class="compare-cell">\${item.shareLYTD.toFixed(1)}%</td>
+                                    <td class="market-cell">${item.channel}</td>
+                                    <td class="value-cell">${item.shareYTD.toFixed(1)}%</td>
+                                    <td class="compare-cell">${item.shareLYTD.toFixed(1)}%</td>
                                     <td class="compare-cell">
-                                        <span class="\${item.shift >= 0 ? 'up' : 'down'}">\${item.shift >= 0 ? '+' : ''}\${item.shift.toFixed(1)} PP</span>
+                                        <span class="${item.shift >= 0 ? 'up' : 'down'}">${item.shift >= 0 ? '+' : ''}${item.shift.toFixed(1)} PP</span>
                                     </td>
-                                    <td class="value-cell">\${formatValue(item.value, kpiConfig.format)}</td>
+                                    <td class="value-cell">${formatValue(item.value, kpiConfig.format)}</td>
                                 </tr>
-                            \`).join('')}
+                            `).join('')}
                         </tbody>
                     </table>
                 </div>
-            \`;
+            `;
         }
 
         // Render dimension analysis (similar to market analysis)
@@ -2760,7 +2760,7 @@
                             }).join('')}
                             ${totalData ? `
                                 <tr class="total-row">
-                                    <td class="market-cell">All</td>
+                                    <td class="market-cell">${totalData.name}</td>
                                     <td class="value-cell">${formatValue(totalData.data.YTD, kpiConfig.format)}</td>
                                     <td class="compare-cell">
                                         <div class="compare-group">
@@ -3065,7 +3065,7 @@
                             }).join('')}
                             ${totalRow ? `
                                 <tr class="total-row">
-                                    <td class="market-cell">All Markets</td>
+                                    <td class="market-cell">${totalRow.market}</td>
                                     <td class="value-cell">${formatValue(totalRow.data.YTD, config.format)}</td>
                                     <td class="compare-cell">
                                         <div class="compare-group">
@@ -3288,7 +3288,7 @@
                                 <div class="kpi-secondary-item">
                                     <div class="kpi-secondary-info">
                                         <span class="kpi-secondary-label">R12M Momentum</span>
-                                        <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)} vs LR12M: ${formatValue(latestData?.LR12M, config.format)}</span>
+                                        <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)} vs LMR12M: ${formatValue(latestData?.LMR12M, config.format)}</span>
                                     </div>
                                     <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
                                 </div>

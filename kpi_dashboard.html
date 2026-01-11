@@ -706,6 +706,84 @@
             min-width: 280px;
         }
 
+        /* Hero row with market breakdown */
+        .kpi-hero-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-hero-row .kpi-hero-card {
+            flex: 2;
+            margin-bottom: 0;
+        }
+
+        /* Market breakdown tile */
+        .market-breakdown-card {
+            flex: 1;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--light-steel);
+        }
+
+        .market-breakdown-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .market-breakdown-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .market-breakdown-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .market-breakdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .market-breakdown-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .market-breakdown-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .market-breakdown-bar-bg {
+            height: 8px;
+            background: var(--light-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .market-breakdown-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .market-breakdown-bar.bar-1 { background: var(--navy); }
+        .market-breakdown-bar.bar-2 { background: var(--steel-blue); }
+        .market-breakdown-bar.bar-3 { background: var(--light-steel); }
+        .market-breakdown-bar.bar-4 { background: #A8C5DA; }
+
         .kpi-secondary-item {
             display: flex;
             align-items: center;
@@ -1991,39 +2069,73 @@
             // Determine overall status based on target or YoY
             const overallPositive = ytdVsTarget !== null ? ytdVsTarget >= 0 : (ytdVsLytd !== null ? ytdVsLytd >= 0 : true);
 
+            // Get market breakdown data
+            const marketBreakdown = getMarkets()
+                .filter(m => m !== 'All Markets')
+                .map(m => {
+                    const data = getLatestData(m, kpiKey);
+                    return { market: m, value: data?.YTD || 0 };
+                })
+                .sort((a, b) => b.value - a.value);
+
+            const totalValue = latestData?.YTD || 1;
+            const maxMarketValue = marketBreakdown[0]?.value || 1;
+
             return `
-                <div class="kpi-hero-card ${overallPositive ? 'positive' : 'negative'}">
-                    <div class="kpi-hero-label">${config.name} — 2025 YTD</div>
-                    <div class="kpi-hero-content">
-                        <div class="kpi-hero-main">
-                            <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
-                            ${ytdVsTarget !== null ? `
-                            <div class="kpi-hero-target">
-                                <div class="kpi-hero-target-info">
-                                    <span class="kpi-hero-target-label">vs Target</span>
-                                    <span class="kpi-hero-target-detail">Target: ${formatValue(latestData?.Target, config.format)}</span>
+                <div class="kpi-hero-row">
+                    <div class="kpi-hero-card ${overallPositive ? 'positive' : 'negative'}">
+                        <div class="kpi-hero-label">${config.name} — 2025 YTD</div>
+                        <div class="kpi-hero-content">
+                            <div class="kpi-hero-main">
+                                <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
+                                ${ytdVsTarget !== null ? `
+                                <div class="kpi-hero-target">
+                                    <div class="kpi-hero-target-info">
+                                        <span class="kpi-hero-target-label">vs Target</span>
+                                        <span class="kpi-hero-target-detail">Target: ${formatValue(latestData?.Target, config.format)}</span>
+                                    </div>
+                                    <span class="kpi-hero-target-badge ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
                                 </div>
-                                <span class="kpi-hero-target-badge ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
+                                ` : ''}
                             </div>
-                            ` : ''}
+                            <div class="kpi-hero-secondary">
+                                <div class="kpi-secondary-item">
+                                    <div class="kpi-secondary-info">
+                                        <span class="kpi-secondary-label">vs 2024</span>
+                                        <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
+                                    </div>
+                                    <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
+                                </div>
+                                ${r12mVsLr12m !== null ? `
+                                <div class="kpi-secondary-item">
+                                    <div class="kpi-secondary-info">
+                                        <span class="kpi-secondary-label">R12M Momentum</span>
+                                        <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)}</span>
+                                    </div>
+                                    <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
+                                </div>
+                                ` : ''}
+                            </div>
                         </div>
-                        <div class="kpi-hero-secondary">
-                            <div class="kpi-secondary-item">
-                                <div class="kpi-secondary-info">
-                                    <span class="kpi-secondary-label">vs 2024</span>
-                                    <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
-                                </div>
-                                <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
-                            </div>
-                            ${r12mVsLr12m !== null ? `
-                            <div class="kpi-secondary-item">
-                                <div class="kpi-secondary-info">
-                                    <span class="kpi-secondary-label">R12M Momentum</span>
-                                    <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)}</span>
-                                </div>
-                                <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
-                            </div>
-                            ` : ''}
+                    </div>
+                    <div class="market-breakdown-card">
+                        <div class="market-breakdown-title">By Market</div>
+                        <div class="market-breakdown-list">
+                            ${marketBreakdown.map((m, i) => {
+                                const share = ((m.value / totalValue) * 100).toFixed(0);
+                                const barWidth = (m.value / maxMarketValue) * 100;
+                                return `
+                                    <div class="market-breakdown-item">
+                                        <div class="market-breakdown-header">
+                                            <span class="market-breakdown-name">${m.market}</span>
+                                            <span class="market-breakdown-value">${formatValue(m.value, config.format)} (${share}%)</span>
+                                        </div>
+                                        <div class="market-breakdown-bar-bg">
+                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: ${barWidth}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
                     </div>
                 </div>

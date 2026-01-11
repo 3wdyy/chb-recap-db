@@ -718,6 +718,10 @@
             margin-bottom: 0;
         }
 
+        .kpi-hero-row.single-market .kpi-hero-card {
+            flex: 1;
+        }
+
         /* Market breakdown tile */
         .market-breakdown-card {
             flex: 1;
@@ -2069,22 +2073,23 @@
             // Determine overall status based on target or YoY
             const overallPositive = ytdVsTarget !== null ? ytdVsTarget >= 0 : (ytdVsLytd !== null ? ytdVsLytd >= 0 : true);
 
-            // Get market breakdown data
-            const marketBreakdown = getMarkets()
+            // Get market breakdown data (only show for All Markets)
+            const isAllMarkets = market === 'All Markets';
+            const marketBreakdown = isAllMarkets ? getMarkets()
                 .filter(m => m !== 'All Markets')
                 .map(m => {
                     const data = getLatestData(m, kpiKey);
                     return { market: m, value: data?.YTD || 0 };
                 })
-                .sort((a, b) => b.value - a.value);
+                .sort((a, b) => b.value - a.value) : [];
 
             const totalValue = latestData?.YTD || 1;
             const maxMarketValue = marketBreakdown[0]?.value || 1;
 
             return `
-                <div class="kpi-hero-row">
+                <div class="kpi-hero-row ${!isAllMarkets ? 'single-market' : ''}">
                     <div class="kpi-hero-card ${overallPositive ? 'positive' : 'negative'}">
-                        <div class="kpi-hero-label">${config.name} — 2025 YTD</div>
+                        <div class="kpi-hero-label">${config.name} — 2025 YTD${!isAllMarkets ? ` (${market})` : ''}</div>
                         <div class="kpi-hero-content">
                             <div class="kpi-hero-main">
                                 <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
@@ -2118,6 +2123,7 @@
                             </div>
                         </div>
                     </div>
+                    ${isAllMarkets ? `
                     <div class="market-breakdown-card">
                         <div class="market-breakdown-title">By Market</div>
                         <div class="market-breakdown-list">
@@ -2138,6 +2144,7 @@
                             }).join('')}
                         </div>
                     </div>
+                    ` : ''}
                 </div>
 
                 <div class="chart-with-badges">

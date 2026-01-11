@@ -720,6 +720,27 @@
             color: var(--text-muted);
         }
 
+        /* Chart with badges side-by-side layout */
+        .chart-with-badges {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .chart-with-badges .chart-container {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .trend-badges-right {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 10px;
+            width: 240px;
+            flex-shrink: 0;
+        }
+
         .trend-badges {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -729,10 +750,32 @@
 
         .trend-badge {
             background: var(--light-bg);
-            padding: 16px 12px;
-            border-radius: 10px;
+            padding: 12px 10px;
+            border-radius: 8px;
             text-align: center;
             border: 1px solid rgba(184, 212, 232, 0.3);
+        }
+
+        .trend-badges-right .trend-badge {
+            padding: 10px 8px;
+        }
+
+        .trend-badges-right .trend-badge-month {
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .trend-badges-right .trend-badge-actual {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .trend-badges-right .trend-badge-value {
+            font-size: 12px;
+        }
+
+        .trend-badges-right .trend-badge-label {
+            font-size: 10px;
         }
 
         .trend-badge-month {
@@ -1921,26 +1964,28 @@
                     </div>
                 </div>
 
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <div class="chart-title">Monthly Trend — ${config.name}</div>
-                        <div class="chart-legend">
-                            <div class="legend-item"><div class="legend-dot solid"></div> 2025</div>
-                            <div class="legend-item"><div class="legend-dot dashed"></div> 2024</div>
-                            ${pathTarget ? '<div class="legend-item"><div class="legend-dot target"></div> Target</div>' : ''}
+                <div class="chart-with-badges">
+                    <div class="chart-container chart-left">
+                        <div class="chart-header">
+                            <div class="chart-title">Monthly Trend — ${config.name}</div>
+                            <div class="chart-legend">
+                                <div class="legend-item"><div class="legend-dot solid"></div> 2025</div>
+                                <div class="legend-item"><div class="legend-dot dashed"></div> 2024</div>
+                                ${pathTarget ? '<div class="legend-item"><div class="legend-dot target"></div> Target</div>' : ''}
+                            </div>
                         </div>
+                        <svg class="chart-svg" viewBox="0 0 ${width} ${height}">
+                            ${yAxisHTML}
+                            ${xAxisHTML}
+                            ${fillAreas}
+                            ${pathTarget ? `<path d="${pathTarget}" fill="none" stroke="var(--positive)" stroke-width="2" stroke-dasharray="4,4"/>` : ''}
+                            <path d="${pathLYTD}" fill="none" stroke="var(--steel-blue)" stroke-width="2" stroke-dasharray="5,5"/>
+                            <path d="${pathYTD}" fill="none" stroke="var(--navy)" stroke-width="3"/>
+                            ${dotsLYTD}
+                            ${dotsYTD}
+                        </svg>
                     </div>
-                    <svg class="chart-svg" viewBox="0 0 ${width} ${height}">
-                        ${yAxisHTML}
-                        ${xAxisHTML}
-                        ${fillAreas}
-                        ${pathTarget ? `<path d="${pathTarget}" fill="none" stroke="var(--positive)" stroke-width="2" stroke-dasharray="4,4"/>` : ''}
-                        <path d="${pathLYTD}" fill="none" stroke="var(--steel-blue)" stroke-width="2" stroke-dasharray="5,5"/>
-                        <path d="${pathYTD}" fill="none" stroke="var(--navy)" stroke-width="3"/>
-                        ${dotsLYTD}
-                        ${dotsYTD}
-                    </svg>
-                    <div class="trend-badges">${badgesHTML}</div>
+                    <div class="trend-badges-right">${badgesHTML}</div>
                 </div>
             `;
         }

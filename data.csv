@@ -1,109 +1,211 @@
-Market,KPI,Month,value_2025,value_2024
-TOTAL,Total Sales,JAN,150000,140000
-TOTAL,Total Sales,FEB,320000,295000
-TOTAL,Total Sales,MAR,510000,460000
-TOTAL,Total Sales,APR,720000,640000
-TOTAL,Total Sales,MAY,950000,830000
-TOTAL,Total Sales,JUN,1200000,1050000
-TOTAL,Total Sales,JUL,1480000,1280000
-TOTAL,Total Sales,AUG,1780000,1530000
-TOTAL,Total Sales,SEP,2100000,1800000
-TOTAL,Total Sales,OCT,2450000,2100000
-TOTAL,Total Sales,NOV,2820000,2420000
-TOTAL,Total Sales,DEC,3250000,2800000
-TOTAL,Conversion Rate %,JAN,0.032,0.028
-TOTAL,Conversion Rate %,FEB,0.034,0.029
-TOTAL,Conversion Rate %,MAR,0.036,0.031
-TOTAL,Conversion Rate %,APR,0.038,0.032
-TOTAL,Conversion Rate %,MAY,0.041,0.034
-TOTAL,Conversion Rate %,JUN,0.043,0.036
-TOTAL,Conversion Rate %,JUL,0.045,0.038
-TOTAL,Conversion Rate %,AUG,0.047,0.039
-TOTAL,Conversion Rate %,SEP,0.049,0.041
-TOTAL,Conversion Rate %,OCT,0.051,0.043
-TOTAL,Conversion Rate %,NOV,0.053,0.044
-TOTAL,Conversion Rate %,DEC,0.055,0.046
-TOTAL,Average Order Value,JAN,125,118
-TOTAL,Average Order Value,FEB,128,120
-TOTAL,Average Order Value,MAR,132,122
-TOTAL,Average Order Value,APR,135,125
-TOTAL,Average Order Value,MAY,138,127
-TOTAL,Average Order Value,JUN,142,130
-TOTAL,Average Order Value,JUL,145,132
-TOTAL,Average Order Value,AUG,148,135
-TOTAL,Average Order Value,SEP,152,138
-TOTAL,Average Order Value,OCT,156,140
-TOTAL,Average Order Value,NOV,160,143
-TOTAL,Average Order Value,DEC,165,145
-UAE,Total Sales,JAN,85000,78000
-UAE,Total Sales,FEB,180000,162000
-UAE,Total Sales,MAR,285000,252000
-UAE,Total Sales,APR,400000,350000
-UAE,Total Sales,MAY,530000,455000
-UAE,Total Sales,JUN,670000,575000
-UAE,Total Sales,JUL,820000,700000
-UAE,Total Sales,AUG,980000,840000
-UAE,Total Sales,SEP,1160000,990000
-UAE,Total Sales,OCT,1360000,1155000
-UAE,Total Sales,NOV,1570000,1330000
-UAE,Total Sales,DEC,1800000,1520000
-UAE,Conversion Rate %,JAN,0.035,0.030
-UAE,Conversion Rate %,FEB,0.037,0.031
-UAE,Conversion Rate %,MAR,0.039,0.033
-UAE,Conversion Rate %,APR,0.042,0.035
-UAE,Conversion Rate %,MAY,0.044,0.037
-UAE,Conversion Rate %,JUN,0.046,0.039
-UAE,Conversion Rate %,JUL,0.048,0.041
-UAE,Conversion Rate %,AUG,0.051,0.043
-UAE,Conversion Rate %,SEP,0.053,0.045
-UAE,Conversion Rate %,OCT,0.055,0.047
-UAE,Conversion Rate %,NOV,0.057,0.048
-UAE,Conversion Rate %,DEC,0.059,0.050
-UAE,Average Order Value,JAN,135,125
-UAE,Average Order Value,FEB,138,128
-UAE,Average Order Value,MAR,142,130
-UAE,Average Order Value,APR,146,133
-UAE,Average Order Value,MAY,150,136
-UAE,Average Order Value,JUN,154,139
-UAE,Average Order Value,JUL,158,142
-UAE,Average Order Value,AUG,162,145
-UAE,Average Order Value,SEP,166,148
-UAE,Average Order Value,OCT,170,151
-UAE,Average Order Value,NOV,175,154
-UAE,Average Order Value,DEC,180,158
-KSA,Total Sales,JAN,65000,62000
-KSA,Total Sales,FEB,140000,133000
-KSA,Total Sales,MAR,225000,208000
-KSA,Total Sales,APR,320000,290000
-KSA,Total Sales,MAY,420000,375000
-KSA,Total Sales,JUN,530000,475000
-KSA,Total Sales,JUL,660000,580000
-KSA,Total Sales,AUG,800000,690000
-KSA,Total Sales,SEP,940000,810000
-KSA,Total Sales,OCT,1090000,945000
-KSA,Total Sales,NOV,1250000,1090000
-KSA,Total Sales,DEC,1450000,1280000
-KSA,Conversion Rate %,JAN,0.028,0.026
-KSA,Conversion Rate %,FEB,0.030,0.027
-KSA,Conversion Rate %,MAR,0.032,0.029
-KSA,Conversion Rate %,APR,0.034,0.030
-KSA,Conversion Rate %,MAY,0.036,0.032
-KSA,Conversion Rate %,JUN,0.038,0.033
-KSA,Conversion Rate %,JUL,0.040,0.035
-KSA,Conversion Rate %,AUG,0.042,0.037
-KSA,Conversion Rate %,SEP,0.044,0.038
-KSA,Conversion Rate %,OCT,0.046,0.040
-KSA,Conversion Rate %,NOV,0.048,0.041
-KSA,Conversion Rate %,DEC,0.050,0.043
-KSA,Average Order Value,JAN,115,110
-KSA,Average Order Value,FEB,118,112
-KSA,Average Order Value,MAR,121,115
-KSA,Average Order Value,APR,124,117
-KSA,Average Order Value,MAY,127,120
-KSA,Average Order Value,JUN,130,122
-KSA,Average Order Value,JUL,133,125
-KSA,Average Order Value,AUG,136,128
-KSA,Average Order Value,SEP,140,130
-KSA,Average Order Value,OCT,143,133
-KSA,Average Order Value,NOV,147,136
-KSA,Average Order Value,DEC,150,140
+Market,Month,Key,KPI,YTD,LYTD,R12M,LMR12M,Target
+All Markets,01 - Jan,SLS_TTL,Total Sales,125000000,115000000,1450000000,1320000000,
+All Markets,02 - Feb,SLS_TTL,Total Sales,260000000,238000000,1465000000,1338000000,
+All Markets,03 - Mar,SLS_TTL,Total Sales,405000000,368000000,1485000000,1360000000,
+All Markets,04 - Apr,SLS_TTL,Total Sales,555000000,502000000,1510000000,1385000000,
+All Markets,05 - May,SLS_TTL,Total Sales,710000000,640000000,1540000000,1415000000,
+All Markets,06 - Jun,SLS_TTL,Total Sales,875000000,785000000,1575000000,1450000000,
+All Markets,07 - Jul,SLS_TTL,Total Sales,1050000000,938000000,1615000000,1490000000,
+All Markets,08 - Aug,SLS_TTL,Total Sales,1235000000,1098000000,1660000000,1535000000,
+All Markets,09 - Sep,SLS_TTL,Total Sales,1430000000,1268000000,1710000000,1585000000,
+All Markets,10 - Oct,SLS_TTL,Total Sales,1640000000,1450000000,1768000000,1642000000,
+All Markets,11 - Nov,SLS_TTL,Total Sales,1865000000,1645000000,1832000000,1705000000,
+All Markets,12 - Dec,SLS_TTL,Total Sales,2120000000,1865000000,1905000000,1775000000,2000000000
+All Markets,01 - Jan,MBR_TTL,Transacting Members,1850000,1720000,2100000,1950000,
+All Markets,02 - Feb,MBR_TTL,Transacting Members,1880000,1745000,2120000,1970000,
+All Markets,03 - Mar,MBR_TTL,Transacting Members,1920000,1780000,2145000,1995000,
+All Markets,04 - Apr,MBR_TTL,Transacting Members,1965000,1820000,2175000,2025000,
+All Markets,05 - May,MBR_TTL,Transacting Members,2015000,1865000,2210000,2060000,
+All Markets,06 - Jun,MBR_TTL,Transacting Members,2070000,1915000,2250000,2100000,
+All Markets,07 - Jul,MBR_TTL,Transacting Members,2130000,1970000,2295000,2145000,
+All Markets,08 - Aug,MBR_TTL,Transacting Members,2195000,2030000,2345000,2195000,
+All Markets,09 - Sep,MBR_TTL,Transacting Members,2265000,2095000,2400000,2250000,
+All Markets,10 - Oct,MBR_TTL,Transacting Members,2340000,2165000,2460000,2310000,
+All Markets,11 - Nov,MBR_TTL,Transacting Members,2420000,2240000,2525000,2375000,
+All Markets,12 - Dec,MBR_TTL,Transacting Members,2510000,2325000,2600000,2450000,2600000
+All Markets,01 - Jan,AVG_AOV,Average Order Value,142,135,145,138,
+All Markets,02 - Feb,AVG_AOV,Average Order Value,144,136,146,139,
+All Markets,03 - Mar,AVG_AOV,Average Order Value,146,138,148,140,
+All Markets,04 - Apr,AVG_AOV,Average Order Value,148,139,149,141,
+All Markets,05 - May,AVG_AOV,Average Order Value,150,141,151,143,
+All Markets,06 - Jun,AVG_AOV,Average Order Value,152,142,153,144,
+All Markets,07 - Jul,AVG_AOV,Average Order Value,155,144,156,146,
+All Markets,08 - Aug,AVG_AOV,Average Order Value,158,146,158,148,
+All Markets,09 - Sep,AVG_AOV,Average Order Value,161,148,161,150,
+All Markets,10 - Oct,AVG_AOV,Average Order Value,164,150,164,152,
+All Markets,11 - Nov,AVG_AOV,Average Order Value,168,153,167,155,
+All Markets,12 - Dec,AVG_AOV,Average Order Value,172,156,171,158,165
+All Markets,01 - Jan,AVG_ATF,Avg Frequency,2.85,2.72,3.12,2.98,
+All Markets,02 - Feb,AVG_ATF,Avg Frequency,2.88,2.74,3.14,3.00,
+All Markets,03 - Mar,AVG_ATF,Avg Frequency,2.91,2.77,3.17,3.03,
+All Markets,04 - Apr,AVG_ATF,Avg Frequency,2.94,2.79,3.20,3.05,
+All Markets,05 - May,AVG_ATF,Avg Frequency,2.97,2.82,3.23,3.08,
+All Markets,06 - Jun,AVG_ATF,Avg Frequency,3.01,2.85,3.27,3.11,
+All Markets,07 - Jul,AVG_ATF,Avg Frequency,3.05,2.88,3.31,3.14,
+All Markets,08 - Aug,AVG_ATF,Avg Frequency,3.09,2.91,3.35,3.18,
+All Markets,09 - Sep,AVG_ATF,Avg Frequency,3.13,2.95,3.40,3.22,
+All Markets,10 - Oct,AVG_ATF,Avg Frequency,3.18,2.99,3.45,3.26,
+All Markets,11 - Nov,AVG_ATF,Avg Frequency,3.23,3.03,3.50,3.31,
+All Markets,12 - Dec,AVG_ATF,Avg Frequency,3.28,3.08,3.56,3.36,3.40
+All Markets,01 - Jan,PCT_NBA,New Brand Adopters %,0.185,0.205,0.182,0.200,0.210
+All Markets,02 - Feb,PCT_NBA,New Brand Adopters %,0.182,0.202,0.180,0.198,0.210
+All Markets,03 - Mar,PCT_NBA,New Brand Adopters %,0.179,0.199,0.178,0.196,0.210
+All Markets,04 - Apr,PCT_NBA,New Brand Adopters %,0.176,0.196,0.175,0.193,0.210
+All Markets,05 - May,PCT_NBA,New Brand Adopters %,0.173,0.193,0.172,0.190,0.210
+All Markets,06 - Jun,PCT_NBA,New Brand Adopters %,0.170,0.190,0.169,0.187,0.210
+All Markets,07 - Jul,PCT_NBA,New Brand Adopters %,0.167,0.187,0.166,0.184,0.210
+All Markets,08 - Aug,PCT_NBA,New Brand Adopters %,0.164,0.184,0.163,0.181,0.210
+All Markets,09 - Sep,PCT_NBA,New Brand Adopters %,0.161,0.181,0.160,0.178,0.210
+All Markets,10 - Oct,PCT_NBA,New Brand Adopters %,0.158,0.178,0.157,0.175,0.210
+All Markets,11 - Nov,PCT_NBA,New Brand Adopters %,0.155,0.175,0.154,0.172,0.210
+All Markets,12 - Dec,PCT_NBA,New Brand Adopters %,0.152,0.172,0.151,0.169,0.210
+All Markets,01 - Jan,PCT_XBP,Cross Brand Plus %,0.245,0.265,0.242,0.262,0.280
+All Markets,02 - Feb,PCT_XBP,Cross Brand Plus %,0.242,0.262,0.240,0.259,0.280
+All Markets,03 - Mar,PCT_XBP,Cross Brand Plus %,0.239,0.259,0.237,0.256,0.280
+All Markets,04 - Apr,PCT_XBP,Cross Brand Plus %,0.236,0.256,0.234,0.253,0.280
+All Markets,05 - May,PCT_XBP,Cross Brand Plus %,0.233,0.253,0.231,0.250,0.280
+All Markets,06 - Jun,PCT_XBP,Cross Brand Plus %,0.230,0.250,0.228,0.247,0.280
+All Markets,07 - Jul,PCT_XBP,Cross Brand Plus %,0.227,0.247,0.225,0.244,0.280
+All Markets,08 - Aug,PCT_XBP,Cross Brand Plus %,0.224,0.244,0.222,0.241,0.280
+All Markets,09 - Sep,PCT_XBP,Cross Brand Plus %,0.221,0.241,0.219,0.238,0.280
+All Markets,10 - Oct,PCT_XBP,Cross Brand Plus %,0.218,0.238,0.216,0.235,0.280
+All Markets,11 - Nov,PCT_XBP,Cross Brand Plus %,0.215,0.235,0.213,0.232,0.280
+All Markets,12 - Dec,PCT_XBP,Cross Brand Plus %,0.212,0.232,0.210,0.229,0.280
+All Markets,01 - Jan,PCT_RDM,Redeeming Members %,0.425,0.445,0.420,0.440,0.460
+All Markets,02 - Feb,PCT_RDM,Redeeming Members %,0.422,0.442,0.418,0.437,0.460
+All Markets,03 - Mar,PCT_RDM,Redeeming Members %,0.419,0.439,0.415,0.434,0.460
+All Markets,04 - Apr,PCT_RDM,Redeeming Members %,0.416,0.436,0.412,0.431,0.460
+All Markets,05 - May,PCT_RDM,Redeeming Members %,0.413,0.433,0.409,0.428,0.460
+All Markets,06 - Jun,PCT_RDM,Redeeming Members %,0.410,0.430,0.406,0.425,0.460
+All Markets,07 - Jul,PCT_RDM,Redeeming Members %,0.407,0.427,0.403,0.422,0.460
+All Markets,08 - Aug,PCT_RDM,Redeeming Members %,0.404,0.424,0.400,0.419,0.460
+All Markets,09 - Sep,PCT_RDM,Redeeming Members %,0.401,0.421,0.397,0.416,0.460
+All Markets,10 - Oct,PCT_RDM,Redeeming Members %,0.398,0.418,0.394,0.413,0.460
+All Markets,11 - Nov,PCT_RDM,Redeeming Members %,0.395,0.415,0.391,0.410,0.460
+All Markets,12 - Dec,PCT_RDM,Redeeming Members %,0.392,0.412,0.388,0.407,0.460
+United Arab Emirates,01 - Jan,SLS_TTL,Total Sales,52000000,48000000,610000000,560000000,
+United Arab Emirates,02 - Feb,SLS_TTL,Total Sales,108000000,99000000,618000000,568000000,
+United Arab Emirates,03 - Mar,SLS_TTL,Total Sales,168000000,153000000,628000000,578000000,
+United Arab Emirates,04 - Apr,SLS_TTL,Total Sales,231000000,209000000,640000000,590000000,
+United Arab Emirates,05 - May,SLS_TTL,Total Sales,296000000,266000000,654000000,604000000,
+United Arab Emirates,06 - Jun,SLS_TTL,Total Sales,365000000,327000000,670000000,620000000,
+United Arab Emirates,07 - Jul,SLS_TTL,Total Sales,438000000,391000000,688000000,638000000,
+United Arab Emirates,08 - Aug,SLS_TTL,Total Sales,515000000,458000000,708000000,658000000,
+United Arab Emirates,09 - Sep,SLS_TTL,Total Sales,596000000,529000000,730000000,680000000,
+United Arab Emirates,10 - Oct,SLS_TTL,Total Sales,684000000,605000000,756000000,706000000,
+United Arab Emirates,11 - Nov,SLS_TTL,Total Sales,778000000,686000000,785000000,735000000,
+United Arab Emirates,12 - Dec,SLS_TTL,Total Sales,885000000,778000000,820000000,770000000,850000000
+United Arab Emirates,01 - Jan,PCT_NBA,New Brand Adopters %,0.195,0.215,0.192,0.210,0.220
+United Arab Emirates,02 - Feb,PCT_NBA,New Brand Adopters %,0.192,0.212,0.189,0.207,0.220
+United Arab Emirates,03 - Mar,PCT_NBA,New Brand Adopters %,0.189,0.209,0.186,0.204,0.220
+United Arab Emirates,04 - Apr,PCT_NBA,New Brand Adopters %,0.186,0.206,0.183,0.201,0.220
+United Arab Emirates,05 - May,PCT_NBA,New Brand Adopters %,0.183,0.203,0.180,0.198,0.220
+United Arab Emirates,06 - Jun,PCT_NBA,New Brand Adopters %,0.180,0.200,0.177,0.195,0.220
+United Arab Emirates,07 - Jul,PCT_NBA,New Brand Adopters %,0.177,0.197,0.174,0.192,0.220
+United Arab Emirates,08 - Aug,PCT_NBA,New Brand Adopters %,0.174,0.194,0.171,0.189,0.220
+United Arab Emirates,09 - Sep,PCT_NBA,New Brand Adopters %,0.171,0.191,0.168,0.186,0.220
+United Arab Emirates,10 - Oct,PCT_NBA,New Brand Adopters %,0.168,0.188,0.165,0.183,0.220
+United Arab Emirates,11 - Nov,PCT_NBA,New Brand Adopters %,0.165,0.185,0.162,0.180,0.220
+United Arab Emirates,12 - Dec,PCT_NBA,New Brand Adopters %,0.162,0.182,0.159,0.177,0.220
+United Arab Emirates,01 - Jan,PCT_XBP,Cross Brand Plus %,0.255,0.275,0.252,0.272,0.290
+United Arab Emirates,02 - Feb,PCT_XBP,Cross Brand Plus %,0.252,0.272,0.249,0.269,0.290
+United Arab Emirates,03 - Mar,PCT_XBP,Cross Brand Plus %,0.249,0.269,0.246,0.266,0.290
+United Arab Emirates,04 - Apr,PCT_XBP,Cross Brand Plus %,0.246,0.266,0.243,0.263,0.290
+United Arab Emirates,05 - May,PCT_XBP,Cross Brand Plus %,0.243,0.263,0.240,0.260,0.290
+United Arab Emirates,06 - Jun,PCT_XBP,Cross Brand Plus %,0.240,0.260,0.237,0.257,0.290
+United Arab Emirates,07 - Jul,PCT_XBP,Cross Brand Plus %,0.237,0.257,0.234,0.254,0.290
+United Arab Emirates,08 - Aug,PCT_XBP,Cross Brand Plus %,0.234,0.254,0.231,0.251,0.290
+United Arab Emirates,09 - Sep,PCT_XBP,Cross Brand Plus %,0.231,0.251,0.228,0.248,0.290
+United Arab Emirates,10 - Oct,PCT_XBP,Cross Brand Plus %,0.228,0.248,0.225,0.245,0.290
+United Arab Emirates,11 - Nov,PCT_XBP,Cross Brand Plus %,0.225,0.245,0.222,0.242,0.290
+United Arab Emirates,12 - Dec,PCT_XBP,Cross Brand Plus %,0.222,0.242,0.219,0.239,0.290
+United Arab Emirates,01 - Jan,PCT_RDM,Redeeming Members %,0.435,0.455,0.430,0.450,0.470
+United Arab Emirates,02 - Feb,PCT_RDM,Redeeming Members %,0.432,0.452,0.427,0.447,0.470
+United Arab Emirates,03 - Mar,PCT_RDM,Redeeming Members %,0.429,0.449,0.424,0.444,0.470
+United Arab Emirates,04 - Apr,PCT_RDM,Redeeming Members %,0.426,0.446,0.421,0.441,0.470
+United Arab Emirates,05 - May,PCT_RDM,Redeeming Members %,0.423,0.443,0.418,0.438,0.470
+United Arab Emirates,06 - Jun,PCT_RDM,Redeeming Members %,0.420,0.440,0.415,0.435,0.470
+United Arab Emirates,07 - Jul,PCT_RDM,Redeeming Members %,0.417,0.437,0.412,0.432,0.470
+United Arab Emirates,08 - Aug,PCT_RDM,Redeeming Members %,0.414,0.434,0.409,0.429,0.470
+United Arab Emirates,09 - Sep,PCT_RDM,Redeeming Members %,0.411,0.431,0.406,0.426,0.470
+United Arab Emirates,10 - Oct,PCT_RDM,Redeeming Members %,0.408,0.428,0.403,0.423,0.470
+United Arab Emirates,11 - Nov,PCT_RDM,Redeeming Members %,0.405,0.425,0.400,0.420,0.470
+United Arab Emirates,12 - Dec,PCT_RDM,Redeeming Members %,0.402,0.422,0.397,0.417,0.470
+Saudi Arabia,01 - Jan,SLS_TTL,Total Sales,45000000,42000000,530000000,490000000,
+Saudi Arabia,02 - Feb,SLS_TTL,Total Sales,94000000,87000000,538000000,498000000,
+Saudi Arabia,03 - Mar,SLS_TTL,Total Sales,146000000,134000000,548000000,508000000,
+Saudi Arabia,04 - Apr,SLS_TTL,Total Sales,201000000,183000000,560000000,520000000,
+Saudi Arabia,05 - May,SLS_TTL,Total Sales,258000000,234000000,574000000,534000000,
+Saudi Arabia,06 - Jun,SLS_TTL,Total Sales,318000000,287000000,590000000,550000000,
+Saudi Arabia,07 - Jul,SLS_TTL,Total Sales,382000000,343000000,608000000,568000000,
+Saudi Arabia,08 - Aug,SLS_TTL,Total Sales,450000000,402000000,628000000,588000000,
+Saudi Arabia,09 - Sep,SLS_TTL,Total Sales,522000000,464000000,650000000,610000000,
+Saudi Arabia,10 - Oct,SLS_TTL,Total Sales,599000000,530000000,675000000,635000000,
+Saudi Arabia,11 - Nov,SLS_TTL,Total Sales,681000000,600000000,703000000,663000000,
+Saudi Arabia,12 - Dec,SLS_TTL,Total Sales,775000000,681000000,735000000,695000000,750000000
+Saudi Arabia,01 - Jan,PCT_NBA,New Brand Adopters %,0.175,0.195,0.172,0.190,0.200
+Saudi Arabia,02 - Feb,PCT_NBA,New Brand Adopters %,0.172,0.192,0.170,0.188,0.200
+Saudi Arabia,03 - Mar,PCT_NBA,New Brand Adopters %,0.169,0.189,0.167,0.185,0.200
+Saudi Arabia,04 - Apr,PCT_NBA,New Brand Adopters %,0.166,0.186,0.164,0.182,0.200
+Saudi Arabia,05 - May,PCT_NBA,New Brand Adopters %,0.163,0.183,0.161,0.179,0.200
+Saudi Arabia,06 - Jun,PCT_NBA,New Brand Adopters %,0.160,0.180,0.158,0.176,0.200
+Saudi Arabia,07 - Jul,PCT_NBA,New Brand Adopters %,0.157,0.177,0.155,0.173,0.200
+Saudi Arabia,08 - Aug,PCT_NBA,New Brand Adopters %,0.154,0.174,0.152,0.170,0.200
+Saudi Arabia,09 - Sep,PCT_NBA,New Brand Adopters %,0.151,0.171,0.149,0.167,0.200
+Saudi Arabia,10 - Oct,PCT_NBA,New Brand Adopters %,0.148,0.168,0.146,0.164,0.200
+Saudi Arabia,11 - Nov,PCT_NBA,New Brand Adopters %,0.145,0.165,0.143,0.161,0.200
+Saudi Arabia,12 - Dec,PCT_NBA,New Brand Adopters %,0.142,0.162,0.140,0.158,0.200
+Saudi Arabia,01 - Jan,PCT_XBP,Cross Brand Plus %,0.235,0.255,0.232,0.252,0.270
+Saudi Arabia,02 - Feb,PCT_XBP,Cross Brand Plus %,0.232,0.252,0.229,0.249,0.270
+Saudi Arabia,03 - Mar,PCT_XBP,Cross Brand Plus %,0.229,0.249,0.226,0.246,0.270
+Saudi Arabia,04 - Apr,PCT_XBP,Cross Brand Plus %,0.226,0.246,0.223,0.243,0.270
+Saudi Arabia,05 - May,PCT_XBP,Cross Brand Plus %,0.223,0.243,0.220,0.240,0.270
+Saudi Arabia,06 - Jun,PCT_XBP,Cross Brand Plus %,0.220,0.240,0.217,0.237,0.270
+Saudi Arabia,07 - Jul,PCT_XBP,Cross Brand Plus %,0.217,0.237,0.214,0.234,0.270
+Saudi Arabia,08 - Aug,PCT_XBP,Cross Brand Plus %,0.214,0.234,0.211,0.231,0.270
+Saudi Arabia,09 - Sep,PCT_XBP,Cross Brand Plus %,0.211,0.231,0.208,0.228,0.270
+Saudi Arabia,10 - Oct,PCT_XBP,Cross Brand Plus %,0.208,0.228,0.205,0.225,0.270
+Saudi Arabia,11 - Nov,PCT_XBP,Cross Brand Plus %,0.205,0.225,0.202,0.222,0.270
+Saudi Arabia,12 - Dec,PCT_XBP,Cross Brand Plus %,0.202,0.222,0.199,0.219,0.270
+Saudi Arabia,01 - Jan,PCT_RDM,Redeeming Members %,0.415,0.435,0.410,0.430,0.450
+Saudi Arabia,02 - Feb,PCT_RDM,Redeeming Members %,0.412,0.432,0.407,0.427,0.450
+Saudi Arabia,03 - Mar,PCT_RDM,Redeeming Members %,0.409,0.429,0.404,0.424,0.450
+Saudi Arabia,04 - Apr,PCT_RDM,Redeeming Members %,0.406,0.426,0.401,0.421,0.450
+Saudi Arabia,05 - May,PCT_RDM,Redeeming Members %,0.403,0.423,0.398,0.418,0.450
+Saudi Arabia,06 - Jun,PCT_RDM,Redeeming Members %,0.400,0.420,0.395,0.415,0.450
+Saudi Arabia,07 - Jul,PCT_RDM,Redeeming Members %,0.397,0.417,0.392,0.412,0.450
+Saudi Arabia,08 - Aug,PCT_RDM,Redeeming Members %,0.394,0.414,0.389,0.409,0.450
+Saudi Arabia,09 - Sep,PCT_RDM,Redeeming Members %,0.391,0.411,0.386,0.406,0.450
+Saudi Arabia,10 - Oct,PCT_RDM,Redeeming Members %,0.388,0.408,0.383,0.403,0.450
+Saudi Arabia,11 - Nov,PCT_RDM,Redeeming Members %,0.385,0.405,0.380,0.400,0.450
+Saudi Arabia,12 - Dec,PCT_RDM,Redeeming Members %,0.382,0.402,0.377,0.397,0.450
+Kuwait,01 - Jan,SLS_TTL,Total Sales,18000000,16500000,210000000,192000000,
+Kuwait,02 - Feb,SLS_TTL,Total Sales,38000000,34500000,213000000,195000000,
+Kuwait,03 - Mar,SLS_TTL,Total Sales,59000000,53500000,217000000,199000000,
+Kuwait,04 - Apr,SLS_TTL,Total Sales,81000000,73000000,222000000,204000000,
+Kuwait,05 - May,SLS_TTL,Total Sales,104000000,93500000,228000000,210000000,
+Kuwait,06 - Jun,SLS_TTL,Total Sales,128000000,114500000,235000000,217000000,
+Kuwait,07 - Jul,SLS_TTL,Total Sales,154000000,137000000,243000000,225000000,
+Kuwait,08 - Aug,SLS_TTL,Total Sales,181000000,160500000,252000000,234000000,
+Kuwait,09 - Sep,SLS_TTL,Total Sales,210000000,185500000,262000000,244000000,
+Kuwait,10 - Oct,SLS_TTL,Total Sales,241000000,212000000,273000000,255000000,
+Kuwait,11 - Nov,SLS_TTL,Total Sales,274000000,240500000,285000000,267000000,
+Kuwait,12 - Dec,SLS_TTL,Total Sales,310000000,272000000,300000000,282000000,300000000
+Kuwait,12 - Dec,PCT_NBA,New Brand Adopters %,0.148,0.168,0.146,0.165,0.180
+Kuwait,12 - Dec,PCT_XBP,Cross Brand Plus %,0.208,0.228,0.205,0.225,0.245
+Kuwait,12 - Dec,PCT_RDM,Redeeming Members %,0.388,0.408,0.383,0.403,0.430
+Bahrain,01 - Jan,SLS_TTL,Total Sales,10000000,8500000,100000000,88000000,
+Bahrain,02 - Feb,SLS_TTL,Total Sales,20000000,17000000,101000000,89000000,
+Bahrain,03 - Mar,SLS_TTL,Total Sales,32000000,27500000,103000000,91000000,
+Bahrain,04 - Apr,SLS_TTL,Total Sales,42000000,37000000,105000000,93000000,
+Bahrain,05 - May,SLS_TTL,Total Sales,52000000,46500000,108000000,96000000,
+Bahrain,06 - Jun,SLS_TTL,Total Sales,64000000,57000000,112000000,100000000,
+Bahrain,07 - Jul,SLS_TTL,Total Sales,76000000,67000000,116000000,104000000,
+Bahrain,08 - Aug,SLS_TTL,Total Sales,89000000,77500000,121000000,109000000,
+Bahrain,09 - Sep,SLS_TTL,Total Sales,102000000,88500000,127000000,115000000,
+Bahrain,10 - Oct,SLS_TTL,Total Sales,116000000,100000000,134000000,122000000,
+Bahrain,11 - Nov,SLS_TTL,Total Sales,132000000,112000000,142000000,130000000,
+Bahrain,12 - Dec,SLS_TTL,Total Sales,150000000,128000000,152000000,140000000,145000000
+Bahrain,12 - Dec,PCT_NBA,New Brand Adopters %,0.155,0.175,0.152,0.172,0.185
+Bahrain,12 - Dec,PCT_XBP,Cross Brand Plus %,0.218,0.238,0.215,0.235,0.255
+Bahrain,12 - Dec,PCT_RDM,Redeeming Members %,0.398,0.418,0.393,0.413,0.440

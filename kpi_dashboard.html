@@ -3,442 +3,429 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPI Performance Dashboard</title>
+    <title>2025 Performance Review | KPI Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: #F8FAFC;
-            color: #1B365D;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.5;
         }
 
         .header {
-            background: linear-gradient(135deg, #1B365D 0%, #2D4A7C 100%);
-            color: white;
-            padding: 24px 40px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            padding: 32px 48px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .header-top {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 24px;
-            box-shadow: 0 4px 12px rgba(27, 54, 93, 0.15);
+            margin-bottom: 8px;
         }
 
-        .header-logo {
-            height: 56px;
-            width: auto;
-        }
-
-        .header-text h1 {
-            font-size: 28px;
+        .header h1 {
+            font-size: 32px;
             font-weight: 700;
-            margin-bottom: 4px;
+            color: #fff;
         }
 
-        .header-text p {
-            font-size: 14px;
-            opacity: 0.85;
-            font-weight: 400;
+        .header-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
         }
 
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 32px 40px;
+        .header p {
+            color: #94a3b8;
+            font-size: 15px;
         }
 
-        .filter-section {
+        .nav-tabs {
             display: flex;
+            gap: 8px;
+            padding: 0 48px;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+
+        .nav-tab {
+            padding: 16px 24px;
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover { color: #e2e8f0; }
+        .nav-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        .main { padding: 32px 48px; }
+
+        /* Executive Summary */
+        .exec-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-bottom: 32px;
-            flex-wrap: wrap;
-            align-items: flex-start;
         }
 
-        .filter-group {
+        .metric-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #334155;
             position: relative;
+            overflow: hidden;
         }
 
-        .filter-label {
-            display: block;
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .metric-card.positive::before { background: #10b981; }
+        .metric-card.negative::before { background: #ef4444; }
+        .metric-card.neutral::before { background: #6366f1; }
+        .metric-card.warning::before { background: #f59e0b; }
+
+        .metric-label {
             font-size: 12px;
-            font-weight: 600;
-            color: #64748B;
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 8px;
         }
 
-        .dropdown {
-            position: relative;
-            min-width: 220px;
-        }
-
-        .dropdown-button {
-            width: 100%;
-            padding: 12px 40px 12px 16px;
-            background: white;
-            border: 2px solid #E2E8F0;
-            border-radius: 8px;
-            font-size: 15px;
-            color: #1B365D;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        .dropdown-button:hover {
-            border-color: #8FAFD4;
-        }
-
-        .dropdown-button:focus {
-            outline: none;
-            border-color: #1B365D;
-            box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.1);
-        }
-
-        .dropdown-arrow {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: #64748B;
-            font-size: 12px;
-            transition: transform 0.2s ease;
-        }
-
-        .dropdown-arrow.open {
-            transform: translateY(-50%) rotate(180deg);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
-            right: 0;
-            background: white;
-            border: 2px solid #E2E8F0;
-            border-radius: 8px;
-            box-shadow: 0 10px 40px rgba(27, 54, 93, 0.15);
-            max-height: 280px;
-            overflow-y: auto;
-            display: none;
-            z-index: 100;
-        }
-
-        .dropdown-menu.open {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 12px 16px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.15s ease;
-            border-bottom: 1px solid #F1F5F9;
-        }
-
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-item:hover {
-            background: #F1F5F9;
-        }
-
-        .dropdown-item.selected {
-            background: #E8F4FD;
-            color: #1B365D;
-            font-weight: 600;
-        }
-
-        .market-dropdown {
-            z-index: 20;
-        }
-
-        .kpi-dropdown {
-            z-index: 10;
-        }
-
-        .upload-section {
-            margin-left: auto;
-        }
-
-        .upload-btn {
-            padding: 12px 20px;
-            background: white;
-            border: 2px solid #E2E8F0;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #64748B;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        .upload-btn:hover {
-            border-color: #1B365D;
-            color: #1B365D;
-        }
-
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.08);
-            border-left: 4px solid;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .summary-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(27, 54, 93, 0.12);
-        }
-
-        .summary-card.year-2025 {
-            border-left-color: #1B365D;
-        }
-
-        .summary-card.year-2024 {
-            border-left-color: #7EB8DA;
-        }
-
-        .summary-card.yoy-positive {
-            border-left-color: #2E7D5A;
-        }
-
-        .summary-card.yoy-negative {
-            border-left-color: #C4314B;
-        }
-
-        .card-label {
-            font-size: 13px;
-            color: #64748B;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-        }
-
-        .card-value {
+        .metric-value {
             font-size: 32px;
             font-weight: 700;
-            color: #1B365D;
+            color: #fff;
             margin-bottom: 4px;
         }
 
-        .card-sublabel {
-            font-size: 12px;
-            color: #94A3B8;
-        }
-
-        .card-value.positive {
-            color: #2E7D5A;
-        }
-
-        .card-value.negative {
-            color: #C4314B;
-        }
-
-        .trend-icon {
-            margin-right: 8px;
-        }
-
-        .chart-section {
-            background: white;
-            border-radius: 12px;
-            padding: 32px;
-            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.08);
-            margin-bottom: 32px;
-        }
-
-        .chart-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1B365D;
-            margin-bottom: 24px;
-        }
-
-        .chart-container {
-            width: 100%;
-            height: 360px;
-            position: relative;
-        }
-
-        .chart-legend {
+        .metric-comparison {
             display: flex;
-            justify-content: center;
-            gap: 32px;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .metric-change {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .metric-change.up { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .metric-change.down { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        .metric-vs { color: #64748b; }
+
+        .metric-target {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #334155;
+        }
+
+        .target-bar {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .target-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .target-fill.good { background: #10b981; }
+        .target-fill.ok { background: #f59e0b; }
+        .target-fill.bad { background: #ef4444; }
+
+        .target-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
 
-        .legend-item {
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Focus Areas */
+        .focus-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .focus-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid #ef4444;
+            position: relative;
+        }
+
+        .focus-card.warning { border-color: #f59e0b; }
+        .focus-card.success { border-color: #10b981; }
+
+        .focus-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #64748B;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
         }
 
-        .legend-line {
-            width: 24px;
-            height: 3px;
-            border-radius: 2px;
-        }
+        .focus-icon.red { background: rgba(239, 68, 68, 0.2); }
+        .focus-icon.yellow { background: rgba(245, 158, 11, 0.2); }
+        .focus-icon.green { background: rgba(16, 185, 129, 0.2); }
 
-        .legend-line.solid {
-            background: #1B365D;
-        }
-
-        .legend-line.dashed {
-            background: repeating-linear-gradient(90deg, #7EB8DA 0, #7EB8DA 5px, transparent 5px, transparent 10px);
-        }
-
-        .chart-svg {
-            width: 100%;
-            height: 300px;
-        }
-
-        .monthly-badges {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 8px;
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid #E2E8F0;
-        }
-
-        .month-badge {
-            text-align: center;
-            padding: 8px 4px;
-            border-radius: 6px;
-            background: #F8FAFC;
-        }
-
-        .month-badge-label {
-            font-size: 11px;
+        .focus-title {
+            font-size: 16px;
             font-weight: 600;
-            color: #64748B;
+            color: #fff;
             margin-bottom: 4px;
         }
 
-        .month-badge-value {
-            font-size: 12px;
+        .focus-value {
+            font-size: 28px;
             font-weight: 700;
+            margin-bottom: 8px;
         }
 
-        .month-badge-value.positive {
-            color: #2E7D5A;
+        .focus-value.red { color: #ef4444; }
+        .focus-value.yellow { color: #f59e0b; }
+        .focus-value.green { color: #10b981; }
+
+        .focus-detail {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 16px;
         }
 
-        .month-badge-value.negative {
-            color: #C4314B;
+        .focus-insight {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
         }
 
-        .table-section {
-            background: white;
+        /* Market Comparison */
+        .market-table {
+            width: 100%;
+            background: #1e293b;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.08);
+            overflow: hidden;
+            border: 1px solid #334155;
+            margin-bottom: 40px;
+        }
+
+        .market-table th {
+            background: #0f172a;
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .market-table td {
+            padding: 16px 20px;
+            border-top: 1px solid #334155;
+            font-size: 14px;
+        }
+
+        .market-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .market-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .market-name.total {
+            color: #3b82f6;
+        }
+
+        .cell-value {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .cell-change {
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .cell-change.up { color: #10b981; }
+        .cell-change.down { color: #ef4444; }
+
+        .cell-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mini-bar {
+            width: 60px;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
             overflow: hidden;
         }
 
-        .table-title {
+        .mini-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        /* Insights Panel */
+        .insights-panel {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid #334155;
+            margin-bottom: 40px;
+        }
+
+        .insights-title {
             font-size: 18px;
-            font-weight: 700;
-            color: #1B365D;
-            padding: 24px 32px 16px;
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .comparison-table th {
-            background: #1B365D;
-            color: white;
-            font-size: 12px;
             font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .insight-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .insight-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .insight-icon.green { background: rgba(16, 185, 129, 0.2); }
+        .insight-icon.red { background: rgba(239, 68, 68, 0.2); }
+        .insight-icon.blue { background: rgba(59, 130, 246, 0.2); }
+        .insight-icon.yellow { background: rgba(245, 158, 11, 0.2); }
+
+        .insight-text {
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .insight-text strong {
+            color: #fff;
+        }
+
+        /* Filters */
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 14px 12px;
-            text-align: center;
-            position: sticky;
-            top: 0;
+            margin-bottom: 6px;
         }
 
-        .comparison-table th:first-child {
-            text-align: left;
-            padding-left: 32px;
-        }
-
-        .comparison-table td {
-            padding: 14px 12px;
-            text-align: center;
+        .filter-select {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 10px 36px 10px 14px;
+            border-radius: 8px;
             font-size: 14px;
-            border-bottom: 1px solid #E2E8F0;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            min-width: 180px;
         }
 
-        .comparison-table td:first-child {
-            text-align: left;
-            font-weight: 600;
-            padding-left: 32px;
-            color: #1B365D;
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
         }
 
-        .comparison-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .comparison-table tr:hover {
-            background: #F8FAFC;
-        }
-
-        .row-2025 td:first-child {
-            color: #1B365D;
-        }
-
-        .row-2024 td:first-child {
-            color: #7EB8DA;
-        }
-
-        .row-yoy td:first-child {
-            color: #64748B;
-        }
-
-        .value-positive {
-            color: #2E7D5A;
-            font-weight: 600;
-        }
-
-        .value-negative {
-            color: #C4314B;
-            font-weight: 600;
-        }
-
+        /* Upload */
         .upload-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(27, 54, 93, 0.9);
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -446,157 +433,140 @@
         }
 
         .upload-box {
-            background: white;
+            background: #1e293b;
             border-radius: 16px;
-            padding: 60px 80px;
+            padding: 48px 64px;
             text-align: center;
-            max-width: 520px;
+            border: 1px solid #334155;
+            max-width: 480px;
         }
 
-        .upload-icon {
-            font-size: 64px;
-            margin-bottom: 24px;
-        }
-
-        .upload-box h2 {
-            font-size: 24px;
-            color: #1B365D;
-            margin-bottom: 12px;
-        }
-
-        .upload-box p {
-            color: #64748B;
-            margin-bottom: 24px;
-        }
+        .upload-icon { font-size: 56px; margin-bottom: 20px; }
+        .upload-box h2 { font-size: 24px; color: #fff; margin-bottom: 8px; }
+        .upload-box p { color: #94a3b8; margin-bottom: 24px; }
 
         .dropzone {
-            border: 3px dashed #E2E8F0;
+            border: 2px dashed #334155;
             border-radius: 12px;
-            padding: 40px;
+            padding: 32px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            margin-bottom: 20px;
-        }
-
-        .dropzone:hover, .dropzone.dragover {
-            border-color: #1B365D;
-            background: #F8FAFC;
-        }
-
-        .dropzone-text {
-            color: #64748B;
-            font-size: 15px;
-        }
-
-        .dropzone-text span {
-            color: #1B365D;
-            font-weight: 600;
-        }
-
-        .demo-btn {
-            padding: 14px 28px;
-            background: #1B365D;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s ease;
-        }
-
-        .demo-btn:hover {
-            background: #2D4A7C;
-        }
-
-        .message-state {
-            text-align: center;
-            padding: 80px 40px;
-            color: #64748B;
-        }
-
-        .message-state-icon {
-            font-size: 48px;
+            transition: all 0.2s;
             margin-bottom: 16px;
         }
 
-        .message-state h3 {
-            font-size: 20px;
-            color: #1B365D;
-            margin-bottom: 8px;
-        }
+        .dropzone:hover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        .dropzone-text { color: #94a3b8; }
+        .dropzone-text span { color: #3b82f6; font-weight: 600; }
 
-        .tooltip {
-            position: absolute;
-            background: white;
-            border: 1px solid #E2E8F0;
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 14px 28px;
             border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: 0 4px 16px rgba(27, 54, 93, 0.15);
-            pointer-events: none;
-            z-index: 50;
-            font-size: 13px;
-            min-width: 140px;
-        }
-
-        .tooltip-title {
+            font-size: 15px;
             font-weight: 600;
-            color: #64748B;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .tooltip-row {
+        .btn-primary:hover { background: #2563eb; }
+
+        /* KPI Detail View */
+        .kpi-detail {
+            display: none;
+        }
+
+        .kpi-detail.active {
+            display: block;
+        }
+
+        .chart-container {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #334155;
+            margin-bottom: 24px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+        }
+
+        .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 6px;
+            font-size: 13px;
+            color: #94a3b8;
         }
 
-        .tooltip-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+        .legend-dot {
+            width: 12px;
+            height: 3px;
+            border-radius: 2px;
         }
 
-        .tooltip-value {
+        .legend-dot.solid { background: #3b82f6; }
+        .legend-dot.dashed { background: repeating-linear-gradient(90deg, #64748b 0, #64748b 4px, transparent 4px, transparent 8px); }
+        .legend-dot.target { background: #f59e0b; }
+
+        .chart-svg {
+            width: 100%;
+            height: 280px;
+        }
+
+        .trend-badges {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .trend-badge {
+            background: #0f172a;
+            padding: 10px 4px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .trend-badge-month {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .trend-badge-value {
+            font-size: 12px;
             font-weight: 600;
-            color: #1B365D;
         }
 
-        .tooltip-diff {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #E2E8F0;
-            font-weight: 600;
-        }
+        .trend-badge-value.up { color: #10b981; }
+        .trend-badge-value.down { color: #ef4444; }
 
-        @media (max-width: 1024px) {
-            .summary-cards {
-                grid-template-columns: 1fr;
-            }
-            .monthly-badges {
-                grid-template-columns: repeat(6, 1fr);
-            }
+        @media (max-width: 1200px) {
+            .exec-summary { grid-template-columns: repeat(2, 1fr); }
+            .focus-grid { grid-template-columns: 1fr; }
+            .insights-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
-            .header {
-                padding: 20px;
-            }
-            .main-container {
-                padding: 20px;
-            }
-            .filter-section {
-                flex-direction: column;
-            }
-            .dropdown {
-                min-width: 100%;
-            }
-            .monthly-badges {
-                grid-template-columns: repeat(4, 1fr);
-            }
+            .header, .main, .nav-tabs { padding-left: 20px; padding-right: 20px; }
+            .exec-summary { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -605,706 +575,722 @@
 
     <script>
     (function() {
-        // ============ EMBEDDED SAMPLE DATA ============
-        const SAMPLE_DATA = [
-            {market:"TOTAL",kpi:"Total Sales",month:"JAN",value_2025:150000,value_2024:140000},
-            {market:"TOTAL",kpi:"Total Sales",month:"FEB",value_2025:320000,value_2024:295000},
-            {market:"TOTAL",kpi:"Total Sales",month:"MAR",value_2025:510000,value_2024:460000},
-            {market:"TOTAL",kpi:"Total Sales",month:"APR",value_2025:720000,value_2024:640000},
-            {market:"TOTAL",kpi:"Total Sales",month:"MAY",value_2025:950000,value_2024:830000},
-            {market:"TOTAL",kpi:"Total Sales",month:"JUN",value_2025:1200000,value_2024:1050000},
-            {market:"TOTAL",kpi:"Total Sales",month:"JUL",value_2025:1480000,value_2024:1280000},
-            {market:"TOTAL",kpi:"Total Sales",month:"AUG",value_2025:1780000,value_2024:1530000},
-            {market:"TOTAL",kpi:"Total Sales",month:"SEP",value_2025:2100000,value_2024:1800000},
-            {market:"TOTAL",kpi:"Total Sales",month:"OCT",value_2025:2450000,value_2024:2100000},
-            {market:"TOTAL",kpi:"Total Sales",month:"NOV",value_2025:2820000,value_2024:2420000},
-            {market:"TOTAL",kpi:"Total Sales",month:"DEC",value_2025:3250000,value_2024:2800000},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"JAN",value_2025:0.032,value_2024:0.028},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"FEB",value_2025:0.034,value_2024:0.029},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"MAR",value_2025:0.036,value_2024:0.031},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"APR",value_2025:0.038,value_2024:0.032},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"MAY",value_2025:0.041,value_2024:0.034},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"JUN",value_2025:0.043,value_2024:0.036},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"JUL",value_2025:0.045,value_2024:0.038},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"AUG",value_2025:0.047,value_2024:0.039},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"SEP",value_2025:0.049,value_2024:0.041},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"OCT",value_2025:0.051,value_2024:0.043},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"NOV",value_2025:0.053,value_2024:0.044},
-            {market:"TOTAL",kpi:"Conversion Rate %",month:"DEC",value_2025:0.055,value_2024:0.046},
-            {market:"TOTAL",kpi:"Average Order Value",month:"JAN",value_2025:125,value_2024:118},
-            {market:"TOTAL",kpi:"Average Order Value",month:"FEB",value_2025:128,value_2024:120},
-            {market:"TOTAL",kpi:"Average Order Value",month:"MAR",value_2025:132,value_2024:122},
-            {market:"TOTAL",kpi:"Average Order Value",month:"APR",value_2025:135,value_2024:125},
-            {market:"TOTAL",kpi:"Average Order Value",month:"MAY",value_2025:138,value_2024:127},
-            {market:"TOTAL",kpi:"Average Order Value",month:"JUN",value_2025:142,value_2024:130},
-            {market:"TOTAL",kpi:"Average Order Value",month:"JUL",value_2025:145,value_2024:132},
-            {market:"TOTAL",kpi:"Average Order Value",month:"AUG",value_2025:148,value_2024:135},
-            {market:"TOTAL",kpi:"Average Order Value",month:"SEP",value_2025:152,value_2024:138},
-            {market:"TOTAL",kpi:"Average Order Value",month:"OCT",value_2025:156,value_2024:140},
-            {market:"TOTAL",kpi:"Average Order Value",month:"NOV",value_2025:160,value_2024:143},
-            {market:"TOTAL",kpi:"Average Order Value",month:"DEC",value_2025:165,value_2024:145},
-            {market:"UAE",kpi:"Total Sales",month:"JAN",value_2025:85000,value_2024:78000},
-            {market:"UAE",kpi:"Total Sales",month:"FEB",value_2025:180000,value_2024:162000},
-            {market:"UAE",kpi:"Total Sales",month:"MAR",value_2025:285000,value_2024:252000},
-            {market:"UAE",kpi:"Total Sales",month:"APR",value_2025:400000,value_2024:350000},
-            {market:"UAE",kpi:"Total Sales",month:"MAY",value_2025:530000,value_2024:455000},
-            {market:"UAE",kpi:"Total Sales",month:"JUN",value_2025:670000,value_2024:575000},
-            {market:"UAE",kpi:"Total Sales",month:"JUL",value_2025:820000,value_2024:700000},
-            {market:"UAE",kpi:"Total Sales",month:"AUG",value_2025:980000,value_2024:840000},
-            {market:"UAE",kpi:"Total Sales",month:"SEP",value_2025:1160000,value_2024:990000},
-            {market:"UAE",kpi:"Total Sales",month:"OCT",value_2025:1360000,value_2024:1155000},
-            {market:"UAE",kpi:"Total Sales",month:"NOV",value_2025:1570000,value_2024:1330000},
-            {market:"UAE",kpi:"Total Sales",month:"DEC",value_2025:1800000,value_2024:1520000},
-            {market:"UAE",kpi:"Conversion Rate %",month:"JAN",value_2025:0.035,value_2024:0.030},
-            {market:"UAE",kpi:"Conversion Rate %",month:"FEB",value_2025:0.037,value_2024:0.031},
-            {market:"UAE",kpi:"Conversion Rate %",month:"MAR",value_2025:0.039,value_2024:0.033},
-            {market:"UAE",kpi:"Conversion Rate %",month:"APR",value_2025:0.042,value_2024:0.035},
-            {market:"UAE",kpi:"Conversion Rate %",month:"MAY",value_2025:0.044,value_2024:0.037},
-            {market:"UAE",kpi:"Conversion Rate %",month:"JUN",value_2025:0.046,value_2024:0.039},
-            {market:"UAE",kpi:"Conversion Rate %",month:"JUL",value_2025:0.048,value_2024:0.041},
-            {market:"UAE",kpi:"Conversion Rate %",month:"AUG",value_2025:0.051,value_2024:0.043},
-            {market:"UAE",kpi:"Conversion Rate %",month:"SEP",value_2025:0.053,value_2024:0.045},
-            {market:"UAE",kpi:"Conversion Rate %",month:"OCT",value_2025:0.055,value_2024:0.047},
-            {market:"UAE",kpi:"Conversion Rate %",month:"NOV",value_2025:0.057,value_2024:0.048},
-            {market:"UAE",kpi:"Conversion Rate %",month:"DEC",value_2025:0.059,value_2024:0.050},
-            {market:"UAE",kpi:"Average Order Value",month:"JAN",value_2025:135,value_2024:125},
-            {market:"UAE",kpi:"Average Order Value",month:"FEB",value_2025:138,value_2024:128},
-            {market:"UAE",kpi:"Average Order Value",month:"MAR",value_2025:142,value_2024:130},
-            {market:"UAE",kpi:"Average Order Value",month:"APR",value_2025:146,value_2024:133},
-            {market:"UAE",kpi:"Average Order Value",month:"MAY",value_2025:150,value_2024:136},
-            {market:"UAE",kpi:"Average Order Value",month:"JUN",value_2025:154,value_2024:139},
-            {market:"UAE",kpi:"Average Order Value",month:"JUL",value_2025:158,value_2024:142},
-            {market:"UAE",kpi:"Average Order Value",month:"AUG",value_2025:162,value_2024:145},
-            {market:"UAE",kpi:"Average Order Value",month:"SEP",value_2025:166,value_2024:148},
-            {market:"UAE",kpi:"Average Order Value",month:"OCT",value_2025:170,value_2024:151},
-            {market:"UAE",kpi:"Average Order Value",month:"NOV",value_2025:175,value_2024:154},
-            {market:"UAE",kpi:"Average Order Value",month:"DEC",value_2025:180,value_2024:158},
-            {market:"KSA",kpi:"Total Sales",month:"JAN",value_2025:65000,value_2024:62000},
-            {market:"KSA",kpi:"Total Sales",month:"FEB",value_2025:140000,value_2024:133000},
-            {market:"KSA",kpi:"Total Sales",month:"MAR",value_2025:225000,value_2024:208000},
-            {market:"KSA",kpi:"Total Sales",month:"APR",value_2025:320000,value_2024:290000},
-            {market:"KSA",kpi:"Total Sales",month:"MAY",value_2025:420000,value_2024:375000},
-            {market:"KSA",kpi:"Total Sales",month:"JUN",value_2025:530000,value_2024:475000},
-            {market:"KSA",kpi:"Total Sales",month:"JUL",value_2025:660000,value_2024:580000},
-            {market:"KSA",kpi:"Total Sales",month:"AUG",value_2025:800000,value_2024:690000},
-            {market:"KSA",kpi:"Total Sales",month:"SEP",value_2025:940000,value_2024:810000},
-            {market:"KSA",kpi:"Total Sales",month:"OCT",value_2025:1090000,value_2024:945000},
-            {market:"KSA",kpi:"Total Sales",month:"NOV",value_2025:1250000,value_2024:1090000},
-            {market:"KSA",kpi:"Total Sales",month:"DEC",value_2025:1450000,value_2024:1280000},
-            {market:"KSA",kpi:"Conversion Rate %",month:"JAN",value_2025:0.028,value_2024:0.026},
-            {market:"KSA",kpi:"Conversion Rate %",month:"FEB",value_2025:0.030,value_2024:0.027},
-            {market:"KSA",kpi:"Conversion Rate %",month:"MAR",value_2025:0.032,value_2024:0.029},
-            {market:"KSA",kpi:"Conversion Rate %",month:"APR",value_2025:0.034,value_2024:0.030},
-            {market:"KSA",kpi:"Conversion Rate %",month:"MAY",value_2025:0.036,value_2024:0.032},
-            {market:"KSA",kpi:"Conversion Rate %",month:"JUN",value_2025:0.038,value_2024:0.033},
-            {market:"KSA",kpi:"Conversion Rate %",month:"JUL",value_2025:0.040,value_2024:0.035},
-            {market:"KSA",kpi:"Conversion Rate %",month:"AUG",value_2025:0.042,value_2024:0.037},
-            {market:"KSA",kpi:"Conversion Rate %",month:"SEP",value_2025:0.044,value_2024:0.038},
-            {market:"KSA",kpi:"Conversion Rate %",month:"OCT",value_2025:0.046,value_2024:0.040},
-            {market:"KSA",kpi:"Conversion Rate %",month:"NOV",value_2025:0.048,value_2024:0.041},
-            {market:"KSA",kpi:"Conversion Rate %",month:"DEC",value_2025:0.050,value_2024:0.043},
-            {market:"KSA",kpi:"Average Order Value",month:"JAN",value_2025:115,value_2024:110},
-            {market:"KSA",kpi:"Average Order Value",month:"FEB",value_2025:118,value_2024:112},
-            {market:"KSA",kpi:"Average Order Value",month:"MAR",value_2025:121,value_2024:115},
-            {market:"KSA",kpi:"Average Order Value",month:"APR",value_2025:124,value_2024:117},
-            {market:"KSA",kpi:"Average Order Value",month:"MAY",value_2025:127,value_2024:120},
-            {market:"KSA",kpi:"Average Order Value",month:"JUN",value_2025:130,value_2024:122},
-            {market:"KSA",kpi:"Average Order Value",month:"JUL",value_2025:133,value_2024:125},
-            {market:"KSA",kpi:"Average Order Value",month:"AUG",value_2025:136,value_2024:128},
-            {market:"KSA",kpi:"Average Order Value",month:"SEP",value_2025:140,value_2024:130},
-            {market:"KSA",kpi:"Average Order Value",month:"OCT",value_2025:143,value_2024:133},
-            {market:"KSA",kpi:"Average Order Value",month:"NOV",value_2025:147,value_2024:136},
-            {market:"KSA",kpi:"Average Order Value",month:"DEC",value_2025:150,value_2024:140}
-        ];
-
-        // ============ CONSTANTS ============
         const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        const COLORS = {
-            navyDark: '#1B365D',
-            navyMid: '#2D4A7C',
-            year2025: '#1B365D',
-            year2024: '#7EB8DA',
-            positive: '#2E7D5A',
-            negative: '#C4314B',
-            gray: '#64748B',
-            grayLight: '#E2E8F0'
+        const MONTH_MAP = {'01 - Jan':'JAN','02 - Feb':'FEB','03 - Mar':'MAR','04 - Apr':'APR','05 - May':'MAY','06 - Jun':'JUN','07 - Jul':'JUL','08 - Aug':'AUG','09 - Sep':'SEP','10 - Oct':'OCT','11 - Nov':'NOV','12 - Dec':'DEC'};
+
+        const KPI_CONFIG = {
+            'SLS_TTL': { name: 'Total Sales', format: 'currency', good: 'up' },
+            'SLS_PEN': { name: 'Sales Penetration', format: 'percent', good: 'up' },
+            'MBR_TTL': { name: 'Transacting Members', format: 'number', good: 'up' },
+            'MBR_NEW': { name: 'New Members', format: 'number', good: 'up' },
+            'MBR_RTN': { name: 'Returning Members', format: 'number', good: 'up' },
+            'AVG_ATF': { name: 'Avg Frequency', format: 'decimal', good: 'up' },
+            'AVG_AOV': { name: 'Avg Order Value', format: 'currency_small', good: 'up' },
+            'PCT_RDM': { name: 'Redeeming Members %', format: 'percent', good: 'up', priority: true },
+            'PCT_XBP': { name: 'Cross Brand Plus %', format: 'percent', good: 'up', priority: true },
+            'PCT_NBA': { name: 'New Brand Adopters %', format: 'percent', good: 'up', priority: true },
+            'AVG_BRD': { name: 'Avg Brands Shopped', format: 'decimal', good: 'up' },
+            'PTS_BRN': { name: 'Points Burned Value', format: 'currency', good: 'up' }
         };
 
-        const LOGO_SVG = `<svg width="120" height="56" viewBox="0 0 120 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="120" height="56" rx="8" fill="white" fill-opacity="0.15"/>
-            <text x="15" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="28" font-weight="700" fill="white">KPI</text>
-        </svg>`;
+        const MARKET_ORDER = ['All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
 
-        // ============ STATE ============
         let state = {
             data: null,
-            selectedMarket: '',
-            selectedKPI: '',
-            showUpload: true,
-            marketDropdownOpen: false,
-            kpiDropdownOpen: false
+            selectedMarket: 'All Markets',
+            selectedKPI: null,
+            activeTab: 'summary',
+            showUpload: true
         };
 
-        // ============ UTILITY FUNCTIONS ============
-        function isPercentKPI(kpiName) {
-            return kpiName && kpiName.trim().endsWith('%');
-        }
-
-        function isUSDKPI(kpiName) {
-            if (!kpiName) return false;
-            const lower = kpiName.toLowerCase();
-            return lower.includes('sales') || lower.includes('order value') || lower.includes('value');
-        }
-
-        function formatValue(value, kpiName) {
+        // Utility functions
+        function formatValue(value, format) {
             if (value === null || value === undefined || isNaN(value)) return '—';
-            if (isPercentKPI(kpiName)) {
-                return (value * 100).toFixed(1) + '%';
+            switch(format) {
+                case 'currency':
+                    if (value >= 1e9) return '$' + (value/1e9).toFixed(2) + 'B';
+                    if (value >= 1e6) return '$' + (value/1e6).toFixed(1) + 'M';
+                    if (value >= 1e3) return '$' + (value/1e3).toFixed(0) + 'K';
+                    return '$' + value.toFixed(0);
+                case 'currency_small':
+                    return '$' + value.toFixed(0);
+                case 'percent':
+                    return (value * 100).toFixed(1) + '%';
+                case 'number':
+                    if (value >= 1e6) return (value/1e6).toFixed(2) + 'M';
+                    if (value >= 1e3) return (value/1e3).toFixed(0) + 'K';
+                    return value.toLocaleString();
+                case 'decimal':
+                    return value.toFixed(2);
+                default:
+                    return value.toString();
             }
-            if (isUSDKPI(kpiName)) {
-                if (Math.abs(value) >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
-                if (Math.abs(value) >= 1000) return '$' + (value / 1000).toFixed(1) + 'K';
-                return '$' + value.toLocaleString('en-US', { maximumFractionDigits: 0 });
-            }
-            if (Math.abs(value) >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-            if (Math.abs(value) >= 1000) return (value / 1000).toFixed(1) + 'K';
-            return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
         }
 
-        function calcDiff(val2025, val2024, isPercent) {
-            if (val2025 === null || val2024 === null || val2024 === 0) return null;
-            if (isPercent) {
-                // Use rounded values to match displayed percentages (avoids visual inconsistency)
-                const rounded2025 = parseFloat((val2025 * 100).toFixed(1));
-                const rounded2024 = parseFloat((val2024 * 100).toFixed(1));
-                return rounded2025 - rounded2024;
+        function calcChange(current, previous, format) {
+            if (!current || !previous || previous === 0) return null;
+            if (format === 'percent') {
+                return (current - previous) * 100; // PP
             }
-            return ((val2025 / val2024) - 1) * 100;
+            return ((current / previous) - 1) * 100;
         }
 
-        function formatDiff(diff, isPercent) {
-            if (diff === null || isNaN(diff)) return '—';
-            const sign = diff >= 0 ? '+' : '';
-            if (isPercent) return sign + diff.toFixed(1) + ' PP';
-            return sign + diff.toFixed(1) + '%';
+        function formatChange(change, format) {
+            if (change === null) return '—';
+            const sign = change >= 0 ? '+' : '';
+            if (format === 'percent') {
+                return sign + change.toFixed(1) + ' PP';
+            }
+            return sign + change.toFixed(1) + '%';
         }
 
         function parseCSV(text) {
             const lines = text.trim().split('\n');
-            if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-            const marketIdx = headers.indexOf('market');
-            const kpiIdx = headers.indexOf('kpi');
-            const monthIdx = headers.indexOf('month');
-            const val2025Idx = headers.indexOf('value_2025');
-            const val2024Idx = headers.indexOf('value_2024');
-            if (marketIdx === -1 || kpiIdx === -1 || monthIdx === -1 || val2025Idx === -1 || val2024Idx === -1) {
-                return [];
-            }
+            const headers = lines[0].split(',').map(h => h.trim());
             const data = [];
+
             for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(',').map(v => v.trim());
-                if (values.length < 5) continue;
-                const val2025 = values[val2025Idx] === '' ? null : parseFloat(values[val2025Idx]);
-                const val2024 = values[val2024Idx] === '' ? null : parseFloat(values[val2024Idx]);
-                data.push({
-                    market: values[marketIdx],
-                    kpi: values[kpiIdx],
-                    month: values[monthIdx].toUpperCase(),
-                    value_2025: isNaN(val2025) ? null : val2025,
-                    value_2024: isNaN(val2024) ? null : val2024
+                const values = lines[i].split(',');
+                const row = {};
+                headers.forEach((h, idx) => {
+                    let val = values[idx]?.trim();
+                    if (['YTD', 'LYTD', 'R12M', 'LMR12M', 'Target'].includes(h)) {
+                        row[h] = val === '' ? null : parseFloat(val);
+                    } else {
+                        row[h] = val;
+                    }
                 });
+                if (row.Market && row.Key) data.push(row);
             }
             return data;
         }
 
-        function sortMarkets(markets) {
-            const order = { 'TOTAL': 0, 'UAE': 1, 'KSA': 2 };
-            return [...markets].sort((a, b) => {
-                const orderA = order[a] !== undefined ? order[a] : 100;
-                const orderB = order[b] !== undefined ? order[b] : 100;
-                if (orderA !== orderB) return orderA - orderB;
-                return a.localeCompare(b);
-            });
+        function getLatestData(market, kpiKey) {
+            if (!state.data) return null;
+            const rows = state.data.filter(d => d.Market === market && d.Key === kpiKey);
+            return rows.find(d => d.Month === '12 - Dec') || rows[rows.length - 1];
+        }
+
+        function getMonthlyData(market, kpiKey) {
+            if (!state.data) return [];
+            return state.data.filter(d => d.Market === market && d.Key === kpiKey)
+                .sort((a, b) => a.Month.localeCompare(b.Month));
         }
 
         function getMarkets() {
             if (!state.data) return [];
-            return sortMarkets([...new Set(state.data.map(d => d.market))]);
+            const markets = [...new Set(state.data.map(d => d.Market))];
+            return MARKET_ORDER.filter(m => markets.includes(m));
         }
 
         function getKPIs() {
             if (!state.data) return [];
-            return [...new Set(state.data.map(d => d.kpi))].sort();
+            return [...new Set(state.data.map(d => d.Key))].filter(k => KPI_CONFIG[k]);
         }
 
-        function getFilteredData() {
-            if (!state.data || !state.selectedMarket || !state.selectedKPI) return [];
-            return state.data.filter(d => d.market === state.selectedMarket && d.kpi === state.selectedKPI);
+        // Generate insights
+        function generateInsights() {
+            const insights = [];
+            const market = 'All Markets';
+
+            // Sales insight
+            const sales = getLatestData(market, 'SLS_TTL');
+            if (sales) {
+                const change = calcChange(sales.YTD, sales.LYTD, 'currency');
+                if (change > 0) {
+                    insights.push({
+                        icon: '📈', color: 'green',
+                        text: `<strong>Revenue up ${change.toFixed(1)}%</strong> YoY, reaching ${formatValue(sales.YTD, 'currency')} in 2025`
+                    });
+                }
+            }
+
+            // NBA insight
+            const nba = getLatestData(market, 'PCT_NBA');
+            if (nba) {
+                const change = calcChange(nba.YTD, nba.LYTD, 'percent');
+                if (change < 0) {
+                    insights.push({
+                        icon: '⚠️', color: 'red',
+                        text: `<strong>New Brand Adopters declined ${Math.abs(change).toFixed(1)} PP</strong> - fewer customers trying new brands`
+                    });
+                }
+            }
+
+            // XBP insight
+            const xbp = getLatestData(market, 'PCT_XBP');
+            if (xbp) {
+                const change = calcChange(xbp.YTD, xbp.LYTD, 'percent');
+                if (change < 0) {
+                    insights.push({
+                        icon: '🔄', color: 'red',
+                        text: `<strong>Cross-brand shopping down ${Math.abs(change).toFixed(1)} PP</strong> - customers are less diversified`
+                    });
+                }
+            }
+
+            // Redemption insight
+            const rdm = getLatestData(market, 'PCT_RDM');
+            if (rdm) {
+                const change = calcChange(rdm.YTD, rdm.LYTD, 'percent');
+                if (change < 0) {
+                    insights.push({
+                        icon: '🎁', color: 'yellow',
+                        text: `<strong>Redemption rate dropped ${Math.abs(change).toFixed(1)} PP</strong> - loyalty program engagement weakening`
+                    });
+                }
+            }
+
+            // Best performing market
+            const markets = getMarkets().filter(m => m !== 'All Markets');
+            let bestMarket = null, bestGrowth = -Infinity;
+            markets.forEach(m => {
+                const s = getLatestData(m, 'SLS_TTL');
+                if (s) {
+                    const g = calcChange(s.YTD, s.LYTD, 'currency');
+                    if (g > bestGrowth) { bestGrowth = g; bestMarket = m; }
+                }
+            });
+            if (bestMarket) {
+                insights.push({
+                    icon: '🏆', color: 'blue',
+                    text: `<strong>${bestMarket}</strong> leads with ${bestGrowth.toFixed(1)}% sales growth`
+                });
+            }
+
+            // AOV insight
+            const aov = getLatestData(market, 'AVG_AOV');
+            if (aov) {
+                const change = calcChange(aov.YTD, aov.LYTD, 'currency');
+                if (change > 0) {
+                    insights.push({
+                        icon: '💰', color: 'green',
+                        text: `<strong>AOV up ${change.toFixed(1)}%</strong> to ${formatValue(aov.YTD, 'currency_small')} - customers spending more per transaction`
+                    });
+                }
+            }
+
+            return insights.slice(0, 6);
         }
 
-        // ============ RENDER FUNCTIONS ============
+        // Render functions
         function render() {
             const app = document.getElementById('app');
             if (state.showUpload) {
-                app.innerHTML = renderHeader() + renderUploadOverlay();
+                app.innerHTML = renderUpload();
             } else {
-                app.innerHTML = renderHeader() + renderMainContent();
+                app.innerHTML = renderDashboard();
             }
-            attachEventListeners();
+            attachEvents();
         }
 
-        function renderHeader() {
-            return `
-                <header class="header">
-                    <div class="header-logo">${LOGO_SVG}</div>
-                    <div class="header-text">
-                        <h1>KPI Performance Dashboard</h1>
-                        <p>Year-over-Year Comparison Analysis</p>
-                    </div>
-                </header>
-            `;
-        }
-
-        function renderUploadOverlay() {
+        function renderUpload() {
             return `
                 <div class="upload-overlay">
                     <div class="upload-box">
                         <div class="upload-icon">📊</div>
-                        <h2>KPI Performance Dashboard</h2>
-                        <p>Upload your CSV file or use demo data to explore the dashboard</p>
+                        <h2>2025 Performance Review</h2>
+                        <p>Upload your KPI data to generate the presentation dashboard</p>
                         <div class="dropzone" id="dropzone">
-                            <p class="dropzone-text"><span>Click to upload</span> or drag and drop your CSV file here</p>
+                            <p class="dropzone-text"><span>Click to upload</span> or drag & drop CSV</p>
                             <input type="file" id="fileInput" accept=".csv" style="display:none">
                         </div>
-                        <button class="demo-btn" id="demoBtn">Use Demo Data</button>
+                        <button class="btn-primary" id="demoBtn">Load Demo Data</button>
                     </div>
                 </div>
             `;
         }
 
-        function renderMainContent() {
+        function renderDashboard() {
+            return `
+                <header class="header">
+                    <div class="header-top">
+                        <h1>2025 Performance Review</h1>
+                        <span class="header-badge">Full Year Results</span>
+                    </div>
+                    <p>Year-over-Year Analysis | Strategic KPI Dashboard</p>
+                </header>
+                <nav class="nav-tabs">
+                    <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
+                    <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
+                    <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
+                </nav>
+                <main class="main">
+                    ${state.activeTab === 'summary' ? renderSummaryTab() : ''}
+                    ${state.activeTab === 'markets' ? renderMarketsTab() : ''}
+                    ${state.activeTab === 'kpi' ? renderKPITab() : ''}
+                </main>
+            `;
+        }
+
+        function renderSummaryTab() {
+            const market = 'All Markets';
+            const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF'];
+            const focusKPIs = ['PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
+            const insights = generateInsights();
+
+            return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Key Performance Indicators</div>
+                        <div class="section-subtitle">Full Year 2025 vs 2024 | All Markets</div>
+                    </div>
+                </div>
+                <div class="exec-summary">
+                    ${keyKPIs.map(key => renderMetricCard(market, key)).join('')}
+                </div>
+
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Strategic Focus Areas</div>
+                        <div class="section-subtitle">Engagement metrics requiring attention</div>
+                    </div>
+                </div>
+                <div class="focus-grid">
+                    ${focusKPIs.map(key => renderFocusCard(market, key)).join('')}
+                </div>
+
+                <div class="insights-panel">
+                    <div class="insights-title">💡 Key Insights</div>
+                    <div class="insights-grid">
+                        ${insights.map(i => `
+                            <div class="insight-item">
+                                <div class="insight-icon ${i.color}">${i.icon}</div>
+                                <div class="insight-text">${i.text}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                ${renderMarketSummaryTable()}
+            `;
+        }
+
+        function renderMetricCard(market, kpiKey) {
+            const config = KPI_CONFIG[kpiKey];
+            const data = getLatestData(market, kpiKey);
+            if (!data || !config) return '';
+
+            const change = calcChange(data.YTD, data.LYTD, config.format);
+            const isPositive = change !== null && change >= 0;
+            const isGood = config.good === 'up' ? isPositive : !isPositive;
+
+            let targetPct = null, targetClass = '';
+            if (data.Target && data.Target > 0) {
+                targetPct = Math.min((data.YTD / data.Target) * 100, 100);
+                targetClass = targetPct >= 95 ? 'good' : targetPct >= 85 ? 'ok' : 'bad';
+            }
+
+            return `
+                <div class="metric-card ${isGood ? 'positive' : 'negative'}">
+                    <div class="metric-label">${config.name}</div>
+                    <div class="metric-value">${formatValue(data.YTD, config.format)}</div>
+                    <div class="metric-comparison">
+                        <span class="metric-change ${isPositive ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
+                        <span class="metric-vs">vs 2024: ${formatValue(data.LYTD, config.format)}</span>
+                    </div>
+                    ${targetPct !== null ? `
+                        <div class="metric-target">
+                            <div class="target-label">
+                                <span>Target Attainment</span>
+                                <span>${targetPct.toFixed(0)}%</span>
+                            </div>
+                            <div class="target-bar">
+                                <div class="target-fill ${targetClass}" style="width:${targetPct}%"></div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function renderFocusCard(market, kpiKey) {
+            const config = KPI_CONFIG[kpiKey];
+            const data = getLatestData(market, kpiKey);
+            if (!data || !config) return '';
+
+            const change = calcChange(data.YTD, data.LYTD, config.format);
+            const isNegative = change !== null && change < 0;
+
+            let targetGap = null;
+            if (data.Target) {
+                targetGap = (data.Target - data.YTD) * 100;
+            }
+
+            const iconMap = {
+                'PCT_NBA': '🆕',
+                'PCT_XBP': '🔀',
+                'PCT_RDM': '🎯'
+            };
+
+            const insightMap = {
+                'PCT_NBA': 'Customers trying new brands - indicates program discovery health',
+                'PCT_XBP': 'Shopping across multiple brands - measures basket diversification',
+                'PCT_RDM': 'Active loyalty point redemption - engagement indicator'
+            };
+
+            return `
+                <div class="focus-card ${isNegative ? '' : 'success'}">
+                    <div class="focus-icon ${isNegative ? 'red' : 'green'}">${iconMap[kpiKey] || '📊'}</div>
+                    <div class="focus-title">${config.name}</div>
+                    <div class="focus-value ${isNegative ? 'red' : 'green'}">${formatChange(change, config.format)}</div>
+                    <div class="focus-detail">
+                        2025: ${formatValue(data.YTD, config.format)} vs 2024: ${formatValue(data.LYTD, config.format)}
+                        ${targetGap !== null ? `<br>Gap to target: ${targetGap.toFixed(1)} PP` : ''}
+                    </div>
+                    <div class="focus-insight">${insightMap[kpiKey] || ''}</div>
+                </div>
+            `;
+        }
+
+        function renderMarketSummaryTable() {
             const markets = getMarkets();
+            const kpis = ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
+
+            return `
+                <div class="section-header">
+                    <div class="section-title">Market Comparison</div>
+                </div>
+                <table class="market-table">
+                    <thead>
+                        <tr>
+                            <th>Market</th>
+                            ${kpis.map(k => `<th>${KPI_CONFIG[k]?.name || k}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${markets.map(m => {
+                            const isTotal = m === 'All Markets';
+                            return `
+                                <tr>
+                                    <td class="market-name ${isTotal ? 'total' : ''}">${m}</td>
+                                    ${kpis.map(k => {
+                                        const config = KPI_CONFIG[k];
+                                        const data = getLatestData(m, k);
+                                        if (!data) return '<td>—</td>';
+                                        const change = calcChange(data.YTD, data.LYTD, config.format);
+                                        const isUp = change >= 0;
+                                        return `
+                                            <td>
+                                                <span class="cell-value">${formatValue(data.YTD, config.format)}</span>
+                                                <span class="cell-change ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
+                                            </td>
+                                        `;
+                                    }).join('')}
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderMarketsTab() {
+            const markets = getMarkets().filter(m => m !== 'All Markets');
             const kpis = getKPIs();
-            const filteredData = getFilteredData();
 
-            let content = `<div class="main-container">`;
-            content += renderFilters(markets, kpis);
-
-            if (!state.selectedMarket || !state.selectedKPI) {
-                content += renderMessageState('📈', 'Select Market & KPI', 'Please select a market and KPI metric from the dropdowns above to view the comparison analysis.');
-            } else if (filteredData.length === 0) {
-                content += renderMessageState('🔍', 'No Data Available', 'No data found for the selected Market and KPI combination.');
-            } else {
-                content += renderSummaryCards(filteredData);
-                content += renderChart(filteredData);
-                content += renderTable(filteredData);
-            }
-
-            content += `</div>`;
-            return content;
-        }
-
-        function renderFilters(markets, kpis) {
             return `
-                <div class="filter-section">
-                    <div class="filter-group" style="z-index:20">
-                        <label class="filter-label">Market</label>
-                        <div class="dropdown market-dropdown">
-                            <button class="dropdown-button" id="marketBtn">${state.selectedMarket || 'Select...'}</button>
-                            <span class="dropdown-arrow ${state.marketDropdownOpen ? 'open' : ''}" id="marketArrow">▼</span>
-                            <div class="dropdown-menu ${state.marketDropdownOpen ? 'open' : ''}" id="marketMenu">
-                                ${markets.map(m => `<div class="dropdown-item ${m === state.selectedMarket ? 'selected' : ''}" data-market="${m}">${m}</div>`).join('')}
-                            </div>
-                        </div>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Select KPI</label>
+                        <select class="filter-select" id="marketKpiSelect">
+                            ${kpis.map(k => `<option value="${k}" ${k === 'SLS_TTL' ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
+                        </select>
                     </div>
-                    <div class="filter-group" style="z-index:10">
-                        <label class="filter-label">KPI Metric</label>
-                        <div class="dropdown kpi-dropdown">
-                            <button class="dropdown-button" id="kpiBtn">${state.selectedKPI || 'Select...'}</button>
-                            <span class="dropdown-arrow ${state.kpiDropdownOpen ? 'open' : ''}" id="kpiArrow">▼</span>
-                            <div class="dropdown-menu ${state.kpiDropdownOpen ? 'open' : ''}" id="kpiMenu">
-                                ${kpis.map(k => `<div class="dropdown-item ${k === state.selectedKPI ? 'selected' : ''}" data-kpi="${k}">${k}</div>`).join('')}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="upload-section">
-                        <button class="upload-btn" id="uploadNewBtn">📁 Upload New CSV</button>
-                        <input type="file" id="newFileInput" accept=".csv" style="display:none">
-                    </div>
+                </div>
+                <div id="marketComparisonContent">
+                    ${renderMarketComparison('SLS_TTL')}
                 </div>
             `;
         }
 
-        function renderMessageState(icon, title, message) {
-            return `
-                <div class="message-state">
-                    <div class="message-state-icon">${icon}</div>
-                    <h3>${title}</h3>
-                    <p>${message}</p>
-                </div>
-            `;
-        }
+        function renderMarketComparison(kpiKey) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => m !== 'All Markets');
 
-        function renderSummaryCards(data) {
-            const isPercent = isPercentKPI(state.selectedKPI);
-            const decData = data.find(d => d.month === 'DEC');
-            const val2025 = decData ? decData.value_2025 : null;
-            const val2024 = decData ? decData.value_2024 : null;
-            const diff = calcDiff(val2025, val2024, isPercent);
-            const isPositive = diff !== null && diff >= 0;
+            // Get data for all markets
+            const marketData = markets.map(m => {
+                const data = getLatestData(m, kpiKey);
+                return { market: m, data };
+            }).filter(d => d.data);
+
+            // Find max for bar scaling
+            const maxVal = Math.max(...marketData.map(d => d.data.YTD || 0));
 
             return `
-                <div class="summary-cards">
-                    <div class="summary-card year-2025">
-                        <div class="card-label">2025 Full Year</div>
-                        <div class="card-value">${formatValue(val2025, state.selectedKPI)}</div>
-                        <div class="card-sublabel">Year-to-Date (December)</div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">${config?.name || kpiKey} by Market</div>
                     </div>
-                    <div class="summary-card year-2024">
-                        <div class="card-label">2024 Full Year</div>
-                        <div class="card-value">${formatValue(val2024, state.selectedKPI)}</div>
-                        <div class="card-sublabel">Year-to-Date (December)</div>
-                    </div>
-                    <div class="summary-card ${isPositive ? 'yoy-positive' : 'yoy-negative'}">
-                        <div class="card-label">YoY Change</div>
-                        <div class="card-value ${isPositive ? 'positive' : 'negative'}">
-                            <span class="trend-icon">${isPositive ? '↑' : '↓'}</span>${formatDiff(diff, isPercent)}
-                        </div>
-                        <div class="card-sublabel">vs Previous Year</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderChart(data) {
-            const isPercent = isPercentKPI(state.selectedKPI);
-            const chartData = MONTHS.map(month => {
-                const monthData = data.find(d => d.month === month);
-                return {
-                    month,
-                    value_2025: monthData ? monthData.value_2025 : null,
-                    value_2024: monthData ? monthData.value_2024 : null
-                };
-            });
-
-            const allValues = chartData.flatMap(d => [d.value_2025, d.value_2024]).filter(v => v !== null);
-            const minVal = allValues.length ? Math.min(...allValues) : 0;
-            const maxVal = allValues.length ? Math.max(...allValues) : 100;
-            const padding = (maxVal - minVal) * 0.15;
-            const yMin = minVal - padding;
-            const yMax = maxVal + padding;
-
-            // SVG dimensions
-            const width = 900;
-            const height = 280;
-            const marginLeft = 70;
-            const marginRight = 30;
-            const marginTop = 20;
-            const marginBottom = 40;
-            const chartWidth = width - marginLeft - marginRight;
-            const chartHeight = height - marginTop - marginBottom;
-
-            // Scale functions
-            const xScale = (i) => marginLeft + (i * chartWidth / 11);
-            const yScale = (v) => marginTop + chartHeight - ((v - yMin) / (yMax - yMin)) * chartHeight;
-
-            // Create path data
-            let path2025 = '';
-            let path2024 = '';
-            let dots2025 = '';
-            let dots2024 = '';
-
-            chartData.forEach((d, i) => {
-                const x = xScale(i);
-                if (d.value_2025 !== null) {
-                    const y = yScale(d.value_2025);
-                    path2025 += (path2025 ? ' L' : 'M') + `${x},${y}`;
-                    dots2025 += `<circle cx="${x}" cy="${y}" r="5" fill="${COLORS.year2025}" data-idx="${i}" class="chart-dot"/>`;
-                }
-                if (d.value_2024 !== null) {
-                    const y = yScale(d.value_2024);
-                    path2024 += (path2024 ? ' L' : 'M') + `${x},${y}`;
-                    dots2024 += `<circle cx="${x}" cy="${y}" r="5" fill="${COLORS.year2024}" data-idx="${i}" class="chart-dot"/>`;
-                }
-            });
-
-            // Y-axis ticks
-            const yTicks = 5;
-            let yAxisHTML = '';
-            for (let i = 0; i <= yTicks; i++) {
-                const v = yMin + (yMax - yMin) * (i / yTicks);
-                const y = yScale(v);
-                let label;
-                if (isPercent) {
-                    label = (v * 100).toFixed(0) + '%';
-                } else if (Math.abs(v) >= 1000000) {
-                    label = (v / 1000000).toFixed(1) + 'M';
-                } else if (Math.abs(v) >= 1000) {
-                    label = (v / 1000).toFixed(0) + 'K';
-                } else {
-                    label = v.toFixed(0);
-                }
-                yAxisHTML += `<text x="${marginLeft - 10}" y="${y + 4}" text-anchor="end" fill="${COLORS.gray}" font-size="12">${label}</text>`;
-                yAxisHTML += `<line x1="${marginLeft}" y1="${y}" x2="${width - marginRight}" y2="${y}" stroke="${COLORS.grayLight}" stroke-dasharray="3,3"/>`;
-            }
-
-            // X-axis labels
-            let xAxisHTML = '';
-            MONTHS.forEach((m, i) => {
-                const x = xScale(i);
-                xAxisHTML += `<text x="${x}" y="${height - 10}" text-anchor="middle" fill="${COLORS.gray}" font-size="12">${m}</text>`;
-            });
-
-            // Monthly badges
-            let badgesHTML = chartData.map(d => {
-                const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
-                const isPositive = diff !== null && diff >= 0;
-                return `
-                    <div class="month-badge">
-                        <div class="month-badge-label">${d.month}</div>
-                        <div class="month-badge-value ${isPositive ? 'positive' : 'negative'}">${formatDiff(diff, isPercent)}</div>
-                    </div>
-                `;
-            }).join('');
-
-            return `
-                <div class="chart-section">
-                    <h3 class="chart-title">Monthly Trend Comparison</h3>
-                    <div class="chart-legend">
-                        <div class="legend-item">
-                            <div class="legend-line solid"></div>
-                            <span>2025</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-line dashed"></div>
-                            <span>2024</span>
-                        </div>
-                    </div>
-                    <div class="chart-container" id="chartContainer">
-                        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
-                            ${yAxisHTML}
-                            ${xAxisHTML}
-                            <path d="${path2024}" fill="none" stroke="${COLORS.year2024}" stroke-width="3" stroke-dasharray="5,5"/>
-                            <path d="${path2025}" fill="none" stroke="${COLORS.year2025}" stroke-width="3"/>
-                            ${dots2024}
-                            ${dots2025}
-                        </svg>
-                        <div class="tooltip" id="chartTooltip" style="display:none"></div>
-                    </div>
-                    <div class="monthly-badges">${badgesHTML}</div>
-                </div>
-            `;
-        }
-
-        function renderTable(data) {
-            const isPercent = isPercentKPI(state.selectedKPI);
-            const tableData = MONTHS.map(month => {
-                const monthData = data.find(d => d.month === month);
-                return {
-                    month,
-                    value_2025: monthData ? monthData.value_2025 : null,
-                    value_2024: monthData ? monthData.value_2024 : null
-                };
-            });
-
-            const row2025 = tableData.map(d => `<td>${formatValue(d.value_2025, state.selectedKPI)}</td>`).join('');
-            const row2024 = tableData.map(d => `<td>${formatValue(d.value_2024, state.selectedKPI)}</td>`).join('');
-            const rowYoY = tableData.map(d => {
-                const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
-                const isPositive = diff !== null && diff >= 0;
-                return `<td class="${isPositive ? 'value-positive' : 'value-negative'}">${formatDiff(diff, isPercent)}</td>`;
-            }).join('');
-
-            return `
-                <div class="table-section">
-                    <h3 class="table-title">Monthly Comparison Table</h3>
-                    <table class="comparison-table">
+                    <table class="market-table">
                         <thead>
                             <tr>
-                                <th>Year</th>
-                                ${MONTHS.map(m => `<th>${m}</th>`).join('')}
+                                <th style="width:200px">Market</th>
+                                <th>2025 Value</th>
+                                <th>vs 2024</th>
+                                <th>Target</th>
+                                <th style="width:40%">Performance</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="row-2025"><td>2025</td>${row2025}</tr>
-                            <tr class="row-2024"><td>2024</td>${row2024}</tr>
-                            <tr class="row-yoy"><td>YoY Δ</td>${rowYoY}</tr>
+                            ${marketData.map(({market, data}) => {
+                                const change = calcChange(data.YTD, data.LYTD, config.format);
+                                const isUp = change >= 0;
+                                const barPct = maxVal > 0 ? (data.YTD / maxVal) * 100 : 0;
+                                const targetPct = data.Target ? (data.YTD / data.Target * 100).toFixed(0) : null;
+
+                                return `
+                                    <tr>
+                                        <td class="market-name">${market}</td>
+                                        <td class="cell-value">${formatValue(data.YTD, config.format)}</td>
+                                        <td>
+                                            <span class="cell-change ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</span>
+                                        </td>
+                                        <td>${targetPct ? targetPct + '%' : '—'}</td>
+                                        <td>
+                                            <div class="cell-bar">
+                                                <div class="mini-bar" style="width:100%">
+                                                    <div class="mini-bar-fill" style="width:${barPct}%;background:${isUp ? '#10b981' : '#ef4444'}"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
         }
 
-        // ============ EVENT LISTENERS ============
-        function attachEventListeners() {
-            // Upload overlay
+        function renderKPITab() {
+            const kpis = getKPIs();
+            const markets = getMarkets();
+            const selectedKPI = state.selectedKPI || 'SLS_TTL';
+            const selectedMarket = state.selectedMarket || 'All Markets';
+
+            return `
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Market</label>
+                        <select class="filter-select" id="kpiMarketSelect">
+                            ${markets.map(m => `<option value="${m}" ${m === selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>KPI Metric</label>
+                        <select class="filter-select" id="kpiSelect">
+                            ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div id="kpiDetailContent">
+                    ${renderKPIDetail(selectedMarket, selectedKPI)}
+                </div>
+            `;
+        }
+
+        function renderKPIDetail(market, kpiKey) {
+            const config = KPI_CONFIG[kpiKey];
+            const monthlyData = getMonthlyData(market, kpiKey);
+            const latestData = getLatestData(market, kpiKey);
+
+            if (!config || monthlyData.length === 0) {
+                return '<p>No data available for selection</p>';
+            }
+
+            // Prepare chart data
+            const chartData = MONTHS.map(month => {
+                const row = monthlyData.find(d => MONTH_MAP[d.Month] === month);
+                return {
+                    month,
+                    ytd: row?.YTD ?? null,
+                    lytd: row?.LYTD ?? null,
+                    target: row?.Target ?? null
+                };
+            });
+
+            // SVG Chart
+            const width = 900, height = 260;
+            const marginLeft = 70, marginRight = 30, marginTop = 20, marginBottom = 40;
+            const chartWidth = width - marginLeft - marginRight;
+            const chartHeight = height - marginTop - marginBottom;
+
+            const allVals = chartData.flatMap(d => [d.ytd, d.lytd, d.target]).filter(v => v !== null);
+            const minVal = Math.min(...allVals) * 0.9;
+            const maxVal = Math.max(...allVals) * 1.1;
+
+            const xScale = i => marginLeft + (i * chartWidth / 11);
+            const yScale = v => marginTop + chartHeight - ((v - minVal) / (maxVal - minVal)) * chartHeight;
+
+            let pathYTD = '', pathLYTD = '', pathTarget = '';
+            let dotsYTD = '', dotsLYTD = '';
+
+            chartData.forEach((d, i) => {
+                const x = xScale(i);
+                if (d.ytd !== null) {
+                    const y = yScale(d.ytd);
+                    pathYTD += (pathYTD ? ' L' : 'M') + `${x},${y}`;
+                    dotsYTD += `<circle cx="${x}" cy="${y}" r="4" fill="#3b82f6"/>`;
+                }
+                if (d.lytd !== null) {
+                    const y = yScale(d.lytd);
+                    pathLYTD += (pathLYTD ? ' L' : 'M') + `${x},${y}`;
+                    dotsLYTD += `<circle cx="${x}" cy="${y}" r="4" fill="#64748b"/>`;
+                }
+                if (d.target !== null) {
+                    const y = yScale(d.target);
+                    pathTarget += (pathTarget ? ' L' : 'M') + `${x},${y}`;
+                }
+            });
+
+            // Y-axis
+            let yAxisHTML = '';
+            for (let i = 0; i <= 5; i++) {
+                const v = minVal + (maxVal - minVal) * (i / 5);
+                const y = yScale(v);
+                yAxisHTML += `<text x="${marginLeft-10}" y="${y+4}" text-anchor="end" fill="#64748b" font-size="11">${formatValue(v, config.format)}</text>`;
+                yAxisHTML += `<line x1="${marginLeft}" y1="${y}" x2="${width-marginRight}" y2="${y}" stroke="#334155" stroke-dasharray="3,3"/>`;
+            }
+
+            // X-axis
+            let xAxisHTML = MONTHS.map((m, i) => `<text x="${xScale(i)}" y="${height-12}" text-anchor="middle" fill="#64748b" font-size="11">${m}</text>`).join('');
+
+            // Monthly badges
+            const badgesHTML = chartData.map(d => {
+                const change = calcChange(d.ytd, d.lytd, config.format);
+                const isUp = change >= 0;
+                return `
+                    <div class="trend-badge">
+                        <div class="trend-badge-month">${d.month}</div>
+                        <div class="trend-badge-value ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="exec-summary" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+                    ${renderMetricCard(market, kpiKey)}
+                    <div class="metric-card neutral">
+                        <div class="metric-label">R12M Value</div>
+                        <div class="metric-value">${formatValue(latestData?.R12M, config.format)}</div>
+                        <div class="metric-comparison">
+                            <span class="metric-vs">Rolling 12 Month Total</span>
+                        </div>
+                    </div>
+                    <div class="metric-card ${latestData?.Target ? 'warning' : 'neutral'}">
+                        <div class="metric-label">2025 Target</div>
+                        <div class="metric-value">${latestData?.Target ? formatValue(latestData.Target, config.format) : '—'}</div>
+                        ${latestData?.Target ? `
+                            <div class="metric-comparison">
+                                <span class="metric-vs">Attainment: ${((latestData.YTD / latestData.Target) * 100).toFixed(0)}%</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Monthly Trend - ${config.name}</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot solid"></div> 2025</div>
+                            <div class="legend-item"><div class="legend-dot dashed"></div> 2024</div>
+                            ${pathTarget ? '<div class="legend-item"><div class="legend-dot target"></div> Target</div>' : ''}
+                        </div>
+                    </div>
+                    <svg class="chart-svg" viewBox="0 0 ${width} ${height}">
+                        ${yAxisHTML}
+                        ${xAxisHTML}
+                        ${pathTarget ? `<path d="${pathTarget}" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,4"/>` : ''}
+                        <path d="${pathLYTD}" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5"/>
+                        <path d="${pathYTD}" fill="none" stroke="#3b82f6" stroke-width="3"/>
+                        ${dotsLYTD}
+                        ${dotsYTD}
+                    </svg>
+                    <div class="trend-badges">${badgesHTML}</div>
+                </div>
+            `;
+        }
+
+        function attachEvents() {
+            // Upload
             const dropzone = document.getElementById('dropzone');
             const fileInput = document.getElementById('fileInput');
             const demoBtn = document.getElementById('demoBtn');
 
             if (dropzone) {
-                dropzone.addEventListener('click', () => fileInput.click());
-                dropzone.addEventListener('dragover', (e) => {
+                dropzone.onclick = () => fileInput.click();
+                dropzone.ondragover = e => { e.preventDefault(); dropzone.style.borderColor = '#3b82f6'; };
+                dropzone.ondragleave = () => { dropzone.style.borderColor = '#334155'; };
+                dropzone.ondrop = e => {
                     e.preventDefault();
-                    dropzone.classList.add('dragover');
-                });
-                dropzone.addEventListener('dragleave', () => {
-                    dropzone.classList.remove('dragover');
-                });
-                dropzone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    dropzone.classList.remove('dragover');
                     const file = e.dataTransfer.files[0];
-                    if (file && file.name.endsWith('.csv')) handleFile(file);
-                });
+                    if (file) loadFile(file);
+                };
             }
 
             if (fileInput) {
-                fileInput.addEventListener('change', (e) => {
-                    if (e.target.files[0]) handleFile(e.target.files[0]);
-                });
+                fileInput.onchange = e => { if (e.target.files[0]) loadFile(e.target.files[0]); };
             }
 
             if (demoBtn) {
-                demoBtn.addEventListener('click', () => {
-                    state.data = SAMPLE_DATA;
-                    state.showUpload = false;
-                    render();
-                });
+                demoBtn.onclick = () => {
+                    // For demo, prompt user to upload actual file
+                    alert('Please upload your CSV file with the KPI data.');
+                };
             }
 
-            // Main content
-            const marketBtn = document.getElementById('marketBtn');
-            const kpiBtn = document.getElementById('kpiBtn');
-            const uploadNewBtn = document.getElementById('uploadNewBtn');
-            const newFileInput = document.getElementById('newFileInput');
-
-            if (marketBtn) {
-                marketBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    state.marketDropdownOpen = !state.marketDropdownOpen;
-                    state.kpiDropdownOpen = false;
+            // Tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.onclick = () => {
+                    state.activeTab = tab.dataset.tab;
                     render();
-                });
-            }
-
-            if (kpiBtn) {
-                kpiBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    state.kpiDropdownOpen = !state.kpiDropdownOpen;
-                    state.marketDropdownOpen = false;
-                    render();
-                });
-            }
-
-            document.querySelectorAll('[data-market]').forEach(el => {
-                el.addEventListener('click', () => {
-                    state.selectedMarket = el.dataset.market;
-                    state.marketDropdownOpen = false;
-                    render();
-                });
+                };
             });
 
-            document.querySelectorAll('[data-kpi]').forEach(el => {
-                el.addEventListener('click', () => {
-                    state.selectedKPI = el.dataset.kpi;
-                    state.kpiDropdownOpen = false;
-                    render();
-                });
-            });
-
-            if (uploadNewBtn) {
-                uploadNewBtn.addEventListener('click', () => newFileInput.click());
+            // Market KPI select
+            const marketKpiSelect = document.getElementById('marketKpiSelect');
+            if (marketKpiSelect) {
+                marketKpiSelect.onchange = () => {
+                    document.getElementById('marketComparisonContent').innerHTML = renderMarketComparison(marketKpiSelect.value);
+                };
             }
 
-            if (newFileInput) {
-                newFileInput.addEventListener('change', (e) => {
-                    if (e.target.files[0]) handleFile(e.target.files[0]);
-                });
+            // KPI detail selects
+            const kpiMarketSelect = document.getElementById('kpiMarketSelect');
+            const kpiSelect = document.getElementById('kpiSelect');
+
+            if (kpiMarketSelect) {
+                kpiMarketSelect.onchange = () => {
+                    state.selectedMarket = kpiMarketSelect.value;
+                    document.getElementById('kpiDetailContent').innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || 'SLS_TTL');
+                };
             }
 
-            // Click outside to close dropdowns
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.dropdown')) {
-                    if (state.marketDropdownOpen || state.kpiDropdownOpen) {
-                        state.marketDropdownOpen = false;
-                        state.kpiDropdownOpen = false;
-                        render();
-                    }
-                }
-            });
-
-            // Chart tooltip
-            const chartContainer = document.getElementById('chartContainer');
-            const chartTooltip = document.getElementById('chartTooltip');
-            if (chartContainer && chartTooltip) {
-                const dots = chartContainer.querySelectorAll('.chart-dot');
-                const filteredData = getFilteredData();
-                const chartData = MONTHS.map(month => {
-                    const monthData = filteredData.find(d => d.month === month);
-                    return {
-                        month,
-                        value_2025: monthData ? monthData.value_2025 : null,
-                        value_2024: monthData ? monthData.value_2024 : null
-                    };
-                });
-
-                dots.forEach(dot => {
-                    dot.addEventListener('mouseenter', (e) => {
-                        const idx = parseInt(e.target.dataset.idx);
-                        const d = chartData[idx];
-                        const isPercent = isPercentKPI(state.selectedKPI);
-                        const diff = calcDiff(d.value_2025, d.value_2024, isPercent);
-                        const diffColor = diff >= 0 ? COLORS.positive : COLORS.negative;
-
-                        chartTooltip.innerHTML = `
-                            <div class="tooltip-title">${d.month}</div>
-                            <div class="tooltip-row">
-                                <div class="tooltip-dot" style="background:${COLORS.year2025}"></div>
-                                <span>2025:</span>
-                                <span class="tooltip-value">${formatValue(d.value_2025, state.selectedKPI)}</span>
-                            </div>
-                            <div class="tooltip-row">
-                                <div class="tooltip-dot" style="background:${COLORS.year2024}"></div>
-                                <span>2024:</span>
-                                <span class="tooltip-value">${formatValue(d.value_2024, state.selectedKPI)}</span>
-                            </div>
-                            <div class="tooltip-diff" style="color:${diffColor}">YoY: ${formatDiff(diff, isPercent)}</div>
-                        `;
-                        chartTooltip.style.display = 'block';
-
-                        const rect = chartContainer.getBoundingClientRect();
-                        const dotRect = e.target.getBoundingClientRect();
-                        chartTooltip.style.left = (dotRect.left - rect.left + 15) + 'px';
-                        chartTooltip.style.top = (dotRect.top - rect.top - 80) + 'px';
-                    });
-
-                    dot.addEventListener('mouseleave', () => {
-                        chartTooltip.style.display = 'none';
-                    });
-                });
+            if (kpiSelect) {
+                kpiSelect.onchange = () => {
+                    state.selectedKPI = kpiSelect.value;
+                    document.getElementById('kpiDetailContent').innerHTML = renderKPIDetail(state.selectedMarket || 'All Markets', state.selectedKPI);
+                };
             }
         }
 
-        function handleFile(file) {
+        function loadFile(file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const parsed = parseCSV(e.target.result);
-                if (parsed.length > 0) {
-                    state.data = parsed;
-                    state.selectedMarket = '';
-                    state.selectedKPI = '';
+            reader.onload = e => {
+                const data = parseCSV(e.target.result);
+                if (data.length > 0) {
+                    state.data = data;
                     state.showUpload = false;
                     render();
                 } else {
-                    alert('Invalid CSV format. Expected headers: Market, KPI, Month, value_2025, value_2024');
+                    alert('Could not parse CSV. Please check the format.');
                 }
             };
             reader.readAsText(file);
         }
 
-        // ============ INIT ============
+        // Initialize
         render();
     })();
     </script>

@@ -564,30 +564,42 @@
         .trend-badges {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
-            gap: 8px;
+            gap: 6px;
             margin-top: 20px;
         }
 
         .trend-badge {
             background: var(--light-bg);
-            padding: 10px 4px;
+            padding: 8px 4px;
             border-radius: 6px;
             text-align: center;
         }
 
         .trend-badge-month {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+        }
+
+        .trend-badge-actual {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 2px;
         }
 
         .trend-badge-value {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 600;
         }
 
-        .trend-badge-value.up { color: var(--positive); }
-        .trend-badge-value.down { color: var(--negative); }
+        .trend-badge-value.up { color: var(--positive-soft); }
+        .trend-badge-value.down { color: var(--negative-soft); }
+
+        .trend-badge-label {
+            font-weight: 400;
+            color: var(--text-muted);
+        }
 
         /* Analysis Table */
         .analysis-table {
@@ -1313,7 +1325,8 @@
                 return `
                     <div class="trend-badge">
                         <div class="trend-badge-month">${d.month}</div>
-                        <div class="trend-badge-value ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)}</div>
+                        <div class="trend-badge-actual">${formatValue(d.ytd, config.format)}</div>
+                        <div class="trend-badge-value ${isUp ? 'up' : 'down'}">${formatChange(change, config.format)} <span class="trend-badge-label">vs LY</span></div>
                     </div>
                 `;
             }).join('');

@@ -2713,6 +2713,709 @@
             content: '📊';
             margin-right: 6px;
         }
+
+        /* ========================================
+           CEO DASHBOARD ENHANCEMENTS
+           ======================================== */
+
+        /* Traffic Light Scorecard */
+        .scorecard-strip {
+            display: flex;
+            gap: 16px;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            align-items: stretch;
+        }
+
+        .scorecard-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 12px;
+            border-radius: 12px;
+            background: var(--light-bg);
+            transition: all var(--transition-normal);
+            position: relative;
+            min-width: 120px;
+        }
+
+        .scorecard-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .scorecard-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .scorecard-item.status-green::before { background: var(--positive); }
+        .scorecard-item.status-amber::before { background: var(--neutral); }
+        .scorecard-item.status-red::before { background: var(--negative); }
+
+        .scorecard-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .scorecard-item.status-green .scorecard-indicator {
+            background: linear-gradient(135deg, var(--positive) 0%, #059669 100%);
+            color: white;
+        }
+
+        .scorecard-item.status-amber .scorecard-indicator {
+            background: linear-gradient(135deg, var(--neutral) 0%, #D97706 100%);
+            color: white;
+        }
+
+        .scorecard-item.status-red .scorecard-indicator {
+            background: linear-gradient(135deg, var(--negative) 0%, #DC2626 100%);
+            color: white;
+        }
+
+        .scorecard-name {
+            font-size: var(--font-caption);
+            font-weight: 600;
+            color: var(--navy);
+            text-align: center;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .scorecard-value {
+            font-size: var(--font-body);
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .scorecard-change {
+            font-size: var(--font-label);
+            font-weight: 600;
+        }
+
+        .scorecard-change.up { color: var(--positive); }
+        .scorecard-change.down { color: var(--negative); }
+        .scorecard-change.neutral { color: var(--neutral); }
+
+        .scorecard-summary {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 24px;
+            border-left: 2px solid var(--light-steel);
+            min-width: 180px;
+        }
+
+        .scorecard-summary-label {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .scorecard-summary-text {
+            font-size: var(--font-body-lg);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .scorecard-summary-detail {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Target Achievement Gauges */
+        .gauge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .gauge-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: all var(--transition-normal);
+        }
+
+        .gauge-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .gauge-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 20px;
+        }
+
+        .gauge-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: var(--light-bg);
+            stroke-width: 12;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .gauge-fill.exceeded { stroke: var(--positive); }
+        .gauge-fill.on-track { stroke: var(--steel-blue); }
+        .gauge-fill.at-risk { stroke: var(--neutral); }
+        .gauge-fill.behind { stroke: var(--negative); }
+
+        .gauge-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .gauge-percent {
+            font-size: var(--font-value-md);
+            font-weight: 800;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .gauge-label-small {
+            font-size: var(--font-micro);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gauge-title {
+            font-size: var(--font-body);
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .gauge-values {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            font-size: var(--font-caption);
+        }
+
+        .gauge-actual {
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .gauge-target {
+            color: var(--text-muted);
+        }
+
+        .gauge-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: var(--font-label);
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .gauge-status.exceeded {
+            background: var(--positive-light);
+            color: var(--positive);
+        }
+
+        .gauge-status.on-track {
+            background: var(--light-steel);
+            color: var(--steel-blue);
+        }
+
+        .gauge-status.at-risk {
+            background: var(--neutral-light);
+            color: var(--neutral);
+        }
+
+        .gauge-status.behind {
+            background: var(--negative-light);
+            color: var(--negative);
+        }
+
+        /* Trend Sparklines in Tables */
+        .sparkline-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .sparkline-mini {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 24px;
+            padding: 2px 0;
+        }
+
+        .sparkline-mini-bar {
+            width: 4px;
+            background: var(--steel-blue);
+            border-radius: 1px;
+            transition: all var(--transition-fast);
+            min-height: 3px;
+        }
+
+        .sparkline-mini-bar:last-child {
+            background: var(--navy);
+        }
+
+        .sparkline-mini-bar.declining {
+            background: var(--negative);
+        }
+
+        .sparkline-mini-bar.declining:last-child {
+            background: var(--negative);
+        }
+
+        /* Waterfall Chart */
+        .waterfall-container {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            box-shadow: var(--shadow-md);
+        }
+
+        .waterfall-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--light-steel);
+        }
+
+        .waterfall-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .waterfall-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--steel-blue) 0%, var(--navy) 100%);
+            border-radius: 2px;
+        }
+
+        .waterfall-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 280px;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .waterfall-chart::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 60px;
+            height: 1px;
+            background: var(--light-steel);
+            z-index: 0;
+        }
+
+        .waterfall-bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            max-width: 100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .waterfall-bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 200px;
+            justify-content: flex-end;
+            position: relative;
+            width: 100%;
+        }
+
+        .waterfall-bar {
+            width: 48px;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all var(--transition-normal);
+            cursor: pointer;
+        }
+
+        .waterfall-bar:hover {
+            filter: brightness(1.1);
+            transform: scaleY(1.02);
+            transform-origin: bottom;
+        }
+
+        .waterfall-bar.base {
+            background: linear-gradient(180deg, var(--navy-light) 0%, var(--navy) 100%);
+        }
+
+        .waterfall-bar.positive {
+            background: linear-gradient(180deg, var(--positive-soft) 0%, var(--positive) 100%);
+        }
+
+        .waterfall-bar.negative {
+            background: linear-gradient(180deg, var(--negative-soft) 0%, var(--negative) 100%);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .waterfall-bar.total {
+            background: linear-gradient(180deg, var(--steel-blue) 0%, var(--navy) 100%);
+        }
+
+        .waterfall-bar-value {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: var(--font-caption);
+            font-weight: 700;
+            color: var(--navy);
+            white-space: nowrap;
+        }
+
+        .waterfall-bar.positive .waterfall-bar-value { color: var(--positive); }
+        .waterfall-bar.negative .waterfall-bar-value { color: var(--negative); }
+
+        .waterfall-connector {
+            position: absolute;
+            height: 2px;
+            background: var(--text-muted);
+            opacity: 0.3;
+            top: 0;
+            z-index: 0;
+        }
+
+        .waterfall-label {
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .waterfall-label-name {
+            font-size: var(--font-caption);
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 2px;
+        }
+
+        .waterfall-label-sub {
+            font-size: var(--font-micro);
+            color: var(--text-muted);
+        }
+
+        /* Momentum Indicator */
+        .momentum-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .momentum-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            box-shadow: var(--shadow-md);
+        }
+
+        .momentum-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .momentum-title {
+            font-size: var(--font-body);
+            font-weight: 700;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .momentum-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: var(--font-caption);
+            font-weight: 600;
+        }
+
+        .momentum-badge.accelerating {
+            background: var(--positive-light);
+            color: var(--positive);
+        }
+
+        .momentum-badge.stable {
+            background: var(--light-steel);
+            color: var(--steel-blue);
+        }
+
+        .momentum-badge.decelerating {
+            background: var(--negative-light);
+            color: var(--negative);
+        }
+
+        .momentum-visual {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .momentum-arrow-container {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .momentum-arrow {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+
+        .momentum-arrow.up { transform: rotate(-45deg); }
+        .momentum-arrow.flat { transform: rotate(0deg); }
+        .momentum-arrow.down { transform: rotate(45deg); }
+
+        .momentum-stats {
+            flex: 1;
+        }
+
+        .momentum-stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light-bg);
+        }
+
+        .momentum-stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .momentum-stat-label {
+            font-size: var(--font-body-sm);
+            color: var(--text-muted);
+        }
+
+        .momentum-stat-value {
+            font-size: var(--font-body-sm);
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .momentum-insight {
+            background: var(--light-bg);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: var(--font-body-sm);
+            color: var(--text-dark);
+            border-left: 3px solid var(--steel-blue);
+        }
+
+        .momentum-insight strong {
+            color: var(--navy);
+        }
+
+        /* Chart Narrative Callouts */
+        .chart-callout {
+            position: absolute;
+            background: var(--navy);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: var(--font-caption);
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
+            max-width: 160px;
+            text-align: center;
+            pointer-events: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chart-callout::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+        }
+
+        .chart-callout.callout-bottom::after {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: var(--navy);
+        }
+
+        .chart-callout.callout-top::after {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: var(--navy);
+        }
+
+        .chart-callout.positive {
+            background: var(--positive);
+        }
+
+        .chart-callout.positive.callout-bottom::after {
+            border-top-color: var(--positive);
+        }
+
+        .chart-callout.negative {
+            background: var(--negative);
+        }
+
+        .chart-callout.negative.callout-bottom::after {
+            border-top-color: var(--negative);
+        }
+
+        .chart-annotations {
+            position: relative;
+        }
+
+        /* Inline callout markers */
+        .callout-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--navy);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.3);
+        }
+
+        .callout-marker:hover {
+            transform: scale(1.2);
+        }
+
+        .callout-marker.positive { background: var(--positive); }
+        .callout-marker.negative { background: var(--negative); }
+
+        /* Chart with callouts layout */
+        .chart-with-callouts {
+            position: relative;
+        }
+
+        .chart-callout-list {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .callout-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            font-size: var(--font-caption);
+            color: var(--text-dark);
+        }
+
+        .callout-legend-number {
+            width: 20px;
+            height: 20px;
+            background: var(--navy);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: white;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .callout-legend-number.positive { background: var(--positive); }
+        .callout-legend-number.negative { background: var(--negative); }
+
+        @media (max-width: 1200px) {
+            .gauge-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .momentum-section {
+                grid-template-columns: 1fr;
+            }
+            .scorecard-strip {
+                flex-wrap: wrap;
+            }
+            .scorecard-summary {
+                width: 100%;
+                border-left: none;
+                border-top: 2px solid var(--light-steel);
+                padding-left: 0;
+                padding-top: 16px;
+                margin-top: 16px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -3220,6 +3923,507 @@
             }).filter(d => d.data);
         }
 
+        // ========================================
+        // CEO DASHBOARD ENHANCEMENT FUNCTIONS
+        // ========================================
+
+        // Traffic Light Scorecard - shows health of key metrics at a glance
+        function renderTrafficLightScorecard() {
+            const market = getAggregateValue('market');
+            const config = getKPIConfig();
+
+            // Key metrics to track with their targets and thresholds
+            const metrics = [
+                { key: 'SLS_TTL', name: 'Revenue', icon: '↑' },
+                { key: 'MBR_TTL', name: 'Members', icon: '↑' },
+                { key: 'AVG_AOV', name: 'AOV', icon: '↑' },
+                { key: 'AVG_ATF', name: 'Frequency', icon: '↑' },
+                { key: 'PCT_NBA', name: 'New Brand Adopters', icon: '↑' },
+                { key: 'PCT_RDM', name: 'Redemption', icon: '↑' }
+            ];
+
+            let greenCount = 0;
+            let amberCount = 0;
+            let redCount = 0;
+
+            const items = metrics.map(m => {
+                const data = getLatestData(market, m.key);
+                if (!data) return null;
+
+                const change = calcChange(data.YTD, data.LYTD, config[m.key]?.format);
+                const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config[m.key]?.format) : null;
+
+                // Determine status: green if growing and on/above target, amber if growing but below target, red if declining
+                let status = 'green';
+                let icon = '✓';
+
+                if (change < 0) {
+                    status = 'red';
+                    icon = '↓';
+                    redCount++;
+                } else if (targetGap !== null && targetGap < -5) {
+                    status = 'amber';
+                    icon = '!';
+                    amberCount++;
+                } else if (targetGap !== null && targetGap < 0) {
+                    status = 'amber';
+                    icon = '~';
+                    amberCount++;
+                } else {
+                    greenCount++;
+                }
+
+                return {
+                    ...m,
+                    value: formatValue(data.YTD, config[m.key]?.format),
+                    change: change,
+                    changeFormatted: formatChange(change, config[m.key]?.format),
+                    changeClass: getChangeClass(change, config[m.key]?.format),
+                    status,
+                    statusIcon: icon
+                };
+            }).filter(Boolean);
+
+            const totalMetrics = greenCount + amberCount + redCount;
+            const summaryText = greenCount === totalMetrics
+                ? 'All metrics on track'
+                : `${greenCount}/${totalMetrics} on track`;
+            const summaryDetail = redCount > 0
+                ? `${redCount} metric${redCount > 1 ? 's' : ''} need${redCount === 1 ? 's' : ''} attention`
+                : amberCount > 0
+                    ? `${amberCount} metric${amberCount > 1 ? 's' : ''} approaching target`
+                    : 'Strong performance across all KPIs';
+
+            return `
+                <div class="scorecard-strip animate-fade-in-up">
+                    ${items.map(item => `
+                        <div class="scorecard-item status-${item.status}">
+                            <div class="scorecard-indicator">${item.statusIcon}</div>
+                            <div class="scorecard-name">${item.name}</div>
+                            <div class="scorecard-value">${item.value}</div>
+                            <div class="scorecard-change ${item.changeClass}">${item.changeFormatted} vs LY</div>
+                        </div>
+                    `).join('')}
+                    <div class="scorecard-summary">
+                        <div class="scorecard-summary-label">Overall Status</div>
+                        <div class="scorecard-summary-text">${summaryText}</div>
+                        <div class="scorecard-summary-detail">${summaryDetail}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Target Achievement Gauges - radial progress toward targets
+        function renderTargetGauges() {
+            const market = getAggregateValue('market');
+            const config = getKPIConfig();
+
+            // Metrics with targets
+            const gaugeMetrics = [
+                { key: 'SLS_TTL', name: 'Total Sales' },
+                { key: 'MBR_TTL', name: 'Members' },
+                { key: 'AVG_AOV', name: 'Avg Order Value' }
+            ];
+
+            const gauges = gaugeMetrics.map(m => {
+                const data = getLatestData(market, m.key);
+                if (!data || !data.Target) return null;
+
+                const actual = data.YTD;
+                const target = data.Target;
+                const percent = Math.round((actual / target) * 100);
+                const gap = calcTargetGap(actual, target, config[m.key]?.format);
+
+                // Status thresholds
+                let status = 'exceeded';
+                let statusText = 'Exceeded';
+                if (percent >= 100) {
+                    status = 'exceeded';
+                    statusText = `+${(percent - 100).toFixed(0)}% above`;
+                } else if (percent >= 95) {
+                    status = 'on-track';
+                    statusText = 'On Track';
+                } else if (percent >= 85) {
+                    status = 'at-risk';
+                    statusText = 'At Risk';
+                } else {
+                    status = 'behind';
+                    statusText = 'Behind';
+                }
+
+                // SVG arc calculation
+                const radius = 54;
+                const circumference = 2 * Math.PI * radius;
+                const displayPercent = Math.min(percent, 120); // Cap visual at 120%
+                const dashOffset = circumference - (circumference * displayPercent / 120);
+
+                return {
+                    ...m,
+                    actual: formatValue(actual, config[m.key]?.format),
+                    target: formatValue(target, config[m.key]?.format),
+                    percent,
+                    status,
+                    statusText,
+                    radius,
+                    circumference,
+                    dashOffset
+                };
+            }).filter(Boolean);
+
+            if (gauges.length === 0) return '';
+
+            return `
+                <div class="gauge-grid">
+                    ${gauges.map(g => `
+                        <div class="gauge-card animate-fade-in-up">
+                            <div class="gauge-wrapper">
+                                <svg class="gauge-svg" viewBox="0 0 140 140">
+                                    <circle class="gauge-bg" cx="70" cy="70" r="${g.radius}"/>
+                                    <circle class="gauge-fill ${g.status}"
+                                            cx="70" cy="70" r="${g.radius}"
+                                            stroke-dasharray="${g.circumference}"
+                                            stroke-dashoffset="${g.dashOffset}"/>
+                                </svg>
+                                <div class="gauge-center">
+                                    <div class="gauge-percent">${g.percent}%</div>
+                                    <div class="gauge-label-small">of target</div>
+                                </div>
+                            </div>
+                            <div class="gauge-title">${g.name}</div>
+                            <div class="gauge-values">
+                                <span class="gauge-actual">${g.actual}</span>
+                                <span class="gauge-target">Target: ${g.target}</span>
+                            </div>
+                            <div class="gauge-status ${g.status}">${g.statusText}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Waterfall Chart - shows what's driving revenue growth
+        function renderWaterfallChart() {
+            const market = getAggregateValue('market');
+            const config = getKPIConfig();
+
+            // Get key metrics to decompose revenue growth
+            const salesCY = getLatestData(market, 'SLS_TTL');
+            const membersCY = getLatestData(market, 'MBR_TTL');
+            const aovCY = getLatestData(market, 'AVG_AOV');
+            const freqCY = getLatestData(market, 'AVG_ATF');
+
+            if (!salesCY) return '';
+
+            const salesLY = salesCY.LYTD;
+            const salesActual = salesCY.YTD;
+            const totalGrowth = salesActual - salesLY;
+
+            // Calculate contribution of each driver (simplified model)
+            const membersLY = membersCY?.LYTD || 0;
+            const membersNow = membersCY?.YTD || 0;
+            const memberGrowthPct = membersLY > 0 ? (membersNow - membersLY) / membersLY : 0;
+
+            const aovLY = aovCY?.LYTD || 0;
+            const aovNow = aovCY?.YTD || 0;
+            const aovGrowthPct = aovLY > 0 ? (aovNow - aovLY) / aovLY : 0;
+
+            const freqLY = freqCY?.LYTD || 0;
+            const freqNow = freqCY?.YTD || 0;
+            const freqGrowthPct = freqLY > 0 ? (freqNow - freqLY) / freqLY : 0;
+
+            // Attribute growth proportionally
+            const totalPct = Math.abs(memberGrowthPct) + Math.abs(aovGrowthPct) + Math.abs(freqGrowthPct);
+
+            const memberContribution = totalPct > 0 ? totalGrowth * (memberGrowthPct / totalPct) : totalGrowth / 3;
+            const aovContribution = totalPct > 0 ? totalGrowth * (aovGrowthPct / totalPct) : totalGrowth / 3;
+            const freqContribution = totalPct > 0 ? totalGrowth * (freqGrowthPct / totalPct) : totalGrowth / 3;
+
+            const bars = [
+                { name: `${PREVIOUS_YEAR}`, sub: 'Baseline', value: salesLY, type: 'base', cumulative: salesLY },
+                { name: 'Members', sub: `${memberGrowthPct >= 0 ? '+' : ''}${(memberGrowthPct * 100).toFixed(1)}%`, value: memberContribution, type: memberContribution >= 0 ? 'positive' : 'negative', cumulative: salesLY + memberContribution },
+                { name: 'AOV', sub: `${aovGrowthPct >= 0 ? '+' : ''}${(aovGrowthPct * 100).toFixed(1)}%`, value: aovContribution, type: aovContribution >= 0 ? 'positive' : 'negative', cumulative: salesLY + memberContribution + aovContribution },
+                { name: 'Frequency', sub: `${freqGrowthPct >= 0 ? '+' : ''}${(freqGrowthPct * 100).toFixed(1)}%`, value: freqContribution, type: freqContribution >= 0 ? 'positive' : 'negative', cumulative: salesActual },
+                { name: `${CURRENT_YEAR}`, sub: 'Result', value: salesActual, type: 'total', cumulative: salesActual }
+            ];
+
+            // Calculate heights
+            const maxValue = Math.max(salesLY, salesActual) * 1.15;
+            const getHeight = (val) => Math.max(4, (Math.abs(val) / maxValue) * 180);
+            const getBottom = (cum, val, type) => {
+                if (type === 'base' || type === 'total') return 60;
+                if (val >= 0) return 60 + ((cum - val) / maxValue) * 180;
+                return 60 + (cum / maxValue) * 180;
+            };
+
+            return `
+                <div class="waterfall-container animate-fade-in-up">
+                    <div class="waterfall-header">
+                        <div class="waterfall-title">Revenue Growth Drivers</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:var(--positive)"></div> Growth driver</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:var(--negative)"></div> Headwind</div>
+                        </div>
+                    </div>
+                    <div class="waterfall-chart">
+                        ${bars.map((bar, i) => {
+                            const height = bar.type === 'base' || bar.type === 'total'
+                                ? getHeight(bar.value)
+                                : getHeight(bar.value);
+                            const bottom = bar.type === 'base' || bar.type === 'total'
+                                ? 60
+                                : bar.value >= 0
+                                    ? 60 + ((bar.cumulative - bar.value) / maxValue) * 180
+                                    : 60 + (bar.cumulative / maxValue) * 180;
+
+                            const displayValue = bar.type === 'base' || bar.type === 'total'
+                                ? formatValue(bar.value, 'currency')
+                                : (bar.value >= 0 ? '+' : '') + formatValue(bar.value, 'currency');
+
+                            return `
+                                <div class="waterfall-bar-group">
+                                    <div class="waterfall-bar-wrapper">
+                                        <div class="waterfall-bar ${bar.type}" style="height:${height}px; margin-bottom:${bottom - 60}px;">
+                                            <div class="waterfall-bar-value">${displayValue}</div>
+                                        </div>
+                                    </div>
+                                    <div class="waterfall-label">
+                                        <div class="waterfall-label-name">${bar.name}</div>
+                                        <div class="waterfall-label-sub">${bar.sub}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Momentum Indicators - shows rolling 12-month acceleration/deceleration
+        function renderMomentumIndicators() {
+            const market = getAggregateValue('market');
+            const config = getKPIConfig();
+
+            const momentumMetrics = [
+                { key: 'SLS_TTL', name: 'Revenue Momentum' },
+                { key: 'MBR_TTL', name: 'Member Growth Momentum' }
+            ];
+
+            const cards = momentumMetrics.map(m => {
+                const data = getLatestData(market, m.key);
+                if (!data) return null;
+
+                const r12m = data.R12M;
+                const lr12m = data.LMR12M;
+                const ytd = data.YTD;
+                const lytd = data.LYTD;
+
+                const r12mChange = lr12m ? ((r12m - lr12m) / lr12m) * 100 : 0;
+                const ytdChange = lytd ? ((ytd - lytd) / lytd) * 100 : 0;
+
+                // Momentum = is R12M growth accelerating vs prior period?
+                const acceleration = r12mChange - (ytdChange * 0.8); // Compare to slightly dampened YTD
+
+                let status = 'stable';
+                let statusText = 'Stable';
+                let arrowDirection = 'flat';
+                let insight = '';
+
+                if (acceleration > 2) {
+                    status = 'accelerating';
+                    statusText = 'Accelerating';
+                    arrowDirection = 'up';
+                    insight = `<strong>Momentum is building.</strong> Rolling 12-month performance is accelerating, suggesting sustained growth ahead.`;
+                } else if (acceleration < -2) {
+                    status = 'decelerating';
+                    statusText = 'Decelerating';
+                    arrowDirection = 'down';
+                    insight = `<strong>Momentum is slowing.</strong> While still growing, the rate of growth is declining. Consider interventions to reinvigorate.`;
+                } else {
+                    insight = `<strong>Steady performance.</strong> Growth is consistent with prior periods, indicating stable execution.`;
+                }
+
+                // Arrow SVG
+                const arrowSvg = `
+                    <svg class="momentum-arrow ${arrowDirection}" viewBox="0 0 80 80">
+                        <defs>
+                            <linearGradient id="arrowGrad${m.key}" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:${status === 'accelerating' ? '#10B981' : status === 'decelerating' ? '#EF4444' : '#3B82F6'}"/>
+                                <stop offset="100%" style="stop-color:${status === 'accelerating' ? '#059669' : status === 'decelerating' ? '#DC2626' : '#1B365D'}"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M10,40 L55,40 L55,30 L75,45 L55,60 L55,50 L10,50 Z" fill="url(#arrowGrad${m.key})"/>
+                    </svg>
+                `;
+
+                return {
+                    ...m,
+                    status,
+                    statusText,
+                    arrowSvg,
+                    r12m: formatValue(r12m, config[m.key]?.format),
+                    r12mChange: r12mChange.toFixed(1),
+                    ytdChange: ytdChange.toFixed(1),
+                    insight
+                };
+            }).filter(Boolean);
+
+            if (cards.length === 0) return '';
+
+            return `
+                <div class="momentum-section">
+                    ${cards.map(card => `
+                        <div class="momentum-card animate-fade-in-up">
+                            <div class="momentum-header">
+                                <div class="momentum-title">${card.name}</div>
+                                <div class="momentum-badge ${card.status}">${card.statusText}</div>
+                            </div>
+                            <div class="momentum-visual">
+                                <div class="momentum-arrow-container">
+                                    ${card.arrowSvg}
+                                </div>
+                                <div class="momentum-stats">
+                                    <div class="momentum-stat-row">
+                                        <span class="momentum-stat-label">Rolling 12M</span>
+                                        <span class="momentum-stat-value">${card.r12m}</span>
+                                    </div>
+                                    <div class="momentum-stat-row">
+                                        <span class="momentum-stat-label">R12M vs Prior</span>
+                                        <span class="momentum-stat-value" style="color:${parseFloat(card.r12mChange) >= 0 ? 'var(--positive)' : 'var(--negative)'}">${parseFloat(card.r12mChange) >= 0 ? '+' : ''}${card.r12mChange}%</span>
+                                    </div>
+                                    <div class="momentum-stat-row">
+                                        <span class="momentum-stat-label">YTD vs LY</span>
+                                        <span class="momentum-stat-value" style="color:${parseFloat(card.ytdChange) >= 0 ? 'var(--positive)' : 'var(--negative)'}">${parseFloat(card.ytdChange) >= 0 ? '+' : ''}${card.ytdChange}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="momentum-insight">${card.insight}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Sparkline generator for market table
+        function generateSparkline(market, kpiKey) {
+            const monthlyData = getMonthlyData(market, kpiKey);
+            if (monthlyData.length < 3) return '';
+
+            // Get last 6 months of YTD data (or monthly values)
+            const values = monthlyData.slice(-6).map(d => d.YTD).filter(v => v !== null && !isNaN(v));
+            if (values.length < 3) return '';
+
+            const max = Math.max(...values);
+            const min = Math.min(...values);
+            const range = max - min || 1;
+
+            // Check if trend is declining
+            const isDecline = values[values.length - 1] < values[0];
+            const declineClass = isDecline ? 'declining' : '';
+
+            const bars = values.map((v, i) => {
+                const height = 4 + ((v - min) / range) * 18;
+                return `<div class="sparkline-mini-bar ${declineClass}" style="height:${height}px"></div>`;
+            }).join('');
+
+            return `<div class="sparkline-mini">${bars}</div>`;
+        }
+
+        // Generate chart annotations/callouts based on data
+        function generateChartCallouts(chartData, config) {
+            const callouts = [];
+
+            if (!chartData || chartData.length === 0) return callouts;
+
+            // Find best month (highest YTD)
+            let bestMonth = null;
+            let bestValue = -Infinity;
+            let worstMonth = null;
+            let worstGap = Infinity;
+
+            chartData.forEach((d, i) => {
+                if (d.ytd !== null && d.ytd > bestValue) {
+                    bestValue = d.ytd;
+                    bestMonth = { ...d, index: i };
+                }
+
+                // Find worst gap vs target
+                if (d.ytd !== null && d.target !== null) {
+                    const gap = ((d.ytd - d.target) / d.target) * 100;
+                    if (gap < worstGap) {
+                        worstGap = gap;
+                        worstMonth = { ...d, index: i, gap };
+                    }
+                }
+            });
+
+            // Best month callout
+            if (bestMonth) {
+                callouts.push({
+                    month: bestMonth.month,
+                    index: bestMonth.index,
+                    text: 'Peak performance',
+                    type: 'positive',
+                    value: formatValue(bestMonth.ytd, config.format)
+                });
+            }
+
+            // Check for significant target miss
+            if (worstMonth && worstGap < -5) {
+                callouts.push({
+                    month: worstMonth.month,
+                    index: worstMonth.index,
+                    text: `${worstGap.toFixed(0)}% vs target`,
+                    type: 'negative',
+                    value: formatValue(worstMonth.ytd, config.format)
+                });
+            }
+
+            // Check for recovery (if last month improved significantly)
+            const lastTwo = chartData.filter(d => d.ytd !== null).slice(-2);
+            if (lastTwo.length === 2) {
+                const change = ((lastTwo[1].ytd - lastTwo[0].ytd) / lastTwo[0].ytd) * 100;
+                if (change > 8) {
+                    const lastIndex = chartData.findIndex(d => d.month === lastTwo[1].month);
+                    callouts.push({
+                        month: lastTwo[1].month,
+                        index: lastIndex,
+                        text: 'Strong finish',
+                        type: 'positive',
+                        value: `+${change.toFixed(0)}% MoM`
+                    });
+                }
+            }
+
+            return callouts.slice(0, 3); // Max 3 callouts
+        }
+
+        // Render callout markers on chart
+        function renderChartCalloutMarkers(chartData, config, xScale, yScale, width, height) {
+            const callouts = generateChartCallouts(chartData, config);
+            if (callouts.length === 0) return '';
+
+            return callouts.map((c, idx) => {
+                const x = xScale(c.index);
+                const dataPoint = chartData[c.index];
+                const y = dataPoint?.ytd ? yScale(dataPoint.ytd) : 100;
+                const leftPct = (x / width) * 100;
+                const topPct = (y / height) * 100 - 8;
+                return '<div class="callout-marker ' + c.type + '" style="left:' + leftPct + '%;top:' + topPct + '%;">' + (idx + 1) + '</div>';
+            }).join('');
+        }
+
+        // Render callout legend below chart
+        function renderChartCalloutLegend(chartData, config) {
+            const callouts = generateChartCallouts(chartData, config);
+            if (callouts.length === 0) return '';
+
+            const items = callouts.map((c, idx) => {
+                return '<div class="callout-legend-item"><div class="callout-legend-number ' + c.type + '">' + (idx + 1) + '</div><span><strong>' + c.month + ':</strong> ' + c.text + '</span></div>';
+            }).join('');
+
+            return '<div class="chart-callout-list">' + items + '</div>';
+        }
+
         // Generate insights without suggestions
         function generateInsights() {
             const insights = [];
@@ -3492,6 +4696,15 @@
 
             return `
                 ${renderExecutiveHeadline('MUSE')}
+
+                ${renderTrafficLightScorecard()}
+
+                ${renderTargetGauges()}
+
+                ${renderWaterfallChart()}
+
+                ${renderMomentumIndicators()}
+
                 <div class="section-header">
                     <div>
                         <div class="section-title">Key Performance Indicators</div>
@@ -3514,7 +4727,7 @@
                     </div>
                 </div>
 
-                ${renderMarketSummaryTable()}
+                ${renderMarketSummaryTableWithSparklines()}
             `;
         }
 
@@ -4481,6 +5694,94 @@
             `;
         }
 
+        // Enhanced market table with sparklines showing trends
+        function renderMarketSummaryTableWithSparklines() {
+            const markets = getMarkets();
+            const kpiConfig = getKPIConfig();
+            const kpis = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV'];
+
+            // Separate individual markets from aggregate, sort by Total Sales value
+            const individualMarkets = markets.filter(m => !isAggregateValue(m, 'market'))
+                .map(m => ({ market: m, data: getLatestData(m, 'SLS_TTL') }))
+                .sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0))
+                .map(d => d.market);
+            const totalMarket = markets.find(m => isAggregateValue(m, 'market'));
+
+            // Calculate total for share
+            const totalData = totalMarket ? getLatestData(totalMarket, 'SLS_TTL') : null;
+            const totalSales = totalData?.YTD || 1;
+
+            // Helper to render a market row with sparkline
+            function renderMarketRowWithSparkline(m, isTotal = false) {
+                const salesData = getLatestData(m, 'SLS_TTL');
+                const share = salesData ? ((salesData.YTD / totalSales) * 100).toFixed(0) : 0;
+
+                return `
+                    <tr class="${isTotal ? 'total-row' : ''}">
+                        <td class="market-cell">
+                            <div>${m}</div>
+                            ${!isTotal ? `<div style="font-size:var(--font-label);color:var(--text-muted);margin-top:2px;">${share}% of total</div>` : ''}
+                        </td>
+                        ${kpis.map(k => {
+                            const config = kpiConfig[k];
+                            const data = getLatestData(m, k);
+                            if (!data) return '<td class="compare-cell">—</td>';
+                            const change = calcChange(data.YTD, data.LYTD, config.format);
+                            const changeClass = getChangeClass(change, config.format);
+
+                            // Generate sparkline for this market/KPI
+                            const sparkline = generateSparkline(m, k);
+
+                            let targetPart = '';
+                            if (data.Target) {
+                                const tGap = calcTargetGap(data.YTD, data.Target, config.format);
+                                const tGapClass = getChangeClass(tGap, config.format);
+                                targetPart = `<span class="cell-divider">|</span><span class="cell-compare-label">TGT:</span> <span class="cell-compare-value ${tGapClass}">${formatChange(tGap, config.format)}</span>`;
+                            }
+
+                            return `
+                                <td class="compare-cell">
+                                    <div class="sparkline-cell">
+                                        ${sparkline}
+                                        <div>
+                                            <div class="value-cell">${formatValue(data.YTD, config.format)}</div>
+                                            <div class="cell-compare-inline">
+                                                <span class="cell-compare-value ${changeClass}">${formatChange(change, config.format)}</span>
+                                                ${targetPart}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            `;
+                        }).join('')}
+                    </tr>
+                `;
+            }
+
+            return `
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Market Performance with Trends</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="sparkline-mini" style="gap:1px"><div class="sparkline-mini-bar" style="height:8px"></div><div class="sparkline-mini-bar" style="height:12px"></div><div class="sparkline-mini-bar" style="height:16px"></div></div> 6-month trend</div>
+                        </div>
+                    </div>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Market</th>
+                                ${kpis.map(k => `<th class="center">${kpiConfig[k]?.name || k}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${individualMarkets.map(m => renderMarketRowWithSparkline(m, false)).join('')}
+                            ${totalMarket ? renderMarketRowWithSparkline(totalMarket, true) : ''}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
         function renderMarketsTab() {
             const kpis = getKPIs();
             const config = getKPIConfig();
@@ -4925,7 +6226,7 @@
                 </div>
 
                 <div class="chart-with-badges">
-                    <div class="chart-container chart-left">
+                    <div class="chart-container chart-left chart-with-callouts">
                         <div class="chart-header">
                             <div class="chart-title">Monthly Trend — ${config.name}</div>
                             <div class="chart-legend">
@@ -4934,16 +6235,20 @@
                                 ${pathTarget ? '<div class="legend-item"><div class="legend-dot target"></div> Target</div>' : ''}
                             </div>
                         </div>
-                        <svg class="chart-svg" viewBox="0 0 ${width} ${height}">
-                            ${yAxisHTML}
-                            ${xAxisHTML}
-                            ${fillAreas}
-                            ${pathTarget ? `<path d="${pathTarget}" fill="none" stroke="var(--positive)" stroke-width="2" stroke-dasharray="4,4"/>` : ''}
-                            <path d="${pathLYTD}" fill="none" stroke="var(--steel-blue)" stroke-width="2" stroke-dasharray="5,5"/>
-                            <path d="${pathYTD}" fill="none" stroke="var(--navy)" stroke-width="3"/>
-                            ${dotsLYTD}
-                            ${dotsYTD}
-                        </svg>
+                        <div class="chart-annotations" style="position:relative;">
+                            <svg class="chart-svg" viewBox="0 0 ${width} ${height}">
+                                ${yAxisHTML}
+                                ${xAxisHTML}
+                                ${fillAreas}
+                                ${pathTarget ? `<path d="${pathTarget}" fill="none" stroke="var(--positive)" stroke-width="2" stroke-dasharray="4,4"/>` : ''}
+                                <path d="${pathLYTD}" fill="none" stroke="var(--steel-blue)" stroke-width="2" stroke-dasharray="5,5"/>
+                                <path d="${pathYTD}" fill="none" stroke="var(--navy)" stroke-width="3"/>
+                                ${dotsLYTD}
+                                ${dotsYTD}
+                            </svg>
+                            ${renderChartCalloutMarkers(chartData, config, xScale, yScale, width, height)}
+                        </div>
+                        ${renderChartCalloutLegend(chartData, config)}
                     </div>
                     <div class="trend-badges-right">${badgesHTML}</div>
                 </div>

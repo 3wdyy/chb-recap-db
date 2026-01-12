@@ -1075,7 +1075,7 @@
         .kpi-hero-card {
             background: linear-gradient(135deg, var(--white) 0%, rgba(219, 234, 254, 0.2) 100%);
             border-radius: 20px;
-            padding: 36px;
+            padding: 28px 32px;
             border: 1px solid rgba(219, 234, 254, 0.8);
             border-top: 5px solid var(--navy);
             margin-bottom: 24px;
@@ -1113,11 +1113,11 @@
         .kpi-hero-card.neutral::before { background: linear-gradient(90deg, var(--neutral) 0%, var(--neutral-soft) 100%); }
 
         .kpi-hero-label {
-            font-size: var(--font-body-sm);
+            font-size: var(--font-caption);
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
             font-weight: 600;
         }
 
@@ -1125,7 +1125,7 @@
         .kpi-hero-content {
             display: flex;
             align-items: stretch;
-            gap: 48px;
+            gap: 32px;
             position: relative;
             z-index: 1;
         }
@@ -1135,11 +1135,11 @@
         }
 
         .kpi-hero-value {
-            font-size: var(--font-display);
+            font-size: 44px;
             font-weight: 800;
             color: var(--navy);
-            margin-bottom: 24px;
-            letter-spacing: -2px;
+            margin-bottom: 16px;
+            letter-spacing: -1.5px;
             background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -1151,16 +1151,16 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 28px;
+            padding: 14px 20px;
             background: linear-gradient(135deg, var(--light-bg) 0%, rgba(219, 234, 254, 0.5) 100%);
-            border-radius: 14px;
+            border-radius: 12px;
             border: 1px solid rgba(219, 234, 254, 0.5);
         }
 
         .kpi-hero-target-info {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px;
         }
 
         .kpi-hero-target-label {
@@ -1172,16 +1172,16 @@
         }
 
         .kpi-hero-target-detail {
-            font-size: var(--font-body);
+            font-size: var(--font-body-sm);
             color: var(--navy);
             font-weight: 600;
         }
 
         .kpi-hero-target-badge {
-            font-size: var(--font-value-lg);
+            font-size: var(--font-value-md);
             font-weight: 700;
-            padding: 8px 20px;
-            border-radius: 10px;
+            padding: 6px 16px;
+            border-radius: 8px;
         }
 
         .kpi-hero-target-badge.up {

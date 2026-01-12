@@ -10,29 +10,41 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            /* Colors */
+            /* Colors - Modern Premium Palette */
             --navy: #1B365D;
-            --steel-blue: #8FAFD4;
-            --light-steel: #B8D4E8;
-            --positive: #2E7D5A;
-            --negative: #C4314B;
-            --neutral: #B8860B;
-            --positive-soft: #3d9970;
-            --negative-soft: #d35d6e;
-            --neutral-soft: #D4A017;
+            --navy-dark: #0F1D35;
+            --navy-light: #2A4A7A;
+            --steel-blue: #3B82F6;
+            --light-steel: #DBEAFE;
+            --positive: #10B981;
+            --positive-light: #D1FAE5;
+            --negative: #EF4444;
+            --negative-light: #FEE2E2;
+            --neutral: #F59E0B;
+            --neutral-light: #FEF3C7;
+            --positive-soft: #34D399;
+            --negative-soft: #F87171;
+            --neutral-soft: #FBBF24;
             --white: #FFFFFF;
             --light-bg: #F8FAFC;
+            --light-bg-gradient: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%);
             --text-dark: #1B365D;
             --text-muted: #64748B;
+            --shadow-sm: 0 1px 2px rgba(27, 54, 93, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(27, 54, 93, 0.1), 0 2px 4px -1px rgba(27, 54, 93, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(27, 54, 93, 0.1), 0 4px 6px -2px rgba(27, 54, 93, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(27, 54, 93, 0.1), 0 10px 10px -5px rgba(27, 54, 93, 0.04);
+            --shadow-glow-positive: 0 0 20px rgba(16, 185, 129, 0.3);
+            --shadow-glow-negative: 0 0 20px rgba(239, 68, 68, 0.3);
 
-            /* Typography Scale */
-            --font-display: 48px;      /* Hero values */
-            --font-h1: 26px;           /* Page title */
-            --font-h2: 20px;           /* Section titles */
+            /* Typography Scale - Enhanced */
+            --font-display: 56px;      /* Hero values - larger */
+            --font-h1: 28px;           /* Page title */
+            --font-h2: 22px;           /* Section titles */
             --font-h3: 18px;           /* Chart titles, subsections */
-            --font-value-xl: 32px;     /* Large card values */
-            --font-value-lg: 26px;     /* Medium card values */
-            --font-value-md: 20px;     /* Small card values */
+            --font-value-xl: 36px;     /* Large card values */
+            --font-value-lg: 28px;     /* Medium card values */
+            --font-value-md: 22px;     /* Small card values */
             --font-value-sm: 16px;     /* Table cell values */
             --font-body-lg: 15px;      /* Large body text */
             --font-body: 14px;         /* Default body text */
@@ -40,22 +52,97 @@
             --font-caption: 12px;      /* Captions, badges */
             --font-label: 11px;        /* Small uppercase labels */
             --font-micro: 10px;        /* Tiny text */
+
+            /* Animation Timing */
+            --transition-fast: 150ms ease;
+            --transition-normal: 250ms ease;
+            --transition-slow: 400ms ease;
+            --transition-bounce: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--light-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light-bg-gradient);
+            background-attachment: fixed;
             color: var(--text-dark);
             line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
+
+        /* Google Font Import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: var(--shadow-md); }
+            50% { box-shadow: var(--shadow-lg); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-fade-in { animation: fadeIn var(--transition-slow) ease forwards; }
+        .animate-fade-in-up { animation: fadeInUp var(--transition-slow) ease forwards; }
+        .animate-slide-in { animation: slideInRight var(--transition-slow) ease forwards; }
+        .animate-scale-in { animation: scaleIn var(--transition-bounce) forwards; }
 
         .header {
             background: var(--white);
             padding: 20px 48px;
-            border-bottom: 3px solid var(--navy);
+            border-bottom: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 50;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--navy) 0%, var(--steel-blue) 50%, var(--navy) 100%);
         }
 
         .header-left {
@@ -103,6 +190,10 @@
             padding: 0 48px;
             background: var(--white);
             border-bottom: 1px solid var(--light-steel);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            box-shadow: var(--shadow-sm);
         }
 
         .nav-tab {
@@ -112,69 +203,111 @@
             font-weight: 500;
             cursor: pointer;
             border-bottom: 3px solid transparent;
-            transition: all 0.2s;
+            transition: all var(--transition-normal);
+            position: relative;
         }
 
-        .nav-tab:hover { color: var(--navy); }
+        .nav-tab:hover {
+            color: var(--navy);
+            background: var(--light-bg);
+        }
+
         .nav-tab.active {
             color: var(--navy);
-            border-bottom-color: var(--navy);
+            border-bottom-color: var(--steel-blue);
             font-weight: 600;
+            background: linear-gradient(180deg, transparent 0%, rgba(59, 130, 246, 0.05) 100%);
         }
 
-        .main { padding: 32px 48px; }
+        .main {
+            padding: 32px 48px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
 
         /* Executive Summary Cards */
         .exec-summary {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 32px;
         }
 
         .metric-card {
             background: var(--white);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 24px;
-            border: 1px solid var(--light-steel);
-            border-left: 4px solid var(--navy);
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            border-top: 4px solid var(--navy);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
         }
 
-        .metric-card.positive { border-left-color: var(--positive); }
-        .metric-card.negative { border-left-color: var(--negative); }
-        .metric-card.neutral { border-left-color: var(--neutral); }
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--navy) 0%, var(--steel-blue) 100%);
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: transparent;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .metric-card.positive { border-top-color: var(--positive); }
+        .metric-card.positive::before { background: linear-gradient(90deg, var(--positive) 0%, var(--positive-soft) 100%); }
+        .metric-card.negative { border-top-color: var(--negative); }
+        .metric-card.negative::before { background: linear-gradient(90deg, var(--negative) 0%, var(--negative-soft) 100%); }
+        .metric-card.neutral { border-top-color: var(--neutral); }
+        .metric-card.neutral::before { background: linear-gradient(90deg, var(--neutral) 0%, var(--neutral-soft) 100%); }
 
         .metric-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .metric-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: var(--light-bg);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--light-bg) 0%, var(--light-steel) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--navy);
+            box-shadow: var(--shadow-sm);
         }
 
         .metric-label {
             font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            font-weight: 600;
         }
 
         .metric-value {
             font-size: var(--font-value-xl);
-            font-weight: 700;
+            font-weight: 800;
             color: var(--navy);
             margin-bottom: 18px;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
+            font-variant-numeric: tabular-nums;
         }
 
         /* Target comparison - primary */
@@ -182,10 +315,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 14px;
-            background: var(--light-bg);
-            border-radius: 8px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(219, 234, 254, 0.5) 100%);
+            border-radius: 10px;
             margin-bottom: 12px;
+            border: 1px solid rgba(219, 234, 254, 0.5);
         }
 
         .metric-target-left {
@@ -203,25 +337,29 @@
         }
 
         .metric-target-badge {
-            padding: 5px 12px;
-            border-radius: 14px;
+            padding: 6px 14px;
+            border-radius: 20px;
             font-weight: 700;
             font-size: var(--font-body-sm);
+            transition: all var(--transition-fast);
         }
 
         .metric-target-badge.up {
-            background: rgba(46, 125, 90, 0.15);
+            background: linear-gradient(135deg, var(--positive-light) 0%, rgba(16, 185, 129, 0.2) 100%);
             color: var(--positive);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
         }
 
         .metric-target-badge.down {
-            background: rgba(196, 49, 75, 0.15);
+            background: linear-gradient(135deg, var(--negative-light) 0%, rgba(239, 68, 68, 0.2) 100%);
             color: var(--negative);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
         }
 
         .metric-target-badge.neutral {
-            background: rgba(184, 134, 11, 0.15);
+            background: linear-gradient(135deg, var(--neutral-light) 0%, rgba(245, 158, 11, 0.2) 100%);
             color: var(--neutral);
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
         }
 
         /* vs LY - secondary with arrow */
@@ -252,10 +390,36 @@
         /* Share Tile - for middle row with new/returning split */
         .share-tile {
             background: var(--white);
-            border-radius: 12px;
-            padding: 20px 24px;
-            border: 1px solid var(--light-steel);
-            border-left: 4px solid var(--navy);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            border-top: 4px solid var(--navy);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .share-tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--navy) 0%, var(--steel-blue) 100%);
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .share-tile:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: transparent;
+        }
+
+        .share-tile:hover::before {
+            opacity: 1;
         }
 
         .share-tile-header {
@@ -375,10 +539,17 @@
         /* Small Tile - for bottom row (AOV, Frequency, ACV, UPT) */
         .small-tile {
             background: var(--white);
-            border-radius: 10px;
-            padding: 16px 20px;
-            border: 1px solid var(--light-steel);
-            border-left: 3px solid var(--navy);
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            border-top: 3px solid var(--navy);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+
+        .small-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
         }
 
         .small-tile-header {
@@ -490,7 +661,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--light-steel);
         }
 
         .section-title {
@@ -498,6 +671,20 @@
             font-weight: 700;
             color: var(--navy);
             letter-spacing: -0.3px;
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--steel-blue) 0%, var(--navy) 100%);
+            border-radius: 2px;
         }
 
         .section-subtitle {
@@ -509,40 +696,44 @@
         .market-table {
             width: 100%;
             background: var(--white);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            border: 1px solid var(--light-steel);
+            border: none;
             margin-bottom: 40px;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
+            box-shadow: var(--shadow-md);
         }
 
         .market-table th {
-            background: var(--navy);
-            padding: 16px 18px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+            padding: 18px 20px;
             text-align: center;
             font-size: var(--font-caption);
             color: white;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 700;
+            letter-spacing: 0.8px;
+            font-weight: 600;
         }
 
         .market-table th.left { text-align: left; }
 
         .market-table td {
-            padding: 16px 18px;
-            border-top: 1px solid var(--light-steel);
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(219, 234, 254, 0.5);
             font-size: var(--font-body);
             text-align: center;
+            transition: background var(--transition-fast);
         }
 
         .market-table tr:hover td {
-            background: var(--light-bg);
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
         }
 
         .market-table tr.total-row td {
-            background: rgba(27, 54, 93, 0.05);
+            background: linear-gradient(90deg, rgba(27, 54, 93, 0.08) 0%, rgba(27, 54, 93, 0.03) 100%);
             font-weight: 600;
+            border-top: 2px solid var(--navy);
         }
 
         .market-name {
@@ -588,22 +779,41 @@
 
         /* Insights Panel */
         .insights-panel {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 28px;
-            border: 1px solid var(--light-steel);
-            border-left: 4px solid var(--steel-blue);
+            background: linear-gradient(135deg, var(--white) 0%, rgba(219, 234, 254, 0.3) 100%);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            border-left: 5px solid var(--steel-blue);
             margin-bottom: 40px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insights-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .insights-title {
             font-size: var(--font-h3);
-            font-weight: 600;
+            font-weight: 700;
             color: var(--navy);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+        }
+
+        .insights-title::before {
+            content: '💡';
+            font-size: 20px;
         }
 
         .insights-grid {
@@ -615,43 +825,60 @@
         .insight-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: var(--light-bg);
-            border-radius: 8px;
+            gap: 16px;
+            padding: 18px 20px;
+            background: var(--white);
+            border-radius: 12px;
+            transition: all var(--transition-normal);
+            border: 1px solid transparent;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .insight-item:hover {
+            transform: translateX(4px);
+            border-color: var(--light-steel);
+            box-shadow: var(--shadow-md);
         }
 
         .insight-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: var(--font-h3);
+            font-size: 22px;
             flex-shrink: 0;
         }
 
-        .insight-icon.green { background: rgba(46, 125, 90, 0.15); }
-        .insight-icon.amber { background: rgba(245, 158, 11, 0.15); }
-        .insight-icon.blue { background: rgba(143, 175, 212, 0.3); }
+        .insight-icon.green {
+            background: linear-gradient(135deg, var(--positive-light) 0%, rgba(16, 185, 129, 0.2) 100%);
+        }
+        .insight-icon.amber {
+            background: linear-gradient(135deg, var(--neutral-light) 0%, rgba(245, 158, 11, 0.2) 100%);
+        }
+        .insight-icon.blue {
+            background: linear-gradient(135deg, var(--light-steel) 0%, rgba(59, 130, 246, 0.2) 100%);
+        }
 
         .insight-text {
             font-size: var(--font-body);
             color: var(--text-dark);
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .insight-text strong {
             color: var(--navy);
+            font-weight: 600;
         }
 
         /* Filters */
         .filter-row {
             display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 20px;
+            margin-bottom: 28px;
             flex-wrap: wrap;
+            align-items: flex-end;
         }
 
         .filter-group label {
@@ -659,18 +886,18 @@
             font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             margin-bottom: 8px;
             font-weight: 600;
         }
 
         .filter-select {
             background: var(--white);
-            border: 2px solid var(--navy);
+            border: 2px solid var(--light-steel);
             color: var(--navy);
             padding: 14px 48px 14px 18px;
-            border-radius: 8px;
-            font-size: var(--font-body-lg);
+            border-radius: 10px;
+            font-size: var(--font-body);
             font-weight: 600;
             cursor: pointer;
             appearance: none;
@@ -680,17 +907,19 @@
             background-repeat: no-repeat;
             background-position: right 16px center;
             min-width: 200px;
-            transition: border-color 0.2s ease;
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-sm);
         }
 
         .filter-select:hover {
             border-color: var(--steel-blue);
+            box-shadow: var(--shadow-md);
         }
 
         .filter-select:focus {
             outline: none;
-            border-color: var(--navy);
-            box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.1);
+            border-color: var(--steel-blue);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
         }
 
         .filter-select option {
@@ -775,10 +1004,16 @@
         /* Chart Container */
         .chart-container {
             background: var(--white);
-            border-radius: 12px;
-            padding: 28px;
-            border: 1px solid var(--light-steel);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
             margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+        }
+
+        .chart-container:hover {
+            box-shadow: var(--shadow-lg);
         }
 
         .chart-header {
@@ -787,7 +1022,7 @@
             align-items: center;
             margin-bottom: 24px;
             padding-bottom: 16px;
-            border-bottom: 1px solid var(--light-steel);
+            border-bottom: 2px solid var(--light-steel);
         }
 
         .chart-title {
@@ -795,6 +1030,17 @@
             font-weight: 700;
             color: var(--navy);
             letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--steel-blue) 0%, var(--navy) 100%);
+            border-radius: 2px;
         }
 
         .chart-legend {
@@ -827,31 +1073,61 @@
 
         /* KPI Hero Card - Primary value display */
         .kpi-hero-card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 32px;
-            border: 1px solid var(--light-steel);
-            border-left: 5px solid var(--navy);
+            background: linear-gradient(135deg, var(--white) 0%, rgba(219, 234, 254, 0.2) 100%);
+            border-radius: 20px;
+            padding: 36px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            border-top: 5px solid var(--navy);
             margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
         }
 
-        .kpi-hero-card.up { border-left-color: var(--positive); }
-        .kpi-hero-card.down { border-left-color: var(--negative); }
-        .kpi-hero-card.neutral { border-left-color: var(--neutral); }
+        .kpi-hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--navy) 0%, var(--steel-blue) 100%);
+        }
+
+        .kpi-hero-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .kpi-hero-card.up { border-top-color: var(--positive); }
+        .kpi-hero-card.up::before { background: linear-gradient(90deg, var(--positive) 0%, var(--positive-soft) 100%); }
+        .kpi-hero-card.down { border-top-color: var(--negative); }
+        .kpi-hero-card.down::before { background: linear-gradient(90deg, var(--negative) 0%, var(--negative-soft) 100%); }
+        .kpi-hero-card.neutral { border-top-color: var(--neutral); }
+        .kpi-hero-card.neutral::before { background: linear-gradient(90deg, var(--neutral) 0%, var(--neutral-soft) 100%); }
 
         .kpi-hero-label {
             font-size: var(--font-body-sm);
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 600;
         }
 
         /* Hero card main layout - two columns */
         .kpi-hero-content {
             display: flex;
             align-items: stretch;
-            gap: 40px;
+            gap: 48px;
+            position: relative;
+            z-index: 1;
         }
 
         .kpi-hero-main {
@@ -860,9 +1136,14 @@
 
         .kpi-hero-value {
             font-size: var(--font-display);
-            font-weight: 700;
+            font-weight: 800;
             color: var(--navy);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* Primary comparison - vs Target (prominent) */
@@ -870,9 +1151,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 24px;
-            background: var(--light-bg);
-            border-radius: 12px;
+            padding: 20px 28px;
+            background: linear-gradient(135deg, var(--light-bg) 0%, rgba(219, 234, 254, 0.5) 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(219, 234, 254, 0.5);
         }
 
         .kpi-hero-target-info {
@@ -1119,11 +1401,18 @@
         }
 
         .trend-badge {
-            background: var(--light-bg);
-            padding: 12px 10px;
-            border-radius: 8px;
+            background: var(--white);
+            padding: 14px 12px;
+            border-radius: 12px;
             text-align: center;
-            border: 1px solid rgba(184, 212, 232, 0.3);
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+        }
+
+        .trend-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .trend-badges-right .trend-badge {
@@ -1193,38 +1482,53 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
         }
 
         .modern-table th {
-            padding: 16px 18px;
+            padding: 18px 20px;
             text-align: center;
             font-size: var(--font-caption);
             color: white;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 700;
-            background: var(--navy);
+            letter-spacing: 0.8px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
         }
 
         .modern-table th:first-child {
             text-align: left;
-            border-radius: 8px 0 0 0;
+            border-radius: 12px 0 0 0;
         }
         .modern-table th:last-child {
-            border-radius: 0 8px 0 0;
+            border-radius: 0 12px 0 0;
         }
         .modern-table th.right { text-align: right; }
         .modern-table th.center { text-align: center; }
 
         .modern-table td {
-            padding: 16px;
+            padding: 18px 20px;
             font-size: var(--font-body);
-            border-bottom: 1px solid rgba(184, 212, 232, 0.4);
+            border-bottom: 1px solid rgba(219, 234, 254, 0.5);
             vertical-align: middle;
+            transition: background var(--transition-fast);
+        }
+
+        .modern-table tbody tr:hover td {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
         }
 
         .modern-table tr:last-child td {
             border-bottom: none;
+        }
+
+        .modern-table tr:last-child td:first-child {
+            border-radius: 0 0 0 12px;
+        }
+
+        .modern-table tr:last-child td:last-child {
+            border-radius: 0 0 12px 0;
         }
 
         .modern-table .market-cell {
@@ -1260,31 +1564,37 @@
 
         .modern-table .compare-badge {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 4px 10px;
+            border-radius: 16px;
             font-size: var(--font-caption);
             font-weight: 600;
-            min-width: 52px;
+            min-width: 56px;
             text-align: center;
+            transition: all var(--transition-fast);
         }
 
         .modern-table .compare-badge.up {
-            background: rgba(46, 125, 90, 0.12);
+            background: linear-gradient(135deg, var(--positive-light) 0%, rgba(16, 185, 129, 0.15) 100%);
             color: var(--positive);
         }
 
         .modern-table .compare-badge.down {
-            background: rgba(196, 49, 75, 0.12);
+            background: linear-gradient(135deg, var(--negative-light) 0%, rgba(239, 68, 68, 0.15) 100%);
             color: var(--negative);
         }
 
         .modern-table .compare-badge.neutral {
-            background: rgba(184, 134, 11, 0.12);
+            background: linear-gradient(135deg, var(--neutral-light) 0%, rgba(245, 158, 11, 0.15) 100%);
             color: var(--neutral);
         }
 
         .modern-table .total-row {
-            background: linear-gradient(90deg, rgba(27, 54, 93, 0.05) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(27, 54, 93, 0.08) 0%, rgba(27, 54, 93, 0.02) 100%);
+        }
+
+        .modern-table .total-row td {
+            font-weight: 600;
+            border-top: 2px solid var(--navy);
         }
 
         .modern-table .total-row td {
@@ -1467,32 +1777,49 @@
         /* Tooltip */
         .chart-tooltip {
             position: fixed;
-            background: var(--navy);
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
             color: white;
-            padding: 10px 14px;
-            border-radius: 8px;
+            padding: 14px 18px;
+            border-radius: 12px;
             font-size: var(--font-body-sm);
             pointer-events: none;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 40px rgba(27, 54, 93, 0.3);
             display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 180px;
         }
 
-        .chart-tooltip.visible { display: block; }
+        .chart-tooltip.visible {
+            display: block;
+            animation: scaleIn var(--transition-fast) ease;
+        }
 
         .tooltip-title {
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: var(--font-body);
         }
 
         .tooltip-row {
             display: flex;
             justify-content: space-between;
-            gap: 16px;
+            gap: 20px;
+            margin-top: 6px;
         }
 
-        .tooltip-label { opacity: 0.8; }
-        .tooltip-value { font-weight: 600; }
+        .tooltip-label {
+            opacity: 0.7;
+            font-size: var(--font-caption);
+        }
+
+        .tooltip-value {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
 
         @media (max-width: 1200px) {
             .exec-summary { grid-template-columns: repeat(2, 1fr); }
@@ -1882,9 +2209,18 @@
 
         .segment-visual-card {
             background: var(--white);
-            border-radius: 12px;
-            border: 1px solid var(--light-steel);
-            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(219, 234, 254, 0.8);
+            border-top: 4px solid var(--navy);
+            padding: 28px;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+
+        .segment-visual-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
         }
 
         .segment-visual-header {
@@ -2133,11 +2469,236 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Executive Summary Headline */
+        .executive-headline {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+            border-radius: 20px;
+            padding: 28px 36px;
+            margin-bottom: 32px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .executive-headline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.2) 100%);
+            pointer-events: none;
+        }
+
+        .executive-headline-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .executive-headline-main {
+            flex: 1;
+        }
+
+        .executive-headline-title {
+            font-size: var(--font-h2);
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .executive-headline-subtitle {
+            font-size: var(--font-body);
+            opacity: 0.85;
+        }
+
+        .executive-headline-kpis {
+            display: flex;
+            gap: 40px;
+        }
+
+        .headline-kpi {
+            text-align: center;
+        }
+
+        .headline-kpi-value {
+            font-size: var(--font-value-lg);
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .headline-kpi-label {
+            font-size: var(--font-caption);
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .headline-kpi-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: var(--font-micro);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .headline-kpi-badge.up {
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        .headline-kpi-badge.down {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Presentation Mode */
+        .presentation-mode .header,
+        .presentation-mode .nav-tabs,
+        .presentation-mode .filter-row,
+        .presentation-mode .filter-cascade {
+            display: none !important;
+        }
+
+        .presentation-mode .main {
+            padding-top: 40px;
+        }
+
+        .presentation-mode .metric-value,
+        .presentation-mode .kpi-hero-value {
+            font-size: calc(var(--font-display) * 1.3);
+        }
+
+        .presentation-mode .section-title {
+            font-size: calc(var(--font-h2) * 1.2);
+        }
+
+        .presentation-mode .metric-card,
+        .presentation-mode .share-tile,
+        .presentation-mode .small-tile {
+            transform: scale(1.02);
+        }
+
+        /* Presentation Toggle Button */
+        .presentation-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: var(--font-body);
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all var(--transition-normal);
+            z-index: 1000;
+        }
+
+        .presentation-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(27, 54, 93, 0.3);
+        }
+
+        .presentation-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Staggered Animation Classes */
+        .stagger-1 { animation-delay: 50ms; }
+        .stagger-2 { animation-delay: 100ms; }
+        .stagger-3 { animation-delay: 150ms; }
+        .stagger-4 { animation-delay: 200ms; }
+        .stagger-5 { animation-delay: 250ms; }
+        .stagger-6 { animation-delay: 300ms; }
+        .stagger-7 { animation-delay: 350ms; }
+        .stagger-8 { animation-delay: 400ms; }
+
+        /* Chart Line Animation */
+        .chart-line-animated {
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: drawLine 1.5s ease forwards;
+        }
+
+        /* Progress Ring for Target Achievement */
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.8s ease;
+        }
+
+        /* Sparkline */
+        .sparkline-container {
+            margin-top: 12px;
+            height: 30px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .sparkline-bar {
+            flex: 1;
+            background: linear-gradient(180deg, var(--steel-blue) 0%, var(--light-steel) 100%);
+            border-radius: 2px 2px 0 0;
+            min-height: 4px;
+            transition: all var(--transition-fast);
+        }
+
+        .sparkline-bar:hover {
+            background: var(--navy);
+        }
+
+        .sparkline-bar.negative {
+            background: linear-gradient(180deg, var(--negative) 0%, var(--negative-light) 100%);
+        }
+
+        /* Data Timestamp */
+        .data-timestamp {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: var(--white);
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            box-shadow: var(--shadow-md);
+            z-index: 100;
+        }
+
+        .data-timestamp::before {
+            content: '📊';
+            margin-right: 6px;
+        }
     </style>
 </head>
 <body>
     <div id="app"></div>
     <div class="chart-tooltip" id="chartTooltip"></div>
+    <button class="presentation-toggle" id="presentationToggle" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <span>Present</span>
+    </button>
+    <div class="data-timestamp" id="dataTimestamp" style="display: none;">Data as of: December 2025</div>
 
     <script>
     (function() {
@@ -2833,12 +3394,85 @@
             return renderMUSESummaryTab();
         }
 
+        // Executive Summary Headline - Shows key metrics at a glance
+        function renderExecutiveHeadline(mode = 'MUSE') {
+            const market = getAggregateValue('market');
+            const config = getKPIConfig();
+
+            let salesData, membersData, aovData;
+            let salesKey, membersKey, aovKey;
+
+            if (mode === 'MUSE') {
+                salesKey = 'SLS_TTL';
+                membersKey = 'MBR_TTL';
+                aovKey = 'AVG_AOV';
+            } else {
+                salesKey = 'TOTAL OWN BRAND SALES';
+                membersKey = 'CUSTOMER COUNT';
+                aovKey = 'AOV';
+            }
+
+            salesData = getLatestData(market, salesKey, mode === 'MC' ? getAggregateValue('channel') : null);
+            membersData = getLatestData(market, membersKey, mode === 'MC' ? getAggregateValue('channel') : null);
+            aovData = getLatestData(market, aovKey, mode === 'MC' ? getAggregateValue('channel') : null);
+
+            if (!salesData) return '';
+
+            const salesChange = calcChange(salesData.YTD, salesData.LYTD, config[salesKey]?.format);
+            const salesTargetGap = salesData.Target ? calcTargetGap(salesData.YTD, salesData.Target, config[salesKey]?.format) : null;
+            const membersChange = membersData ? calcChange(membersData.YTD, membersData.LYTD, config[membersKey]?.format) : 0;
+            const aovChange = aovData ? calcChange(aovData.YTD, aovData.LYTD, config[aovKey]?.format) : 0;
+
+            const overallStatus = salesChange >= 0 && (salesTargetGap === null || salesTargetGap >= 0) ? 'positive' : 'attention';
+            const statusIcon = overallStatus === 'positive' ? '📈' : '📊';
+            const statusText = overallStatus === 'positive'
+                ? `Strong performance with ${formatChange(salesChange, config[salesKey]?.format)} growth`
+                : `Revenue ${salesChange >= 0 ? 'growing' : 'declining'} ${formatChange(Math.abs(salesChange), config[salesKey]?.format)}`;
+
+            return `
+                <div class="executive-headline animate-fade-in-up">
+                    <div class="executive-headline-content">
+                        <div class="executive-headline-main">
+                            <div class="executive-headline-title">
+                                ${statusIcon} ${CURRENT_YEAR} Performance Summary
+                            </div>
+                            <div class="executive-headline-subtitle">
+                                ${statusText}${salesTargetGap !== null ? ` | Target: ${salesTargetGap >= 0 ? 'Exceeded' : 'Gap'} ${formatChange(Math.abs(salesTargetGap), config[salesKey]?.format)}` : ''}
+                            </div>
+                        </div>
+                        <div class="executive-headline-kpis">
+                            <div class="headline-kpi">
+                                <div class="headline-kpi-value">${formatValue(salesData.YTD, config[salesKey]?.format)}</div>
+                                <div class="headline-kpi-label">${mode === 'MUSE' ? 'Revenue' : 'Sales'}</div>
+                                <div class="headline-kpi-badge ${salesChange >= 0 ? 'up' : 'down'}">${formatChange(salesChange, config[salesKey]?.format)}</div>
+                            </div>
+                            ${membersData ? `
+                            <div class="headline-kpi">
+                                <div class="headline-kpi-value">${formatValue(membersData.YTD, config[membersKey]?.format)}</div>
+                                <div class="headline-kpi-label">${mode === 'MUSE' ? 'Members' : 'Customers'}</div>
+                                <div class="headline-kpi-badge ${membersChange >= 0 ? 'up' : 'down'}">${formatChange(membersChange, config[membersKey]?.format)}</div>
+                            </div>
+                            ` : ''}
+                            ${aovData ? `
+                            <div class="headline-kpi">
+                                <div class="headline-kpi-value">${formatValue(aovData.YTD, config[aovKey]?.format)}</div>
+                                <div class="headline-kpi-label">AOV</div>
+                                <div class="headline-kpi-badge ${aovChange >= 0 ? 'up' : 'down'}">${formatChange(aovChange, config[aovKey]?.format)}</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderMUSESummaryTab() {
             const market = getAggregateValue('market');
             const allKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF', 'SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
             const insights = generateInsights();
 
             return `
+                ${renderExecutiveHeadline('MUSE')}
                 <div class="section-header">
                     <div>
                         <div class="section-title">Key Performance Indicators</div>
@@ -2846,7 +3480,7 @@
                     </div>
                 </div>
                 <div class="exec-summary">
-                    ${allKPIs.map(key => renderMetricCard(market, key)).join('')}
+                    ${allKPIs.map((key, i) => `<div class="animate-fade-in-up stagger-${i + 1}">${renderMetricCard(market, key)}</div>`).join('')}
                 </div>
 
                 <div class="insights-panel">
@@ -2891,6 +3525,7 @@
             const channelLabel = isAggregateValue(selectedChannel, 'channel') ? channelAgg : selectedChannel;
 
             return `
+                ${renderExecutiveHeadline('MC')}
                 <div class="section-header">
                     <div>
                         <div class="section-title">Key Performance Indicators</div>
@@ -2902,7 +3537,7 @@
 
                 <!-- Top Row: 3 Main KPIs -->
                 <div class="kpi-row-3">
-                    ${topRowKPIs.map(key => renderMetricCard(selectedMarket, key, selectedChannel)).join('')}
+                    ${topRowKPIs.map((key, i) => `<div class="animate-fade-in-up stagger-${i + 1}">${renderMetricCard(selectedMarket, key, selectedChannel)}</div>`).join('')}
                 </div>
 
                 <!-- Middle Row: 3 KPIs with New/Returning Share Split -->
@@ -3370,8 +4005,8 @@
                         <thead>
                             <tr>
                                 <th>Channel</th>
-                                <th class="center">2025 Share</th>
-                                <th class="center">2024 Share</th>
+                                <th class="center">${CURRENT_YEAR} Share</th>
+                                <th class="center">${PREVIOUS_YEAR} Share</th>
                                 <th class="center">Shift</th>
                                 <th class="center">Value</th>
                             </tr>
@@ -3481,8 +4116,8 @@
                         <thead>
                             <tr>
                                 <th>${dimensionLabel}</th>
-                                <th class="center">2025</th>
-                                <th class="center">2024</th>
+                                <th class="center">${CURRENT_YEAR}</th>
+                                <th class="center">${PREVIOUS_YEAR}</th>
                                 <th class="center">Target</th>
                                 <th class="center">Share</th>
                             </tr>
@@ -3948,8 +4583,8 @@
                         <thead>
                             <tr>
                                 <th>Market</th>
-                                <th class="center">2025</th>
-                                <th class="center">2024</th>
+                                <th class="center">${CURRENT_YEAR}</th>
+                                <th class="center">${PREVIOUS_YEAR}</th>
                                 <th class="center">Target</th>
                                 <th class="center">Share</th>
                             </tr>
@@ -4250,7 +4885,7 @@
                                 <div class="kpi-secondary-item">
                                     <div class="kpi-secondary-info">
                                         <span class="kpi-secondary-label">vs LY</span>
-                                        <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
+                                        <span class="kpi-secondary-detail">${PREVIOUS_YEAR}: ${formatValue(latestData?.LYTD, config.format)}</span>
                                     </div>
                                     <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
                                 </div>
@@ -4275,8 +4910,8 @@
                         <div class="chart-header">
                             <div class="chart-title">Monthly Trend — ${config.name}</div>
                             <div class="chart-legend">
-                                <div class="legend-item"><div class="legend-dot solid"></div> 2025</div>
-                                <div class="legend-item"><div class="legend-dot dashed"></div> 2024</div>
+                                <div class="legend-item"><div class="legend-dot solid"></div> ${CURRENT_YEAR}</div>
+                                <div class="legend-item"><div class="legend-dot dashed"></div> ${PREVIOUS_YEAR}</div>
                                 ${pathTarget ? '<div class="legend-item"><div class="legend-dot target"></div> Target</div>' : ''}
                             </div>
                         </div>
@@ -4303,6 +4938,29 @@
             const mcFileInput = document.getElementById('mcFileInput');
             const startBtn = document.getElementById('startBtn');
             const demoBtn = document.getElementById('demoBtn');
+            const presentationToggle = document.getElementById('presentationToggle');
+            const dataTimestamp = document.getElementById('dataTimestamp');
+
+            // Show/hide presentation toggle and timestamp based on data loaded state
+            if (state.dataLoaded) {
+                if (presentationToggle) presentationToggle.style.display = 'flex';
+                if (dataTimestamp) dataTimestamp.style.display = 'block';
+            } else {
+                if (presentationToggle) presentationToggle.style.display = 'none';
+                if (dataTimestamp) dataTimestamp.style.display = 'none';
+            }
+
+            // Presentation mode toggle
+            if (presentationToggle) {
+                presentationToggle.onclick = () => {
+                    document.body.classList.toggle('presentation-mode');
+                    const isPresenting = document.body.classList.contains('presentation-mode');
+                    presentationToggle.innerHTML = isPresenting
+                        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span>Exit</span>`
+                        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>Present</span>`;
+                    if (dataTimestamp) dataTimestamp.style.display = isPresenting ? 'none' : 'block';
+                };
+            }
 
             // Mode toggle in header
             document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
@@ -4468,17 +5126,17 @@
                     tooltip.innerHTML = `
                         <div class="tooltip-title">${info.month}</div>
                         <div class="tooltip-row">
-                            <span class="tooltip-label">2025:</span>
+                            <span class="tooltip-label">${CURRENT_YEAR}:</span>
                             <span class="tooltip-value">${formatValue(info.ytd, info.format)}</span>
                         </div>
                         <div class="tooltip-row">
                             <span class="tooltip-label">vs LY:</span>
-                            <span class="tooltip-value">${formatValue(info.lytd, info.format)} <span style="color:${changeVsLY >= 0 ? '#2E7D5A' : '#C4314B'}">(${formatChange(changeVsLY, info.format)})</span></span>
+                            <span class="tooltip-value">${formatValue(info.lytd, info.format)} <span style="color:${changeVsLY >= 0 ? '#10B981' : '#EF4444'}">(${formatChange(changeVsLY, info.format)})</span></span>
                         </div>
                         ${info.target ? `
                         <div class="tooltip-row">
                             <span class="tooltip-label">vs Target:</span>
-                            <span class="tooltip-value">${formatValue(info.target, info.format)} <span style="color:${changeVsTarget >= 0 ? '#2E7D5A' : '#C4314B'}">(${formatChange(changeVsTarget, info.format)})</span></span>
+                            <span class="tooltip-value">${formatValue(info.target, info.format)} <span style="color:${changeVsTarget >= 0 ? '#10B981' : '#EF4444'}">(${formatChange(changeVsTarget, info.format)})</span></span>
                         </div>
                         ` : ''}
                     `;

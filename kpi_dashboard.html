@@ -10,6 +10,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
+            /* Colors */
             --navy: #1B365D;
             --steel-blue: #8FAFD4;
             --light-steel: #B8D4E8;
@@ -23,6 +24,22 @@
             --light-bg: #F8FAFC;
             --text-dark: #1B365D;
             --text-muted: #64748B;
+
+            /* Typography Scale */
+            --font-display: 48px;      /* Hero values */
+            --font-h1: 26px;           /* Page title */
+            --font-h2: 20px;           /* Section titles */
+            --font-h3: 18px;           /* Chart titles, subsections */
+            --font-value-xl: 32px;     /* Large card values */
+            --font-value-lg: 26px;     /* Medium card values */
+            --font-value-md: 20px;     /* Small card values */
+            --font-value-sm: 16px;     /* Table cell values */
+            --font-body-lg: 15px;      /* Large body text */
+            --font-body: 14px;         /* Default body text */
+            --font-body-sm: 13px;      /* Small body text */
+            --font-caption: 12px;      /* Captions, badges */
+            --font-label: 11px;        /* Small uppercase labels */
+            --font-micro: 10px;        /* Tiny text */
         }
 
         body {
@@ -61,14 +78,14 @@
         }
 
         .header-text h1 {
-            font-size: 28px;
+            font-size: var(--font-h1);
             font-weight: 700;
             color: var(--navy);
         }
 
         .header-text p {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: var(--font-body);
         }
 
         .header-badge {
@@ -91,7 +108,7 @@
         .nav-tab {
             padding: 16px 28px;
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 500;
             cursor: pointer;
             border-bottom: 3px solid transparent;
@@ -146,14 +163,14 @@
         }
 
         .metric-label {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .metric-value {
-            font-size: 36px;
+            font-size: var(--font-value-xl);
             font-weight: 700;
             color: var(--navy);
             margin-bottom: 18px;
@@ -255,7 +272,7 @@
         }
 
         .share-tile-label {
-            font-size: 13px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             font-weight: 500;
             text-transform: uppercase;
@@ -270,7 +287,7 @@
         }
 
         .share-tile-value {
-            font-size: 28px;
+            font-size: var(--font-value-lg);
             font-weight: 700;
             color: var(--navy);
         }
@@ -378,7 +395,7 @@
         }
 
         .small-tile-label {
-            font-size: 12px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             font-weight: 500;
             text-transform: uppercase;
@@ -386,7 +403,7 @@
         }
 
         .small-tile-value {
-            font-size: 22px;
+            font-size: var(--font-value-md);
             font-weight: 700;
             color: var(--navy);
             margin-bottom: 4px;
@@ -477,7 +494,7 @@
         }
 
         .section-title {
-            font-size: 22px;
+            font-size: var(--font-h2);
             font-weight: 700;
             color: var(--navy);
             letter-spacing: -0.3px;
@@ -485,7 +502,7 @@
 
         .section-subtitle {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: var(--font-body);
         }
 
         /* Market Comparison Table */
@@ -503,7 +520,7 @@
             background: var(--navy);
             padding: 16px 18px;
             text-align: center;
-            font-size: 14px;
+            font-size: var(--font-caption);
             color: white;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -515,7 +532,7 @@
         .market-table td {
             padding: 16px 18px;
             border-top: 1px solid var(--light-steel);
-            font-size: 14px;
+            font-size: var(--font-body);
             text-align: center;
         }
 
@@ -541,7 +558,7 @@
 
         .cell-value {
             font-weight: 700;
-            font-size: 18px;
+            font-size: var(--font-value-sm);
             color: var(--navy);
         }
 
@@ -580,7 +597,7 @@
         }
 
         .insights-title {
-            font-size: 18px;
+            font-size: var(--font-h3);
             font-weight: 600;
             color: var(--navy);
             margin-bottom: 20px;
@@ -620,7 +637,7 @@
         .insight-icon.blue { background: rgba(143, 175, 212, 0.3); }
 
         .insight-text {
-            font-size: 14px;
+            font-size: var(--font-body);
             color: var(--text-dark);
             line-height: 1.5;
         }
@@ -639,7 +656,7 @@
 
         .filter-group label {
             display: block;
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -653,7 +670,7 @@
             color: var(--navy);
             padding: 14px 48px 14px 18px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: var(--font-body-lg);
             font-weight: 600;
             cursor: pointer;
             appearance: none;
@@ -774,7 +791,7 @@
         }
 
         .chart-title {
-            font-size: 20px;
+            font-size: var(--font-h3);
             font-weight: 700;
             color: var(--navy);
             letter-spacing: -0.3px;
@@ -895,7 +912,7 @@
         }
 
         .kpi-hero-value {
-            font-size: 56px;
+            font-size: var(--font-display);
             font-weight: 700;
             color: var(--navy);
             margin-bottom: 20px;
@@ -932,7 +949,7 @@
         }
 
         .kpi-hero-target-badge {
-            font-size: 28px;
+            font-size: var(--font-value-lg);
             font-weight: 700;
             padding: 8px 20px;
             border-radius: 10px;
@@ -1080,7 +1097,7 @@
         }
 
         .kpi-secondary-value {
-            font-size: 24px;
+            font-size: var(--font-value-md);
             font-weight: 700;
         }
 
@@ -1196,7 +1213,7 @@
         }
 
         .trend-badge-actual {
-            font-size: 20px;
+            font-size: var(--font-h3);
             font-weight: 700;
             color: var(--navy);
             margin-bottom: 6px;
@@ -1234,7 +1251,7 @@
         .modern-table th {
             padding: 16px 18px;
             text-align: center;
-            font-size: 14px;
+            font-size: var(--font-caption);
             color: white;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1254,7 +1271,7 @@
 
         .modern-table td {
             padding: 16px;
-            font-size: 14px;
+            font-size: var(--font-body);
             border-bottom: 1px solid rgba(184, 212, 232, 0.4);
             vertical-align: middle;
         }
@@ -1275,7 +1292,7 @@
             font-weight: 700;
             color: var(--navy);
             font-variant-numeric: tabular-nums;
-            font-size: 18px;
+            font-size: var(--font-value-sm);
         }
 
         .modern-table .compare-cell {
@@ -1408,13 +1425,13 @@
         }
 
         .donut-center-value {
-            font-size: 24px;
+            font-size: var(--font-value-md);
             font-weight: 700;
             color: var(--navy);
         }
 
         .donut-center-label {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
         }
@@ -1842,7 +1859,7 @@
             color: white;
             padding: 14px 16px;
             text-align: center;
-            font-size: 12px;
+            font-size: var(--font-caption);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1862,7 +1879,7 @@
 
         .segment-table td {
             padding: 12px 16px;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             border-bottom: 1px solid var(--light-steel);
             text-align: center;
         }
@@ -1943,7 +1960,7 @@
         }
 
         .segment-visual-value {
-            font-size: 28px;
+            font-size: var(--font-value-lg);
             font-weight: 700;
             color: var(--navy);
         }
@@ -2871,8 +2888,7 @@
 
         function renderMUSESummaryTab() {
             const market = getAggregateValue('market');
-            const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF'];
-            const loyaltyKPIs = ['SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
+            const allKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF', 'SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
             const insights = generateInsights();
 
             return `
@@ -2883,17 +2899,7 @@
                     </div>
                 </div>
                 <div class="exec-summary">
-                    ${keyKPIs.map(key => renderMetricCard(market, key)).join('')}
-                </div>
-
-                <div class="section-header">
-                    <div>
-                        <div class="section-title">Loyalty KPIs</div>
-                        <div class="section-subtitle">Member engagement metrics</div>
-                    </div>
-                </div>
-                <div class="exec-summary">
-                    ${loyaltyKPIs.map(key => renderLoyaltyCard(market, key)).join('')}
+                    ${allKPIs.map(key => renderMetricCard(market, key)).join('')}
                 </div>
 
                 <div class="insights-panel">
@@ -4065,6 +4071,12 @@
             ` : '';
 
             return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">KPI Deep Dive</div>
+                        <div class="section-subtitle">Detailed monthly trend analysis and performance tracking</div>
+                    </div>
+                </div>
                 <div class="filter-row">
                     <div class="filter-group">
                         <label>Market</label>

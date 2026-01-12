@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Select, Modal } from '@/components/ui';
+import { useQuery } from '@tanstack/react-query';
+import { Card, Button, Badge, Select, Modal } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import {
   Upload,
@@ -12,14 +12,11 @@ import {
   AlertCircle,
   Loader2,
   Eye,
-  Trash2,
-  RefreshCw,
-  ChevronDown,
   ChevronRight,
   AlertTriangle,
 } from 'lucide-react';
 import { listBrands, previewFile, detectBrand, processFile, downloadProcessedFile } from '@/api/client';
-import type { ProcessingJob, FilePreview, ProcessingResult, BrandSummary } from '@/types';
+import type { FilePreview, ProcessingResult, BrandSummary } from '@/types';
 
 interface UploadedFile {
   file: File;
@@ -118,8 +115,6 @@ export function ProcessFiles() {
   };
 
   const processAllFiles = async () => {
-    const readyFiles = files.filter(f => f.status === 'ready' && f.selectedBrand);
-
     for (let i = 0; i < files.length; i++) {
       const f = files[i];
       if (f.status !== 'ready' || !f.selectedBrand) continue;
@@ -367,8 +362,6 @@ interface FileCardProps {
 }
 
 function FileCard({ file, brands, onRemove, onBrandChange, onPreview, onViewResults, onDownload }: FileCardProps) {
-  const [expanded, setExpanded] = useState(false);
-
   const statusConfig = {
     pending: { color: 'bg-slate-100 text-slate-600', icon: null, label: 'Pending' },
     previewing: { color: 'bg-blue-100 text-blue-600', icon: <Loader2 className="h-3 w-3 animate-spin" />, label: 'Reading...' },

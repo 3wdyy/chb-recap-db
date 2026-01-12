@@ -1,10 +1,10 @@
-import { Fragment, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
-import { Button } from './Button';
 
 export interface ModalProps {
-  open: boolean;
+  open?: boolean;
+  isOpen?: boolean;  // Alias for open
   onClose: () => void;
   title?: string;
   description?: string;
@@ -15,6 +15,7 @@ export interface ModalProps {
 
 export function Modal({
   open,
+  isOpen,
   onClose,
   title,
   description,
@@ -22,7 +23,8 @@ export function Modal({
   size = 'md',
   showClose = true,
 }: ModalProps) {
-  if (!open) return null;
+  const isVisible = open ?? isOpen ?? false;
+  if (!isVisible) return null;
 
   const sizes = {
     sm: 'max-w-md',

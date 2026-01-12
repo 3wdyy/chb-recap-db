@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Input, Select, Modal } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Input } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import {
   Save,
@@ -25,7 +25,6 @@ export function Settings() {
   const [hasChanges, setHasChanges] = useState(false);
   const [config, setConfig] = useState<GlobalConfig | null>(null);
   const [activeTab, setActiveTab] = useState<'rates' | 'taxes' | 'phones' | 'countries' | 'output'>('rates');
-  const [editingPhoneCode, setEditingPhoneCode] = useState<number | null>(null);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['globalConfig'],

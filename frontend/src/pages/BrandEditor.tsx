@@ -8,7 +8,6 @@ import {
   Save,
   Plus,
   Trash2,
-  GripVertical,
   ChevronDown,
   ChevronRight,
   Filter,
@@ -16,9 +15,7 @@ import {
   Settings,
   AlertCircle,
   CheckCircle2,
-  Play,
   Code,
-  Eye,
   Copy,
 } from 'lucide-react';
 import { getBrandConfig, updateBrandConfig, createBrand } from '@/api/client';

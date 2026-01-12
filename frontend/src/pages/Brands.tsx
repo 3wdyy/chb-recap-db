@@ -12,15 +12,12 @@ import {
   Copy,
   CheckCircle2,
   AlertCircle,
-  Filter,
-  ArrowUpDown,
   ExternalLink,
   FileSpreadsheet,
   Zap,
-  Settings,
 } from 'lucide-react';
-import { listBrands, deleteBrand, getBrandConfig } from '@/api/client';
-import type { BrandSummary, BrandConfig } from '@/types';
+import { listBrands, deleteBrand } from '@/api/client';
+import type { BrandSummary } from '@/types';
 
 export function Brands() {
   const [search, setSearch] = useState('');
@@ -28,7 +25,7 @@ export function Brands() {
   const [deleteModal, setDeleteModal] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['brands'],
     queryFn: listBrands,
   });

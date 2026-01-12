@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge } from '@/components/ui';
+import { Card, CardContent, CardTitle, Button, Badge } from '@/components/ui';
 import { cn, getBrandColor, getPlatformInfo } from '@/lib/utils';
 import {
   Upload,

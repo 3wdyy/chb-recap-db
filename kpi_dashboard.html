@@ -3452,7 +3452,7 @@
                                 ${statusIcon} ${CURRENT_YEAR} Performance Summary
                             </div>
                             <div class="executive-headline-subtitle">
-                                ${statusText}${salesTargetGap !== null ? ` | Target: ${salesTargetGap >= 0 ? 'Exceeded' : 'Gap'} ${formatChange(Math.abs(salesTargetGap), config[salesKey]?.format)}` : ''}
+                                ${statusText}${salesTargetGap !== null ? ` | Target: ${salesTargetGap >= 0 ? 'Exceeded' : 'Gap'} ${formatChange(salesTargetGap, config[salesKey]?.format)}` : ''}
                             </div>
                         </div>
                         <div class="executive-headline-kpis">

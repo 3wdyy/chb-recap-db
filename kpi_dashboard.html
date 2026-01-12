@@ -2478,13 +2478,13 @@
                     <div class="filter-group">
                         <label>Market</label>
                         <select class="filter-select" id="marketFilter">
-                            ${markets.map(m => `<option value="${m}" ${m === state.selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
+                            ${markets.map(m => `<option value="${m}" ${(state.selectedMarket === null ? isAggregateValue(m, 'market') : m === state.selectedMarket) ? 'selected' : ''}>${m}</option>`).join('')}
                         </select>
                     </div>
                     <div class="filter-group">
                         <label>Channel</label>
                         <select class="filter-select" id="channelFilter">
-                            ${channels.map(c => `<option value="${c}" ${c === state.selectedChannel ? 'selected' : ''}>${c}</option>`).join('')}
+                            ${channels.map(c => `<option value="${c}" ${(state.selectedChannel === null ? isAggregateValue(c, 'channel') : c === state.selectedChannel) ? 'selected' : ''}>${c}</option>`).join('')}
                         </select>
                     </div>
                 </div>
@@ -2598,13 +2598,13 @@
                     <div class="filter-group">
                         <label>Market</label>
                         <select class="filter-select" id="marketFilter">
-                            ${markets.map(m => `<option value="${m}" ${m === state.selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
+                            ${markets.map(m => `<option value="${m}" ${(state.selectedMarket === null ? isAggregateValue(m, 'market') : m === state.selectedMarket) ? 'selected' : ''}>${m}</option>`).join('')}
                         </select>
                     </div>
                     <div class="filter-group">
                         <label>Channel</label>
                         <select class="filter-select" id="channelFilter">
-                            ${channels.map(c => `<option value="${c}" ${c === state.selectedChannel ? 'selected' : ''}>${c}</option>`).join('')}
+                            ${channels.map(c => `<option value="${c}" ${(state.selectedChannel === null ? isAggregateValue(c, 'channel') : c === state.selectedChannel) ? 'selected' : ''}>${c}</option>`).join('')}
                         </select>
                     </div>
                     <div class="filter-group">
@@ -3149,13 +3149,13 @@
                 <div class="filter-group">
                     <label>Market</label>
                     <select class="filter-select" id="marketFilter">
-                        ${markets.map(m => `<option value="${m}" ${m === state.selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
+                        ${markets.map(m => `<option value="${m}" ${(state.selectedMarket === null ? isAggregateValue(m, 'market') : m === state.selectedMarket) ? 'selected' : ''}>${m}</option>`).join('')}
                     </select>
                 </div>
                 <div class="filter-group">
                     <label>Channel</label>
                     <select class="filter-select" id="channelFilter">
-                        ${channels.map(c => `<option value="${c}" ${c === state.selectedChannel ? 'selected' : ''}>${c}</option>`).join('')}
+                        ${channels.map(c => `<option value="${c}" ${(state.selectedChannel === null ? isAggregateValue(c, 'channel') : c === state.selectedChannel) ? 'selected' : ''}>${c}</option>`).join('')}
                     </select>
                 </div>
             ` : '';
@@ -3314,7 +3314,7 @@
                 <div class="filter-group">
                     <label>Channel</label>
                     <select class="filter-select" id="kpiChannelSelect">
-                        ${channels.map(c => `<option value="${c}" ${c === state.selectedChannel ? 'selected' : ''}>${c}</option>`).join('')}
+                        ${channels.map(c => `<option value="${c}" ${(state.selectedChannel === null ? isAggregateValue(c, 'channel') : c === state.selectedChannel) ? 'selected' : ''}>${c}</option>`).join('')}
                     </select>
                 </div>
             ` : '';

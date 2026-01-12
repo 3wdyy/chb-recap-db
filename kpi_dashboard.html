@@ -1985,6 +1985,10 @@
         }
 
         // Get latest data for a specific combination of filters
+        // IMPORTANT: For MC mode, data is pre-aggregated. To get totals:
+        // - Total overall: Market='All' AND Channel='All'
+        // - Total for market: Market='UAE' AND Channel='All'
+        // - Total for channel: Market='All' AND Channel='Retail'
         function getLatestData(market, kpiKey, channel = null) {
             const data = getData();
             if (!data) return null;
@@ -1994,12 +1998,12 @@
             if (state.mode === 'MC') {
                 // Always filter by BU='MC' (the aggregate)
                 rows = rows.filter(d => d.BU === 'MC');
-                // Filter by channel if specified and not an aggregate
-                if (channel && !isAggregateValue(channel, 'channel')) {
-                    rows = rows.filter(d => d.Channel === channel);
-                } else if (!isAggregateValue(state.selectedChannel, 'channel')) {
-                    rows = rows.filter(d => d.Channel === state.selectedChannel);
-                }
+
+                // CRITICAL: Always explicitly filter by channel
+                // If channel is specified, use it; otherwise use the aggregate channel
+                const channelAgg = getAggregateValue('channel');
+                const targetChannel = channel !== null ? channel : channelAgg;
+                rows = rows.filter(d => d.Channel === targetChannel);
             }
 
             // Find December data or latest available
@@ -2021,11 +2025,11 @@
             if (state.mode === 'MC') {
                 // Always filter by BU='MC' (the aggregate)
                 rows = rows.filter(d => d.BU === 'MC');
-                if (channel && !isAggregateValue(channel, 'channel')) {
-                    rows = rows.filter(d => d.Channel === channel);
-                } else if (!isAggregateValue(state.selectedChannel, 'channel')) {
-                    rows = rows.filter(d => d.Channel === state.selectedChannel);
-                }
+
+                // CRITICAL: Always explicitly filter by channel
+                const channelAgg = getAggregateValue('channel');
+                const targetChannel = channel !== null ? channel : channelAgg;
+                rows = rows.filter(d => d.Channel === targetChannel);
             }
 
             return rows.sort((a, b) => (a.Month || '').localeCompare(b.Month || ''));
@@ -2292,8 +2296,12 @@
             const marketAgg = getAggregateValue('market');
             const channelAgg = getAggregateValue('channel');
 
-            const marketLabel = isAggregateValue(state.selectedMarket, 'market') ? marketAgg : state.selectedMarket;
-            const channelLabel = isAggregateValue(state.selectedChannel, 'channel') ? channelAgg : state.selectedChannel;
+            // Use selected values for filtering, fallback to aggregate
+            const selectedMarket = state.selectedMarket || marketAgg;
+            const selectedChannel = state.selectedChannel || channelAgg;
+
+            const marketLabel = isAggregateValue(selectedMarket, 'market') ? marketAgg : selectedMarket;
+            const channelLabel = isAggregateValue(selectedChannel, 'channel') ? channelAgg : selectedChannel;
 
             return `
                 <div class="section-header">
@@ -2306,7 +2314,7 @@
                 ${renderMCFilters()}
 
                 <div class="exec-summary" style="grid-template-columns: repeat(3, 1fr);">
-                    ${heroKPIs.map(key => renderMetricCard(marketAgg, key)).join('')}
+                    ${heroKPIs.map(key => renderMetricCard(selectedMarket, key, selectedChannel)).join('')}
                 </div>
 
                 <div class="comparison-grid" style="margin-top: 32px;">
@@ -2340,6 +2348,8 @@
         }
 
         // Render comparison table for a dimension (market, channel)
+        // For market comparison: Show each market with Channel='All' (market totals)
+        // For channel comparison: Show each channel for the SELECTED market (or all markets if none selected)
         function renderDimensionComparisonTable(dimension, title, kpis) {
             const config = getKPIConfig();
             const items = dimension === 'market' ? getMarkets() : getChannels();
@@ -2351,12 +2361,17 @@
             const marketAgg = getAggregateValue('market');
             const channelAgg = getAggregateValue('channel');
 
+            // For channel comparison, use selected market (so user sees channel breakdown for their selected market)
+            const selectedMarket = state.selectedMarket || marketAgg;
+
             // Get data for each item
             const itemsData = items.map(item => {
                 const kpiData = {};
                 availableKPIs.forEach(kpi => {
                     kpiData[kpi] = getLatestData(
-                        dimension === 'market' ? item : marketAgg,
+                        // Market comparison: use each market with Channel='All'
+                        // Channel comparison: use selected market (or all) with each channel
+                        dimension === 'market' ? item : selectedMarket,
                         kpi,
                         dimension === 'channel' ? item : channelAgg
                     );
@@ -2462,13 +2477,18 @@
             ];
 
             const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
             const config = getKPIConfig();
 
-            // Get data for each segment
+            // Use selected values for filtering
+            const selectedMarket = state.selectedMarket || marketAgg;
+            const selectedChannel = state.selectedChannel || channelAgg;
+
+            // Get data for each segment - respects selected market/channel
             function getSegmentData(kpiKey) {
                 const kpiConfig = config[kpiKey];
                 if (!kpiConfig) return null;
-                const data = getLatestData(marketAgg, kpiKey);
+                const data = getLatestData(selectedMarket, kpiKey, selectedChannel);
                 if (!data) return null;
                 const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
                 const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, kpiConfig.format) : null;
@@ -2526,12 +2546,17 @@
         // Target Scorecard with traffic lights
         function renderTargetScorecard() {
             const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
             const config = getKPIConfig();
             const kpis = getKPIs();
 
-            // Get KPIs that have targets
+            // Use selected values for filtering
+            const selectedMarket = state.selectedMarket || marketAgg;
+            const selectedChannel = state.selectedChannel || channelAgg;
+
+            // Get KPIs that have targets for the selected market/channel
             const kpisWithTargets = kpis.filter(k => {
-                const data = getLatestData(marketAgg, k);
+                const data = getLatestData(selectedMarket, k, selectedChannel);
                 return data && data.Target;
             });
 
@@ -2548,7 +2573,7 @@
 
             const items = kpisWithTargets.map(k => {
                 const kpiConfig = config[k];
-                const data = getLatestData(marketAgg, k);
+                const data = getLatestData(selectedMarket, k, selectedChannel);
                 const gap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
                 const indicator = getIndicator(gap, kpiConfig.format);
                 return {
@@ -2587,7 +2612,7 @@
             `;
         }
 
-        // Channel Mix Analysis
+        // Channel Mix Analysis - shows channel breakdown for selected market
         function renderChannelMix() {
             const channels = getChannels();
             const channelAgg = getAggregateValue('channel');
@@ -2601,14 +2626,17 @@
             if (!kpiConfig) return '';
 
             const marketAgg = getAggregateValue('market');
+            // Use selected market - show channel mix FOR that market
+            const selectedMarket = state.selectedMarket || marketAgg;
 
-            // Get current year and last year data
-            const totalData = getLatestData(marketAgg, kpiKey, channelAgg);
+            // Get total for the selected market (with Channel='All')
+            const totalData = getLatestData(selectedMarket, kpiKey, channelAgg);
             const totalYTD = totalData?.YTD || 1;
             const totalLYTD = totalData?.LYTD || 1;
 
+            // Get each channel's data for the selected market
             const channelData = nonAggChannels.map(ch => {
-                const data = getLatestData(marketAgg, kpiKey, ch);
+                const data = getLatestData(selectedMarket, kpiKey, ch);
                 if (!data) return null;
                 const shareYTD = (data.YTD / totalYTD) * 100;
                 const shareLYTD = data.LYTD ? (data.LYTD / totalLYTD) * 100 : 0;
@@ -2652,6 +2680,8 @@
         }
 
         // Render dimension analysis (similar to market analysis)
+        // For market analysis: Show each market, respecting selected channel filter
+        // For channel analysis: Show each channel for the SELECTED market
         function renderDimensionAnalysis(dimension, kpiKey) {
             const config = getKPIConfig();
             const kpiConfig = config[kpiKey];
@@ -2663,12 +2693,18 @@
             const marketAgg = getAggregateValue('market');
             const channelAgg = getAggregateValue('channel');
 
+            // Respect user's filter selections
+            const selectedMarket = state.selectedMarket || marketAgg;
+            const selectedChannel = state.selectedChannel || channelAgg;
+
             // Get data for all items
             const allData = items.map(item => {
                 const data = getLatestData(
-                    dimension === 'market' ? item : marketAgg,
+                    // Market analysis: use each market with selected channel
+                    // Channel analysis: use selected market with each channel
+                    dimension === 'market' ? item : selectedMarket,
                     kpiKey,
-                    dimension === 'channel' ? item : (isAggregateValue(state.selectedChannel, 'channel') ? channelAgg : state.selectedChannel)
+                    dimension === 'channel' ? item : selectedChannel
                 );
                 return { name: item, data, isTotal: isAggregateValue(item, dimension) };
             }).filter(d => d.data);
@@ -2810,9 +2846,9 @@
             'TRANSACTION COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>'
         };
 
-        function renderMetricCard(market, kpiKey) {
+        function renderMetricCard(market, kpiKey, channel = null) {
             const config = getKPIConfig()[kpiKey];
-            const data = getLatestData(market, kpiKey);
+            const data = getLatestData(market, kpiKey, channel);
             if (!data || !config) return '';
 
             const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
@@ -2969,13 +3005,17 @@
             const markets = getMarkets();
             const hasShare = config.hasShare === true;
 
+            // For MC mode, respect channel selection
+            const channelAgg = getAggregateValue('channel');
+            const selectedChannel = state.selectedChannel || channelAgg;
+
             // Use helper to get market aggregate
             const totalMarketName = getAggregateValue('market');
-            const totalData = getLatestData(totalMarketName, kpiKey);
+            const totalData = getLatestData(totalMarketName, kpiKey, selectedChannel);
             const totalValue = totalData?.YTD || 0;
 
             const allMarketData = markets.map(m => {
-                const data = getLatestData(m, kpiKey);
+                const data = getLatestData(m, kpiKey, selectedChannel);
                 return { market: m, data, isTotal: isAggregateValue(m, 'market') };
             }).filter(d => d.data);
 
@@ -3128,15 +3168,15 @@
                     </div>
                 </div>
                 <div id="kpiDetailContent">
-                    ${renderKPIDetail(selectedMarket, selectedKPI)}
+                    ${renderKPIDetail(selectedMarket, selectedKPI, state.selectedChannel)}
                 </div>
             `;
         }
 
-        function renderKPIDetail(market, kpiKey) {
+        function renderKPIDetail(market, kpiKey, channel = null) {
             const config = getKPIConfig()[kpiKey];
-            const monthlyData = getMonthlyData(market, kpiKey);
-            const latestData = getLatestData(market, kpiKey);
+            const monthlyData = getMonthlyData(market, kpiKey, channel);
+            const latestData = getLatestData(market, kpiKey, channel);
 
             if (!config || monthlyData.length === 0) {
                 return '<p>No data available for selection</p>';
@@ -3472,7 +3512,7 @@
                     state.selectedMarket = kpiMarketSelect.value;
                     const content = document.getElementById('kpiDetailContent');
                     if (content) {
-                        content.innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || defaultKPI);
+                        content.innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || defaultKPI, state.selectedChannel);
                         attachChartTooltips();
                     }
                 };
@@ -3483,7 +3523,7 @@
                     state.selectedChannel = kpiChannelSelect.value;
                     const content = document.getElementById('kpiDetailContent');
                     if (content) {
-                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI || defaultKPI);
+                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI || defaultKPI, state.selectedChannel);
                         attachChartTooltips();
                     }
                 };
@@ -3494,7 +3534,7 @@
                     state.selectedKPI = kpiSelect.value;
                     const content = document.getElementById('kpiDetailContent');
                     if (content) {
-                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI);
+                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI, state.selectedChannel);
                         attachChartTooltips();
                     }
                 };

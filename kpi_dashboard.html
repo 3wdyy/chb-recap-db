@@ -1419,6 +1419,90 @@
             color: var(--navy);
         }
 
+        /* CSV Upload Grid */
+        .csv-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .csv-upload-card {
+            border: 1px solid var(--light-steel);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .csv-upload-header {
+            background: var(--light-bg);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--light-steel);
+        }
+
+        .csv-upload-icon {
+            font-size: 16px;
+        }
+
+        .csv-upload-title {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: 13px;
+        }
+
+        .csv-upload-zone {
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .csv-upload-zone:hover {
+            background: var(--light-bg);
+        }
+
+        .csv-upload-text {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .csv-file-selected {
+            color: var(--positive);
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--navy);
+            border: 1px solid var(--light-steel);
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-bg);
+            border-color: var(--steel-blue);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         /* Segmentation Tab Styles */
         .segment-comparison-grid {
             display: grid;
@@ -1783,11 +1867,13 @@
             mode: 'MUSE', // 'MUSE' or 'MC'
             museData: null,
             mcData: null,
+            museFileName: null,
+            mcFileName: null,
             selectedMarket: 'All',
             selectedChannel: 'All',
             selectedKPI: null,
             activeTab: 'summary',
-            showUpload: true
+            dataLoaded: false
         };
 
         // Get current mode's data
@@ -2163,7 +2249,7 @@
 
         function render() {
             const app = document.getElementById('app');
-            if (state.showUpload) {
+            if (!state.dataLoaded) {
                 app.innerHTML = renderUpload();
             } else {
                 app.innerHTML = renderDashboard();
@@ -2172,35 +2258,52 @@
         }
 
         function renderUpload() {
+            const museFileName = state.museFileName || '';
+            const mcFileName = state.mcFileName || '';
+            const hasAnyFile = museFileName || mcFileName;
+
             return `
                 <div class="upload-overlay">
                     <div class="upload-box">
                         <div class="upload-logo">${LOGO_SVG}</div>
                         <h2>2025 Performance Review</h2>
-                        <p>Select dashboard mode and upload your data</p>
+                        <p>Upload CSV files for each mode</p>
 
-                        <div class="mode-selector">
-                            <div class="mode-card ${state.mode === 'MUSE' ? 'selected' : ''}" data-mode="MUSE">
-                                <div class="mode-card-icon">💎</div>
-                                <div class="mode-card-title">MUSE</div>
-                                <div class="mode-card-desc">Loyalty program analytics</div>
+                        <div class="csv-upload-grid">
+                            <div class="csv-upload-card">
+                                <div class="csv-upload-header">
+                                    <span class="csv-upload-icon">💎</span>
+                                    <span class="csv-upload-title">MUSE Data</span>
+                                </div>
+                                <div class="csv-upload-zone" id="museDropzone">
+                                    <input type="file" id="museFileInput" accept=".csv" style="display:none">
+                                    ${museFileName
+                                        ? `<div class="csv-file-selected">✓ ${museFileName}</div>`
+                                        : '<p class="csv-upload-text">Click or drop CSV</p>'}
+                                </div>
                             </div>
-                            <div class="mode-card ${state.mode === 'MC' ? 'selected' : ''}" data-mode="MC">
-                                <div class="mode-card-icon">📊</div>
-                                <div class="mode-card-title">MC</div>
-                                <div class="mode-card-desc">Multi-channel customer metrics</div>
+                            <div class="csv-upload-card">
+                                <div class="csv-upload-header">
+                                    <span class="csv-upload-icon">📊</span>
+                                    <span class="csv-upload-title">MC Data</span>
+                                </div>
+                                <div class="csv-upload-zone" id="mcDropzone">
+                                    <input type="file" id="mcFileInput" accept=".csv" style="display:none">
+                                    ${mcFileName
+                                        ? `<div class="csv-file-selected">✓ ${mcFileName}</div>`
+                                        : '<p class="csv-upload-text">Click or drop CSV</p>'}
+                                </div>
                             </div>
                         </div>
 
-                        <div class="dropzone" id="dropzone">
-                            <p class="dropzone-text"><span>Click to upload</span> or drag & drop</p>
-                            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+                        <p class="upload-hint">Upload at least one CSV file to continue</p>
+
+                        <div class="upload-actions">
+                            <button class="btn-primary" id="startBtn" ${hasAnyFile ? '' : 'disabled'}>
+                                Start Dashboard
+                            </button>
+                            <button class="btn-secondary" id="demoBtn">Load Demo Data</button>
                         </div>
-                        <p class="upload-hint">
-                            <strong>Excel:</strong> Workbook with sheets named "MUSE" and/or "MC"<br>
-                            <strong>CSV:</strong> Single mode data file
-                        </p>
-                        <button class="btn-primary" id="demoBtn" style="margin-top: 16px;">Load Demo Data</button>
                     </div>
                 </div>
             `;
@@ -2474,10 +2577,8 @@
                 ${renderMCFilters()}
                 <div class="filter-row">
                     <div class="filter-group">
-                        <label>Select KPI</label>
-                        <select class="filter-select" id="channelKpiSelect">
-                            ${kpis.map(k => `<option value="${k}" ${k === defaultKPI ? 'selected' : ''}>${getKPIConfig()[k]?.name || k}</option>`).join('')}
-                        </select>
+                        <label>KPI Metric</label>
+                        ${renderKPIDropdown(kpis, defaultKPI, 'channelKpiSelect')}
                     </div>
                 </div>
                 <div id="channelAnalysisContent">
@@ -2536,8 +2637,9 @@
                                 <span class="segment-metric-name">${m.label}</span>
                                 <span class="segment-metric-values">
                                     <span class="segment-metric-value">${formatValue(m.data.YTD, m.format)}</span>
-                                    <span class="segment-metric-change ${getChangeClass(m.change, m.format)}">
-                                        <span class="segment-change-label">vs LY</span> ${formatChange(m.change, m.format)}
+                                    <span class="segment-metric-change">
+                                        <span class="segment-change-label">vs LY</span>
+                                        <span class="${getChangeClass(m.change, m.format)}">${formatChange(m.change, m.format)}</span>
                                     </span>
                                 </span>
                             </div>
@@ -2734,12 +2836,11 @@
             const itemData = allData.filter(d => !d.isTotal)
                 .sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
 
-            const hasTargets = allData.some(d => d.data?.Target);
             const maxShare = Math.max(...itemData.map(d => totalValue > 0 ? (d.data.YTD / totalValue) * 100 : 0));
 
             function renderShareCell(value, isTotal = false) {
                 if (!hasShare) {
-                    return '<td class="compare-cell"><span class="cell-na">N/A</span></td>';
+                    return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
                 }
                 if (isTotal) {
                     return '<td class="compare-cell"><span style="font-weight:600;color:var(--navy)">100%</span></td>';
@@ -2758,6 +2859,23 @@
                 `;
             }
 
+            // Helper to render target cell (always show column, NA if no target)
+            function renderTargetCell(data) {
+                if (data.Target) {
+                    const tGap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
+                    const tGapClass = getChangeClass(tGap, kpiConfig.format);
+                    return `
+                        <td class="compare-cell">
+                            <div class="compare-group">
+                                <span class="compare-value">${formatValue(data.Target, kpiConfig.format)}</span>
+                                <span class="compare-badge ${tGapClass}">${formatChange(tGap, kpiConfig.format)}</span>
+                            </div>
+                        </td>
+                    `;
+                }
+                return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
+            }
+
             const dimensionLabel = dimension === 'market' ? 'Market' : 'Channel';
 
             return `
@@ -2771,7 +2889,7 @@
                                 <th>${dimensionLabel}</th>
                                 <th class="center">2025</th>
                                 <th class="center">2024</th>
-                                ${hasTargets ? '<th class="center">Target</th>' : ''}
+                                <th class="center">Target</th>
                                 <th class="center">Share</th>
                             </tr>
                         </thead>
@@ -2779,24 +2897,6 @@
                             ${itemData.map(({name, data}) => {
                                 const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
                                 const changeClass = getChangeClass(change, kpiConfig.format);
-
-                                let targetHTML = '';
-                                if (hasTargets) {
-                                    if (data.Target) {
-                                        const tGap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
-                                        const tGapClass = getChangeClass(tGap, kpiConfig.format);
-                                        targetHTML = `
-                                            <td class="compare-cell">
-                                                <div class="compare-group">
-                                                    <span class="compare-value">${formatValue(data.Target, kpiConfig.format)}</span>
-                                                    <span class="compare-badge ${tGapClass}">${formatChange(tGap, kpiConfig.format)}</span>
-                                                </div>
-                                            </td>
-                                        `;
-                                    } else {
-                                        targetHTML = '<td class="compare-cell">—</td>';
-                                    }
-                                }
 
                                 return `
                                     <tr>
@@ -2808,7 +2908,7 @@
                                                 <span class="compare-badge ${changeClass}">${formatChange(change, kpiConfig.format)}</span>
                                             </div>
                                         </td>
-                                        ${targetHTML}
+                                        ${renderTargetCell(data)}
                                         ${renderShareCell(data.YTD)}
                                     </tr>
                                 `;
@@ -2823,14 +2923,7 @@
                                             <span class="compare-badge ${getChangeClass(calcChange(totalData.data.YTD, totalData.data.LYTD, kpiConfig.format), kpiConfig.format)}">${formatChange(calcChange(totalData.data.YTD, totalData.data.LYTD, kpiConfig.format), kpiConfig.format)}</span>
                                         </div>
                                     </td>
-                                    ${hasTargets && totalData.data.Target ? `
-                                        <td class="compare-cell">
-                                            <div class="compare-group">
-                                                <span class="compare-value">${formatValue(totalData.data.Target, kpiConfig.format)}</span>
-                                                <span class="compare-badge ${getChangeClass(calcTargetGap(totalData.data.YTD, totalData.data.Target, kpiConfig.format), kpiConfig.format)}">${formatChange(calcTargetGap(totalData.data.YTD, totalData.data.Target, kpiConfig.format), kpiConfig.format)}</span>
-                                            </div>
-                                        </td>
-                                    ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
+                                    ${renderTargetCell(totalData.data)}
                                     ${renderShareCell(totalData.data.YTD, true)}
                                 </tr>
                             ` : ''}
@@ -3001,10 +3094,8 @@
                 ${state.mode === 'MC' ? renderMCFilters() : ''}
                 <div class="filter-row">
                     <div class="filter-group">
-                        <label>Select KPI</label>
-                        <select class="filter-select" id="marketKpiSelect">
-                            ${kpis.map(k => `<option value="${k}" ${k === defaultKPI ? 'selected' : ''}>${config[k]?.name || k}</option>`).join('')}
-                        </select>
+                        <label>KPI Metric</label>
+                        ${renderKPIDropdown(kpis, defaultKPI, 'marketKpiSelect')}
                     </div>
                 </div>
                 <div id="marketComparisonContent">
@@ -3034,8 +3125,6 @@
                 return { market: m, data, isTotal: isAggregateValue(m, 'market') };
             }).filter(d => d.data);
 
-            const hasTargets = allMarketData.some(d => d.data?.Target);
-
             // Non-total markets sorted by value
             const marketData = allMarketData.filter(d => !d.isTotal).sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
             const totalRow = allMarketData.find(d => d.isTotal);
@@ -3046,7 +3135,7 @@
             // Helper to render share cell with bar
             function renderShareCell(value, isTotal = false) {
                 if (!hasShare) {
-                    return '<td class="compare-cell"><span class="cell-na">N/A</span></td>';
+                    return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
                 }
                 if (isTotal) {
                     return '<td class="compare-cell"><span style="font-weight:600;color:var(--navy)">100%</span></td>';
@@ -3065,6 +3154,23 @@
                 `;
             }
 
+            // Helper to render target cell (always show column, NA if no target)
+            function renderTargetCell(data) {
+                if (data.Target) {
+                    const tGap = calcTargetGap(data.YTD, data.Target, config.format);
+                    const tGapClass = getChangeClass(tGap, config.format);
+                    return `
+                        <td class="compare-cell">
+                            <div class="compare-group">
+                                <span class="compare-value">${formatValue(data.Target, config.format)}</span>
+                                <span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>
+                            </div>
+                        </td>
+                    `;
+                }
+                return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
+            }
+
             return `
                 <div class="chart-container">
                     <div class="chart-header">
@@ -3076,7 +3182,7 @@
                                 <th>Market</th>
                                 <th class="center">2025</th>
                                 <th class="center">2024</th>
-                                ${hasTargets ? '<th class="center">Target</th>' : ''}
+                                <th class="center">Target</th>
                                 <th class="center">Share</th>
                             </tr>
                         </thead>
@@ -3084,24 +3190,6 @@
                             ${marketData.map(({market, data}) => {
                                 const change = calcChange(data.YTD, data.LYTD, config.format);
                                 const changeClass = getChangeClass(change, config.format);
-
-                                let targetHTML = '';
-                                if (hasTargets) {
-                                    if (data.Target) {
-                                        const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                        const tGapClass = getChangeClass(tGap, config.format);
-                                        targetHTML = `
-                                            <td class="compare-cell">
-                                                <div class="compare-group">
-                                                    <span class="compare-value">${formatValue(data.Target, config.format)}</span>
-                                                    <span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>
-                                                </div>
-                                            </td>
-                                        `;
-                                    } else {
-                                        targetHTML = '<td class="compare-cell">—</td>';
-                                    }
-                                }
 
                                 return `
                                     <tr>
@@ -3113,7 +3201,7 @@
                                                 <span class="compare-badge ${changeClass}">${formatChange(change, config.format)}</span>
                                             </div>
                                         </td>
-                                        ${targetHTML}
+                                        ${renderTargetCell(data)}
                                         ${renderShareCell(data.YTD)}
                                     </tr>
                                 `;
@@ -3128,14 +3216,7 @@
                                             <span class="compare-badge ${getChangeClass(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
                                         </div>
                                     </td>
-                                    ${hasTargets && totalRow.data.Target ? `
-                                        <td class="compare-cell">
-                                            <div class="compare-group">
-                                                <span class="compare-value">${formatValue(totalRow.data.Target, config.format)}</span>
-                                                <span class="compare-badge ${getChangeClass(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
-                                            </div>
-                                        </td>
-                                    ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
+                                    ${renderTargetCell(totalRow.data)}
                                     ${renderShareCell(totalRow.data.YTD, true)}
                                     </tr>
                                 ` : ''}
@@ -3423,17 +3504,12 @@
         }
 
         function attachEvents() {
-            const dropzone = document.getElementById('dropzone');
-            const fileInput = document.getElementById('fileInput');
+            const museDropzone = document.getElementById('museDropzone');
+            const mcDropzone = document.getElementById('mcDropzone');
+            const museFileInput = document.getElementById('museFileInput');
+            const mcFileInput = document.getElementById('mcFileInput');
+            const startBtn = document.getElementById('startBtn');
             const demoBtn = document.getElementById('demoBtn');
-
-            // Mode selection on upload screen
-            document.querySelectorAll('.mode-card').forEach(card => {
-                card.onclick = () => {
-                    state.mode = card.dataset.mode;
-                    render();
-                };
-            });
 
             // Mode toggle in header
             document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
@@ -3447,19 +3523,53 @@
                 };
             });
 
-            if (dropzone) {
-                dropzone.onclick = () => fileInput.click();
-                dropzone.ondragover = e => { e.preventDefault(); dropzone.style.borderColor = 'var(--navy)'; };
-                dropzone.ondragleave = () => { dropzone.style.borderColor = 'var(--light-steel)'; };
-                dropzone.ondrop = e => {
+            // MUSE file upload
+            if (museDropzone) {
+                museDropzone.onclick = () => museFileInput.click();
+                museDropzone.ondragover = e => { e.preventDefault(); museDropzone.style.background = 'var(--light-bg)'; };
+                museDropzone.ondragleave = () => { museDropzone.style.background = ''; };
+                museDropzone.ondrop = e => {
                     e.preventDefault();
+                    museDropzone.style.background = '';
                     const file = e.dataTransfer.files[0];
-                    if (file) loadFile(file);
+                    if (file && file.name.endsWith('.csv')) loadCSVFile(file, 'MUSE');
                 };
             }
 
-            if (fileInput) {
-                fileInput.onchange = e => { if (e.target.files[0]) loadFile(e.target.files[0]); };
+            if (museFileInput) {
+                museFileInput.onchange = e => { if (e.target.files[0]) loadCSVFile(e.target.files[0], 'MUSE'); };
+            }
+
+            // MC file upload
+            if (mcDropzone) {
+                mcDropzone.onclick = () => mcFileInput.click();
+                mcDropzone.ondragover = e => { e.preventDefault(); mcDropzone.style.background = 'var(--light-bg)'; };
+                mcDropzone.ondragleave = () => { mcDropzone.style.background = ''; };
+                mcDropzone.ondrop = e => {
+                    e.preventDefault();
+                    mcDropzone.style.background = '';
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.name.endsWith('.csv')) loadCSVFile(file, 'MC');
+                };
+            }
+
+            if (mcFileInput) {
+                mcFileInput.onchange = e => { if (e.target.files[0]) loadCSVFile(e.target.files[0], 'MC'); };
+            }
+
+            // Start button
+            if (startBtn) {
+                startBtn.onclick = () => {
+                    // Set mode based on which data is available (prefer MC if both)
+                    if (state.mcData) {
+                        state.mode = 'MC';
+                    } else if (state.museData) {
+                        state.mode = 'MUSE';
+                    }
+                    state.dataLoaded = true;
+                    state.activeTab = 'summary';
+                    render();
+                };
             }
 
             if (demoBtn) {
@@ -3621,7 +3731,7 @@
                         // If both available, keep user's selection
 
                         if (state.museData || state.mcData) {
-                            state.showUpload = false;
+                            state.dataLoaded = true;
                             state.selectedMarket = 'All';
                             state.selectedChannel = 'All';
                             render();
@@ -3645,7 +3755,7 @@
                         } else {
                             state.museData = data;
                         }
-                        state.showUpload = false;
+                        state.dataLoaded = true;
                         state.selectedMarket = 'All';
                         state.selectedChannel = 'All';
                         render();
@@ -3657,6 +3767,28 @@
             }
         }
 
+        // Load CSV file for specific mode
+        function loadCSVFile(file, mode) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const data = parseCSV(e.target.result, mode);
+                if (data.length > 0) {
+                    if (mode === 'MC') {
+                        state.mcData = data;
+                        state.mcFileName = file.name;
+                    } else {
+                        state.museData = data;
+                        state.museFileName = file.name;
+                    }
+                    // Re-render upload screen to show selected file
+                    render();
+                } else {
+                    alert('Could not parse CSV. Please check the format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function loadDemoData() {
             // Load demo CSV data for MUSE mode
             fetch('data.csv')
@@ -3666,7 +3798,7 @@
                     if (data.length > 0) {
                         state.museData = data;
                         state.mode = 'MUSE';
-                        state.showUpload = false;
+                        state.dataLoaded = true;
                         render();
                     }
                 })

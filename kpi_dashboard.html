@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 Performance Review | KPI Dashboard</title>
+    <title>Performance Review | KPI Dashboard</title>
+    <!-- SheetJS for Excel parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
+            /* Colors */
             --navy: #1B365D;
             --steel-blue: #8FAFD4;
             --light-steel: #B8D4E8;
@@ -21,6 +24,22 @@
             --light-bg: #F8FAFC;
             --text-dark: #1B365D;
             --text-muted: #64748B;
+
+            /* Typography Scale */
+            --font-display: 48px;      /* Hero values */
+            --font-h1: 26px;           /* Page title */
+            --font-h2: 20px;           /* Section titles */
+            --font-h3: 18px;           /* Chart titles, subsections */
+            --font-value-xl: 32px;     /* Large card values */
+            --font-value-lg: 26px;     /* Medium card values */
+            --font-value-md: 20px;     /* Small card values */
+            --font-value-sm: 16px;     /* Table cell values */
+            --font-body-lg: 15px;      /* Large body text */
+            --font-body: 14px;         /* Default body text */
+            --font-body-sm: 13px;      /* Small body text */
+            --font-caption: 12px;      /* Captions, badges */
+            --font-label: 11px;        /* Small uppercase labels */
+            --font-micro: 10px;        /* Tiny text */
         }
 
         body {
@@ -50,20 +69,23 @@
             padding: 8px;
         }
 
-        .logo-container svg {
+        .logo-container svg,
+        .logo-container img {
             height: 70px;
             width: auto;
+            max-width: 200px;
+            object-fit: contain;
         }
 
         .header-text h1 {
-            font-size: 28px;
+            font-size: var(--font-h1);
             font-weight: 700;
             color: var(--navy);
         }
 
         .header-text p {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: var(--font-body);
         }
 
         .header-badge {
@@ -71,7 +93,7 @@
             color: white;
             padding: 8px 20px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
         }
 
@@ -86,7 +108,7 @@
         .nav-tab {
             padding: 16px 28px;
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 500;
             cursor: pointer;
             border-bottom: 3px solid transparent;
@@ -141,14 +163,14 @@
         }
 
         .metric-label {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .metric-value {
-            font-size: 36px;
+            font-size: var(--font-value-xl);
             font-weight: 700;
             color: var(--navy);
             margin-bottom: 18px;
@@ -170,21 +192,21 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
+            font-size: var(--font-body-sm);
             color: var(--text-muted);
         }
 
         .metric-target-val {
             font-weight: 700;
             color: var(--navy);
-            font-size: 15px;
+            font-size: var(--font-body-sm);
         }
 
         .metric-target-badge {
             padding: 5px 12px;
             border-radius: 14px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: var(--font-body-sm);
         }
 
         .metric-target-badge.up {
@@ -202,12 +224,12 @@
             color: var(--neutral);
         }
 
-        /* vs 2024 - secondary with arrow */
+        /* vs LY - secondary with arrow */
         .metric-vs-row {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
         }
 
@@ -227,6 +249,242 @@
             height: 14px;
         }
 
+        /* Share Tile - for middle row with new/returning split */
+        .share-tile {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px 24px;
+            border: 1px solid var(--light-steel);
+            border-left: 4px solid var(--navy);
+        }
+
+        .share-tile-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .share-tile-icon {
+            width: 32px;
+            height: 32px;
+            color: var(--navy);
+        }
+
+        .share-tile-label {
+            font-size: var(--font-label);
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .share-tile-main {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .share-tile-value {
+            font-size: var(--font-value-lg);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .share-tile-change {
+            font-size: var(--font-body-sm);
+            font-weight: 600;
+        }
+
+        .share-tile-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--light-steel);
+        }
+
+        .share-split-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .share-split-label {
+            font-size: var(--font-label);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .share-split-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .share-split-value {
+            font-size: var(--font-body);
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .share-split-pct {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .share-split-change {
+            font-size: var(--font-label);
+            font-weight: 600;
+        }
+
+        .share-split-change.up { color: var(--positive); }
+        .share-split-change.down { color: var(--negative); }
+        .share-split-change.neutral { color: var(--neutral); }
+
+        .share-split-vs {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-top: 2px;
+        }
+
+        .share-split-arrow {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .share-split-arrow svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .share-split-arrow.up { color: var(--positive); }
+        .share-split-arrow.down { color: var(--negative); }
+        .share-split-arrow.neutral { color: var(--neutral); }
+
+        .share-split-vs-label {
+            font-size: var(--font-micro);
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
+        /* Small Tile - for bottom row (AOV, Frequency, ACV, UPT) */
+        .small-tile {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 16px 20px;
+            border: 1px solid var(--light-steel);
+            border-left: 3px solid var(--navy);
+        }
+
+        .small-tile-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .small-tile-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--navy);
+        }
+
+        .small-tile-label {
+            font-size: var(--font-label);
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .small-tile-value {
+            font-size: var(--font-value-md);
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .small-tile-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--font-label);
+        }
+
+        .small-tile-change {
+            font-weight: 600;
+        }
+
+        .small-tile-label-vs {
+            color: var(--text-muted);
+        }
+
+        .small-tile-target {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--font-label);
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--light-steel);
+        }
+
+        .small-tile-target-badge {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .small-tile-target-badge.up {
+            background: rgba(46, 125, 90, 0.15);
+            color: var(--positive);
+        }
+
+        .small-tile-target-badge.down {
+            background: rgba(196, 49, 75, 0.15);
+            color: var(--negative);
+        }
+
+        .small-tile-target-badge.neutral {
+            background: rgba(184, 134, 11, 0.15);
+            color: var(--neutral);
+        }
+
+        .small-tile-arrow {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .small-tile-arrow svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .small-tile-arrow.up { color: var(--positive); }
+        .small-tile-arrow.down { color: var(--negative); }
+        .small-tile-arrow.neutral { color: var(--neutral); }
+
+        /* KPI Rows Layout */
+        .kpi-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-row-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
         /* Section Headers */
         .section-header {
             display: flex;
@@ -236,7 +494,7 @@
         }
 
         .section-title {
-            font-size: 22px;
+            font-size: var(--font-h2);
             font-weight: 700;
             color: var(--navy);
             letter-spacing: -0.3px;
@@ -244,7 +502,7 @@
 
         .section-subtitle {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: var(--font-body);
         }
 
         /* Market Comparison Table */
@@ -262,7 +520,7 @@
             background: var(--navy);
             padding: 16px 18px;
             text-align: center;
-            font-size: 14px;
+            font-size: var(--font-caption);
             color: white;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -274,7 +532,7 @@
         .market-table td {
             padding: 16px 18px;
             border-top: 1px solid var(--light-steel);
-            font-size: 14px;
+            font-size: var(--font-body);
             text-align: center;
         }
 
@@ -300,7 +558,7 @@
 
         .cell-value {
             font-weight: 700;
-            font-size: 18px;
+            font-size: var(--font-value-sm);
             color: var(--navy);
         }
 
@@ -310,7 +568,7 @@
             justify-content: center;
             gap: 6px;
             margin-top: 4px;
-            font-size: 12px;
+            font-size: var(--font-caption);
             font-weight: 500;
         }
 
@@ -320,7 +578,7 @@
         .cell-divider { color: var(--text-muted); }
 
         .cell-sub {
-            font-size: 11px;
+            font-size: var(--font-label);
             font-weight: 500;
         }
 
@@ -339,7 +597,7 @@
         }
 
         .insights-title {
-            font-size: 18px;
+            font-size: var(--font-h3);
             font-weight: 600;
             color: var(--navy);
             margin-bottom: 20px;
@@ -370,7 +628,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: var(--font-h3);
             flex-shrink: 0;
         }
 
@@ -379,7 +637,7 @@
         .insight-icon.blue { background: rgba(143, 175, 212, 0.3); }
 
         .insight-text {
-            font-size: 14px;
+            font-size: var(--font-body);
             color: var(--text-dark);
             line-height: 1.5;
         }
@@ -398,7 +656,7 @@
 
         .filter-group label {
             display: block;
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -412,7 +670,7 @@
             color: var(--navy);
             padding: 14px 48px 14px 18px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: var(--font-body-lg);
             font-weight: 600;
             cursor: pointer;
             appearance: none;
@@ -437,13 +695,29 @@
 
         .filter-select option {
             padding: 12px 16px;
-            font-size: 15px;
+            font-size: var(--font-body-lg);
             color: var(--navy);
             background: var(--white);
         }
 
         .filter-select option:checked {
             background: var(--light-steel);
+        }
+
+        .filter-select optgroup {
+            font-weight: 700;
+            color: var(--navy);
+            background: var(--light-bg);
+            font-size: var(--font-body-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select optgroup option {
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: normal;
+            padding-left: 16px;
         }
 
         /* Upload Overlay */
@@ -468,7 +742,7 @@
         .upload-logo { margin-bottom: 24px; }
         .upload-logo svg { height: 100px; }
 
-        .upload-box h2 { font-size: 24px; color: var(--navy); margin-bottom: 8px; }
+        .upload-box h2 { font-size: var(--font-h1); color: var(--navy); margin-bottom: 8px; }
         .upload-box p { color: var(--text-muted); margin-bottom: 24px; }
 
         .dropzone {
@@ -490,7 +764,7 @@
             border: none;
             padding: 14px 28px;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: var(--font-body);
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
@@ -517,7 +791,7 @@
         }
 
         .chart-title {
-            font-size: 20px;
+            font-size: var(--font-h3);
             font-weight: 700;
             color: var(--navy);
             letter-spacing: -0.3px;
@@ -532,7 +806,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             color: var(--text-muted);
         }
 
@@ -566,64 +840,11 @@
         .kpi-hero-card.neutral { border-left-color: var(--neutral); }
 
         .kpi-hero-label {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 8px;
-        }
-
-        .kpi-hero-value {
-            font-size: 48px;
-            font-weight: 700;
-            color: var(--navy);
-            margin-bottom: 16px;
-        }
-
-        /* Primary comparison - vs Target */
-        .kpi-hero-target {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
-            background: var(--light-bg);
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .kpi-hero-target-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .kpi-hero-target-value {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--navy);
-        }
-
-        .kpi-hero-target-badge {
-            font-size: 22px;
-            font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 8px;
-        }
-
-        .kpi-hero-target-badge.up {
-            background: rgba(46, 125, 90, 0.12);
-            color: var(--positive);
-        }
-
-        .kpi-hero-target-badge.down {
-            background: rgba(196, 49, 75, 0.12);
-            color: var(--negative);
-        }
-
-        .kpi-hero-target-badge.neutral {
-            background: rgba(184, 134, 11, 0.12);
-            color: var(--neutral);
         }
 
         /* Hero card main layout - two columns */
@@ -638,7 +859,7 @@
         }
 
         .kpi-hero-value {
-            font-size: 56px;
+            font-size: var(--font-display);
             font-weight: 700;
             color: var(--navy);
             margin-bottom: 20px;
@@ -661,7 +882,7 @@
         }
 
         .kpi-hero-target-label {
-            font-size: 12px;
+            font-size: var(--font-caption);
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -669,13 +890,13 @@
         }
 
         .kpi-hero-target-detail {
-            font-size: 16px;
+            font-size: var(--font-body);
             color: var(--navy);
             font-weight: 600;
         }
 
         .kpi-hero-target-badge {
-            font-size: 28px;
+            font-size: var(--font-value-lg);
             font-weight: 700;
             padding: 8px 20px;
             border-radius: 10px;
@@ -729,12 +950,20 @@
         }
 
         .market-breakdown-title {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 20px;
+        }
+
+        .breakdown-single-value {
+            font-size: var(--font-value-md);
+            font-weight: 600;
+            color: var(--navy);
+            text-align: center;
+            padding: 30px 0;
         }
 
         .market-breakdown-list {
@@ -756,13 +985,13 @@
         }
 
         .market-breakdown-name {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
             color: var(--navy);
         }
 
         .market-breakdown-value {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 700;
             color: var(--navy);
         }
@@ -802,7 +1031,7 @@
         }
 
         .kpi-secondary-label {
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 700;
             color: var(--navy);
             text-transform: uppercase;
@@ -810,12 +1039,12 @@
         }
 
         .kpi-secondary-detail {
-            font-size: 15px;
+            font-size: var(--font-body);
             color: var(--text-muted);
         }
 
         .kpi-secondary-value {
-            font-size: 24px;
+            font-size: var(--font-value-md);
             font-weight: 700;
         }
 
@@ -838,14 +1067,14 @@
         }
 
         .kpi-comp-label {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .kpi-comp-value {
-            font-size: 18px;
+            font-size: var(--font-h3);
             font-weight: 700;
         }
 
@@ -854,7 +1083,7 @@
         .kpi-comp-value.neutral { color: var(--neutral); }
 
         .kpi-comp-detail {
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
         }
 
@@ -904,25 +1133,25 @@
         }
 
         .trend-badges-right .trend-badge-month {
-            font-size: 11px;
+            font-size: var(--font-label);
             margin-bottom: 4px;
         }
 
         .trend-badges-right .trend-badge-actual {
-            font-size: 16px;
+            font-size: var(--font-body);
             margin-bottom: 4px;
         }
 
         .trend-badges-right .trend-badge-value {
-            font-size: 12px;
+            font-size: var(--font-caption);
         }
 
         .trend-badges-right .trend-badge-label {
-            font-size: 10px;
+            font-size: var(--font-micro);
         }
 
         .trend-badge-month {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
             color: var(--text-muted);
             margin-bottom: 6px;
@@ -931,14 +1160,14 @@
         }
 
         .trend-badge-actual {
-            font-size: 20px;
+            font-size: var(--font-h3);
             font-weight: 700;
             color: var(--navy);
             margin-bottom: 6px;
         }
 
         .trend-badge-value {
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 600;
         }
 
@@ -949,7 +1178,7 @@
         .trend-badge-label {
             font-weight: 400;
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: var(--font-caption);
         }
 
         /* Modern Market Table */
@@ -969,7 +1198,7 @@
         .modern-table th {
             padding: 16px 18px;
             text-align: center;
-            font-size: 14px;
+            font-size: var(--font-caption);
             color: white;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -989,7 +1218,7 @@
 
         .modern-table td {
             padding: 16px;
-            font-size: 14px;
+            font-size: var(--font-body);
             border-bottom: 1px solid rgba(184, 212, 232, 0.4);
             vertical-align: middle;
         }
@@ -1002,7 +1231,7 @@
             font-weight: 600;
             color: var(--navy);
             white-space: nowrap;
-            font-size: 15px;
+            font-size: var(--font-body);
         }
 
         .modern-table .value-cell {
@@ -1010,7 +1239,7 @@
             font-weight: 700;
             color: var(--navy);
             font-variant-numeric: tabular-nums;
-            font-size: 18px;
+            font-size: var(--font-value-sm);
         }
 
         .modern-table .compare-cell {
@@ -1025,7 +1254,7 @@
 
         .modern-table .compare-value {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: var(--font-body);
             font-variant-numeric: tabular-nums;
         }
 
@@ -1033,7 +1262,7 @@
             display: inline-block;
             padding: 3px 8px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: var(--font-caption);
             font-weight: 600;
             min-width: 52px;
             text-align: center;
@@ -1110,7 +1339,7 @@
         }
 
         .donut-title {
-            font-size: 12px;
+            font-size: var(--font-caption);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--text-muted);
@@ -1143,13 +1372,13 @@
         }
 
         .donut-center-value {
-            font-size: 24px;
+            font-size: var(--font-value-md);
             font-weight: 700;
             color: var(--navy);
         }
 
         .donut-center-label {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
         }
@@ -1165,24 +1394,24 @@
 
         .donut-callout {
             position: absolute;
-            font-size: 11px;
+            font-size: var(--font-label);
             font-weight: 600;
             white-space: nowrap;
         }
 
         .donut-callout-label {
             color: var(--navy);
-            font-size: 12px;
+            font-size: var(--font-caption);
         }
 
         .donut-callout-value {
             color: var(--text-muted);
-            font-size: 11px;
+            font-size: var(--font-label);
         }
 
         .donut-legend {
             display: none;
-            font-size: 12px;
+            font-size: var(--font-caption);
         }
 
         .donut-legend-color {
@@ -1213,7 +1442,7 @@
             justify-content: center;
             gap: 4px;
             margin-top: 4px;
-            font-size: 12px;
+            font-size: var(--font-caption);
             flex-wrap: wrap;
         }
 
@@ -1242,7 +1471,7 @@
             color: white;
             padding: 10px 14px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             pointer-events: none;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -1276,6 +1505,634 @@
             .exec-summary { grid-template-columns: 1fr; }
             .trend-badges { grid-template-columns: repeat(3, 1fr); }
         }
+
+        /* Mode Selection Styles */
+        .mode-selector {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .mode-card {
+            flex: 1;
+            background: var(--white);
+            border: 2px solid var(--light-steel);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            border-color: var(--steel-blue);
+            background: var(--light-bg);
+        }
+
+        .mode-card.selected {
+            border-color: var(--navy);
+            background: rgba(27, 54, 93, 0.05);
+        }
+
+        .mode-card-icon {
+            font-size: var(--font-value-xl);
+            margin-bottom: 12px;
+        }
+
+        .mode-card-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .mode-card-desc {
+            font-size: var(--font-body-sm);
+            color: var(--text-muted);
+        }
+
+        /* Header Mode Switcher */
+        .header-mode-switcher {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 16px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 4px;
+            border: 1px solid var(--light-steel);
+        }
+
+        .mode-toggle-btn {
+            padding: 8px 16px;
+            font-size: var(--font-body-sm);
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-toggle-btn.active {
+            background: var(--navy);
+            color: white;
+        }
+
+        .mode-toggle-btn:hover:not(.active) {
+            background: var(--light-steel);
+            color: var(--navy);
+        }
+
+        /* Cascade Filter Styles */
+        .filter-cascade {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Comparison Tables */
+        .comparison-section {
+            margin-bottom: 32px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Upload file type hint */
+        .upload-hint {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .upload-hint strong {
+            color: var(--navy);
+        }
+
+        /* CSV Upload Grid */
+        .csv-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .csv-upload-card {
+            border: 1px solid var(--light-steel);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .csv-upload-header {
+            background: var(--light-bg);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--light-steel);
+        }
+
+        .csv-upload-icon {
+            font-size: var(--font-value-sm);
+        }
+
+        .csv-upload-title {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: var(--font-body-sm);
+        }
+
+        .csv-upload-zone {
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .csv-upload-zone:hover {
+            background: var(--light-bg);
+        }
+
+        .csv-upload-text {
+            color: var(--text-muted);
+            font-size: var(--font-body-sm);
+            margin: 0;
+        }
+
+        .csv-file-selected {
+            color: var(--positive);
+            font-weight: 500;
+            font-size: var(--font-body-sm);
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--navy);
+            border: 1px solid var(--light-steel);
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-bg);
+            border-color: var(--steel-blue);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Segmentation Tab Styles */
+        .segment-comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .segment-card {
+            background: var(--white);
+            border: 1px solid var(--light-steel);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .segment-card.total { border-left: 4px solid var(--navy); }
+        .segment-card.new { border-left: 4px solid var(--positive); }
+        .segment-card.returning { border-left: 4px solid var(--steel-blue); }
+
+        .segment-card-title {
+            font-size: var(--font-body-sm);
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .segment-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light-bg);
+        }
+
+        .segment-metric:last-child { border-bottom: none; }
+
+        .segment-metric-name {
+            font-size: var(--font-body-sm);
+            color: var(--text-secondary);
+        }
+
+        .segment-metric-value {
+            font-size: var(--font-body);
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .segment-metric-change {
+            font-size: var(--font-label);
+            margin-left: 8px;
+        }
+
+        .segment-change-label {
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-right: 2px;
+        }
+
+        .segment-metric-share {
+            font-size: var(--font-label);
+            color: var(--steel-blue);
+            font-weight: 500;
+            min-width: 32px;
+            text-align: right;
+        }
+
+        /* Segment Table Styles */
+        .segment-table-container {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--light-steel);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .segment-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .segment-table th {
+            background: var(--navy);
+            color: white;
+            padding: 14px 16px;
+            text-align: center;
+            font-size: var(--font-caption);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .segment-table th:first-child {
+            text-align: left;
+        }
+
+        .segment-table th.new-col {
+            background: var(--positive);
+        }
+
+        .segment-table th.returning-col {
+            background: var(--steel-blue);
+        }
+
+        .segment-table td {
+            padding: 12px 16px;
+            font-size: var(--font-body-sm);
+            border-bottom: 1px solid var(--light-steel);
+            text-align: center;
+        }
+
+        .segment-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: var(--navy);
+        }
+
+        .segment-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .segment-table tr:hover td {
+            background: rgba(143, 175, 212, 0.08);
+        }
+
+        .segment-cell-value {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .segment-cell-share {
+            font-size: var(--font-label);
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .segment-cell-change {
+            display: block;
+            font-size: var(--font-label);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .segment-cell-change.up { color: var(--positive); }
+        .segment-cell-change.down { color: var(--negative); }
+        .segment-cell-change.neutral { color: var(--neutral); }
+
+        /* New Segment Visual Styles */
+        .segment-visual-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .segment-visual-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .segment-visual-card {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--light-steel);
+            padding: 24px;
+        }
+
+        .segment-visual-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .segment-visual-title {
+            font-size: var(--font-body);
+            font-weight: 600;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .segment-visual-total {
+            text-align: right;
+        }
+
+        .segment-visual-value {
+            font-size: var(--font-value-lg);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .segment-visual-target {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .segment-visual-target-badge {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            background: rgba(143, 175, 212, 0.2);
+            color: var(--navy);
+        }
+
+        .segment-visual-target-badge.up {
+            background: rgba(46, 125, 90, 0.15);
+            color: var(--positive);
+        }
+
+        .segment-visual-target-badge.down {
+            background: rgba(196, 49, 75, 0.15);
+            color: var(--negative);
+        }
+
+        .segment-visual-target-badge.neutral {
+            background: rgba(184, 134, 11, 0.15);
+            color: var(--neutral);
+        }
+
+        .segment-visual-change {
+            font-size: var(--font-caption);
+            margin-top: 4px;
+        }
+
+        .segment-visual-change span:first-child {
+            font-weight: 600;
+        }
+
+        /* Split Bar */
+        .segment-split-bar {
+            height: 24px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            margin: 16px 0;
+        }
+
+        .segment-split-new {
+            background: var(--positive);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: var(--font-label);
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        .segment-split-returning {
+            background: var(--steel-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: var(--font-label);
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        /* Split Details */
+        .segment-split-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .segment-split-section {
+            padding: 12px;
+            border-radius: 8px;
+            background: var(--light-bg);
+        }
+
+        .segment-split-section.new {
+            border-left: 3px solid var(--positive);
+        }
+
+        .segment-split-section.returning {
+            border-left: 3px solid var(--steel-blue);
+        }
+
+        .segment-split-section-label {
+            font-size: var(--font-label);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .segment-split-section-value {
+            font-size: var(--font-body);
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .segment-split-section-share {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .segment-split-section-change {
+            font-size: var(--font-label);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .segment-split-section-change.up { color: var(--positive); }
+        .segment-split-section-change.down { color: var(--negative); }
+        .segment-split-section-change.neutral { color: var(--neutral); }
+
+        /* Target Scorecard Styles */
+        .scorecard-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .scorecard-item {
+            background: var(--white);
+            border: 1px solid var(--light-steel);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .scorecard-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-h3);
+            flex-shrink: 0;
+        }
+
+        .scorecard-indicator.green { background: rgba(46, 125, 90, 0.15); }
+        .scorecard-indicator.amber { background: rgba(184, 134, 11, 0.15); }
+        .scorecard-indicator.red { background: rgba(196, 49, 75, 0.15); }
+        .scorecard-indicator.neutral { background: var(--light-bg); color: var(--text-muted); }
+
+        .scorecard-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .scorecard-kpi {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .scorecard-value {
+            font-size: var(--font-body);
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .scorecard-gap {
+            font-size: var(--font-caption);
+            font-weight: 500;
+        }
+
+        .scorecard-gap.up { color: var(--positive); }
+        .scorecard-gap.down { color: var(--negative); }
+        .scorecard-gap.neutral { color: var(--neutral); }
+
+        /* Channel Mix Styles */
+        .channel-mix-container {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .channel-mix-chart {
+            flex: 1;
+        }
+
+        .channel-mix-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .channel-mix-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .channel-mix-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .channel-mix-dot.retail { background: var(--navy); }
+        .channel-mix-dot.ecom { background: var(--steel-blue); }
+        .channel-mix-dot.other { background: var(--light-steel); }
+
+        @media (max-width: 1200px) {
+            .segment-comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1285,15 +2142,33 @@
     <script>
     (function() {
         const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        // Support both "01 - Jan" and "01-Jan" formats
+        // Support both "01 - Jan" and "01-Jan" formats, and also "Mon-YY" format
         const MONTH_MAP = {
+            // Format: "01 - Jan"
             '01 - Jan':'JAN','02 - Feb':'FEB','03 - Mar':'MAR','04 - Apr':'APR','05 - May':'MAY','06 - Jun':'JUN',
             '07 - Jul':'JUL','08 - Aug':'AUG','09 - Sep':'SEP','10 - Oct':'OCT','11 - Nov':'NOV','12 - Dec':'DEC',
+            // Format: "01-Jan"
             '01-Jan':'JAN','02-Feb':'FEB','03-Mar':'MAR','04-Apr':'APR','05-May':'MAY','06-Jun':'JUN',
-            '07-Jul':'JUL','08-Aug':'AUG','09-Sep':'SEP','10-Oct':'OCT','11-Nov':'NOV','12-Dec':'DEC'
+            '07-Jul':'JUL','08-Aug':'AUG','09-Sep':'SEP','10-Oct':'OCT','11-Nov':'NOV','12-Dec':'DEC',
+            // Format: "Mon-YY" (2024)
+            'Jan-24':'JAN','Feb-24':'FEB','Mar-24':'MAR','Apr-24':'APR','May-24':'MAY','Jun-24':'JUN',
+            'Jul-24':'JUL','Aug-24':'AUG','Sep-24':'SEP','Oct-24':'OCT','Nov-24':'NOV','Dec-24':'DEC',
+            // Format: "Mon-YY" (2025)
+            'Jan-25':'JAN','Feb-25':'FEB','Mar-25':'MAR','Apr-25':'APR','May-25':'MAY','Jun-25':'JUN',
+            'Jul-25':'JUL','Aug-25':'AUG','Sep-25':'SEP','Oct-25':'OCT','Nov-25':'NOV','Dec-25':'DEC',
+            // Short format: "Jan", "Feb", etc.
+            'Jan':'JAN','Feb':'FEB','Mar':'MAR','Apr':'APR','May':'MAY','Jun':'JUN',
+            'Jul':'JUL','Aug':'AUG','Sep':'SEP','Oct':'OCT','Nov':'NOV','Dec':'DEC',
+            // Numeric format: "1", "2", etc.
+            '1':'JAN','2':'FEB','3':'MAR','4':'APR','5':'MAY','6':'JUN',
+            '7':'JUL','8':'AUG','9':'SEP','10':'OCT','11':'NOV','12':'DEC',
+            // Standard abbreviation
+            'JAN':'JAN','FEB':'FEB','MAR':'MAR','APR':'APR','MAY':'MAY','JUN':'JUN',
+            'JUL':'JUL','AUG':'AUG','SEP':'SEP','OCT':'OCT','NOV':'NOV','DEC':'DEC'
         };
 
-        const KPI_CONFIG = {
+        // MUSE mode KPI configurations
+        const MUSE_KPI_CONFIG = {
             'SLS_TTL': { name: 'Total Sales', format: 'currency', good: 'up', hasShare: true },
             'SLS_PEN': { name: 'Sales Penetration', format: 'percent', good: 'up', hasShare: false },
             'MBR_TTL': { name: 'Transacting Members', format: 'number', good: 'up', hasShare: true },
@@ -1308,9 +2183,75 @@
             'PTS_BRN': { name: 'Points Burned Value', format: 'currency', good: 'up', hasShare: true }
         };
 
-        // Map human-readable KPI names to internal keys (for new CSV format)
-        // Includes variations to handle different naming conventions
-        const KPI_NAME_MAP = {
+        // MC mode KPI configurations
+        const MC_KPI_CONFIG = {
+            'TOTAL OWN BRAND SALES': { name: 'Total Own Brand Sales', format: 'currency', good: 'up', hasShare: true, hero: true },
+            'KNOWN SALES': { name: 'Known Sales', format: 'currency', good: 'up', hasShare: true },
+            'NEW CUSTOMERS KNOWN SALES': { name: 'New Customers Sales', format: 'currency', good: 'up', hasShare: true },
+            'RETURNING CUSTOMERS KNOWN SALES': { name: 'Returning Customers Sales', format: 'currency', good: 'up', hasShare: true },
+            'CUSTOMER COUNT': { name: 'Customer Count', format: 'number', good: 'up', hasShare: true, hero: true },
+            'NEW CUSTOMER COUNT': { name: 'New Customers', format: 'number', good: 'up', hasShare: true, hero: true },
+            'RETURNING CUSTOMER COUNT': { name: 'Returning Customers', format: 'number', good: 'up', hasShare: true },
+            'TRANSACTION COUNT': { name: 'Transaction Count', format: 'number', good: 'up', hasShare: true },
+            'NEW CUSTOMERS TRANSACTION COUNT': { name: 'New Customers Transactions', format: 'number', good: 'up', hasShare: true },
+            'RETURNING CUSTOMERS TRANSACTION COUNT': { name: 'Returning Customers Transactions', format: 'number', good: 'up', hasShare: true },
+            'AOV': { name: 'Avg Order Value', format: 'currency_small', good: 'up', hasShare: false, hero: true },
+            'NEW CUSTOMERS AOV': { name: 'New Customers AOV', format: 'currency_small', good: 'up', hasShare: false },
+            'RETURNING CUSTOMERS AOV': { name: 'Returning Customers AOV', format: 'currency_small', good: 'up', hasShare: false },
+            'ACV': { name: 'Avg Customer Value', format: 'currency_small', good: 'up', hasShare: false },
+            'NEW CUSTOMERS ACV': { name: 'New Customers ACV', format: 'currency_small', good: 'up', hasShare: false },
+            'RETURNING CUSTOMERS ACV': { name: 'Returning Customers ACV', format: 'currency_small', good: 'up', hasShare: false },
+            'AVERAGE FREQUENCY': { name: 'Avg Frequency', format: 'decimal', good: 'up', hasShare: false, hero: true },
+            'NEW CUSTOMERS AVERAGE FREQUENCY': { name: 'New Customers Frequency', format: 'decimal', good: 'up', hasShare: false },
+            'RETURNING CUSTOMERS AVERAGE FREQUENCY': { name: 'Returning Customers Frequency', format: 'decimal', good: 'up', hasShare: false },
+            'UPT': { name: 'Units Per Transaction', format: 'decimal', good: 'up', hasShare: false },
+            'NEW CUSTOMERS UPT': { name: 'New Customers UPT', format: 'decimal', good: 'up', hasShare: false },
+            'RETURNING CUSTOMERS UPT': { name: 'Returning Customers UPT', format: 'decimal', good: 'up', hasShare: false },
+            'SALES LINKAGE': { name: 'Sales Linkage', format: 'percent', good: 'up', hasShare: false, hero: true }
+        };
+
+        // KPI Groups for organized dropdown (MC mode)
+        const MC_KPI_GROUPS = [
+            { name: 'Sales', kpis: ['TOTAL OWN BRAND SALES', 'KNOWN SALES', 'NEW CUSTOMERS KNOWN SALES', 'RETURNING CUSTOMERS KNOWN SALES'] },
+            { name: 'Customers', kpis: ['CUSTOMER COUNT', 'NEW CUSTOMER COUNT', 'RETURNING CUSTOMER COUNT'] },
+            { name: 'Transactions', kpis: ['TRANSACTION COUNT', 'NEW CUSTOMERS TRANSACTION COUNT', 'RETURNING CUSTOMERS TRANSACTION COUNT'] },
+            { name: 'Average Order Value', kpis: ['AOV', 'NEW CUSTOMERS AOV', 'RETURNING CUSTOMERS AOV'] },
+            { name: 'Average Customer Value', kpis: ['ACV', 'NEW CUSTOMERS ACV', 'RETURNING CUSTOMERS ACV'] },
+            { name: 'Frequency', kpis: ['AVERAGE FREQUENCY', 'NEW CUSTOMERS AVERAGE FREQUENCY', 'RETURNING CUSTOMERS AVERAGE FREQUENCY'] },
+            { name: 'Units Per Transaction', kpis: ['UPT', 'NEW CUSTOMERS UPT', 'RETURNING CUSTOMERS UPT'] },
+            { name: 'Other', kpis: ['SALES LINKAGE'] }
+        ];
+
+        // Helper to render KPI dropdown with optional grouping
+        function renderKPIDropdown(kpis, selectedKPI, selectId = 'kpiSelect') {
+            const kpiConfig = getKPIConfig();
+
+            if (state.mode === 'MC') {
+                // Grouped dropdown for MC mode
+                return `<select class="filter-select" id="${selectId}">
+                    ${MC_KPI_GROUPS.map(group => {
+                        const groupKpis = group.kpis.filter(k => kpis.includes(k));
+                        if (groupKpis.length === 0) return '';
+                        return `<optgroup label="${group.name}">
+                            ${groupKpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${kpiConfig[k]?.name || k}</option>`).join('')}
+                        </optgroup>`;
+                    }).join('')}
+                </select>`;
+            } else {
+                // Flat dropdown for MUSE mode
+                return `<select class="filter-select" id="${selectId}">
+                    ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${kpiConfig[k]?.name || k}</option>`).join('')}
+                </select>`;
+            }
+        }
+
+        // Get current KPI config based on mode
+        function getKPIConfig() {
+            return state.mode === 'MC' ? MC_KPI_CONFIG : MUSE_KPI_CONFIG;
+        }
+
+        // Map human-readable KPI names to internal keys (for MUSE mode CSV format)
+        const MUSE_KPI_NAME_MAP = {
             'Total Sales': 'SLS_TTL',
             'Sales Penetration': 'SLS_PEN',
             'Transacting Members': 'MBR_TTL',
@@ -1333,32 +2274,157 @@
             'Points Burned': 'PTS_BRN'
         };
 
-        const MARKET_ORDER = ['All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain'];
+        // Preferred market order (for sorting), but list is dynamic
+        const PREFERRED_MARKET_ORDER = ['All', 'All Markets', 'United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain', 'Qatar', 'Oman', 'Egypt', 'Jordan', 'Lebanon'];
 
-        // Company Logo SVG - simplified clean design on white background
-        const LOGO_SVG = `<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- White background -->
-            <rect width="120" height="60" fill="#FFFFFF"/>
-            <!-- Vertical bars with gradient heights -->
-            <rect x="10" y="18" width="8" height="32" rx="2" fill="#B8D4E8"/>
-            <rect x="22" y="12" width="8" height="38" rx="2" fill="#8FAFD4"/>
-            <rect x="34" y="6" width="8" height="44" rx="2" fill="#8FAFD4"/>
-            <rect x="46" y="2" width="8" height="48" rx="2" fill="#1B365D"/>
-            <!-- Wave accent at bottom -->
-            <path d="M10 50 Q30 56, 54 50" stroke="#1B365D" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <!-- Diamond accents -->
-            <rect x="68" y="10" width="10" height="10" transform="rotate(45 73 15)" fill="#1B365D"/>
-            <rect x="82" y="18" width="8" height="8" transform="rotate(45 86 22)" fill="#8FAFD4"/>
-            <rect x="70" y="28" width="8" height="8" transform="rotate(45 74 32)" fill="#B8D4E8"/>
-        </svg>`;
+        // Helper to check if a value is an aggregate/total
+        function isAggregateValue(value, dimension) {
+            // null means "use aggregate" in our state model
+            if (value === null) return true;
+
+            if (dimension === 'bu') {
+                return value === 'MC' || value === 'All' || value === 'MUSE';
+            }
+            if (dimension === 'market') {
+                return value === 'All' || value === 'All Markets';
+            }
+            if (dimension === 'channel') {
+                return value === 'All' || value === 'All Channels';
+            }
+            return false;
+        }
+
+        // Get the aggregate/total value for a dimension from data
+        function getAggregateValue(dimension) {
+            const data = getData();
+            if (!data) return 'All';
+
+            if (dimension === 'bu') {
+                const bus = [...new Set(data.map(d => d.BU))];
+                // MC mode: "MC" is the total
+                if (bus.includes('MC')) return 'MC';
+                if (bus.includes('All')) return 'All';
+                return bus[0];
+            }
+            if (dimension === 'market') {
+                const markets = [...new Set(data.map(d => d.Market))];
+                if (markets.includes('All')) return 'All';
+                if (markets.includes('All Markets')) return 'All Markets';
+                return markets[0];
+            }
+            if (dimension === 'channel') {
+                const channels = [...new Set(data.map(d => d.Channel))];
+                if (channels.includes('All')) return 'All';
+                return channels[0] || 'All';
+            }
+            return 'All';
+        }
+
+        // Company Logo - Replace logo.png with your company logo
+        const LOGO_SVG = `<img src="logo.png" alt="Company Logo" style="height: 60px; width: auto;" onerror="this.style.display='none'">`;
+
+        // Year configuration - update these for different reporting periods
+        const CURRENT_YEAR = 2025;
+        const PREVIOUS_YEAR = 2024;
 
         let state = {
-            data: null,
-            selectedMarket: 'All Markets',
+            mode: 'MUSE', // 'MUSE' or 'MC'
+            museData: null,
+            mcData: null,
+            museFileName: null,
+            mcFileName: null,
+            selectedMarket: null,  // null = use aggregate
+            selectedChannel: null, // null = use aggregate
             selectedKPI: null,
             activeTab: 'summary',
-            showUpload: true
+            dataLoaded: false
         };
+
+        // Get current mode's data
+        function getData() {
+            return state.mode === 'MC' ? state.mcData : state.museData;
+        }
+
+        // Get available markets
+        function getMarkets() {
+            const data = getData();
+            if (!data) return [];
+            let filtered = data;
+            // For MC mode, only consider rows with BU='MC' (the aggregate)
+            if (state.mode === 'MC') {
+                filtered = data.filter(d => d.BU === 'MC');
+            }
+            const markets = [...new Set(filtered.map(d => d.Market))].filter(m => m);
+
+            // Sort: aggregates first, then by preferred order, then alphabetically
+            return markets.sort((a, b) => {
+                const aIsAgg = isAggregateValue(a, 'market');
+                const bIsAgg = isAggregateValue(b, 'market');
+                if (aIsAgg && !bIsAgg) return -1;
+                if (!aIsAgg && bIsAgg) return 1;
+
+                // Use preferred order if both are in it
+                const aIdx = PREFERRED_MARKET_ORDER.indexOf(a);
+                const bIdx = PREFERRED_MARKET_ORDER.indexOf(b);
+                if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+                if (aIdx !== -1) return -1;
+                if (bIdx !== -1) return 1;
+
+                return a.localeCompare(b);
+            });
+        }
+
+        // Get available channels for selected Market
+        function getChannels() {
+            const data = getData();
+            if (!data) return [];
+            let filtered = data;
+            if (state.mode === 'MC') {
+                // Always filter by BU='MC' (the aggregate)
+                filtered = filtered.filter(d => d.BU === 'MC');
+                // Only filter by market if a specific (non-aggregate) market is selected
+                if (state.selectedMarket && !isAggregateValue(state.selectedMarket, 'market')) {
+                    filtered = filtered.filter(d => d.Market === state.selectedMarket);
+                }
+            }
+            const channels = [...new Set(filtered.map(d => d.Channel))].filter(c => c);
+            // Sort with aggregate first, then alphabetically
+            return channels.sort((a, b) => {
+                const aIsAgg = isAggregateValue(a, 'channel');
+                const bIsAgg = isAggregateValue(b, 'channel');
+                if (aIsAgg && !bIsAgg) return -1;
+                if (!aIsAgg && bIsAgg) return 1;
+                return a.localeCompare(b);
+            });
+        }
+
+        // Get KPIs available in current data
+        function getKPIs() {
+            const data = getData();
+            const config = getKPIConfig();
+            if (!data) return [];
+            return [...new Set(data.map(d => d.Key))].filter(k => config[k]);
+        }
+
+        // Get data with current filters applied
+        function getFilteredData() {
+            const data = getData();
+            if (!data) return [];
+            let filtered = data;
+            if (state.mode === 'MC') {
+                // Always filter by BU='MC' (the aggregate)
+                filtered = filtered.filter(d => d.BU === 'MC');
+                // Filter by market if a specific market is selected (not null/aggregate)
+                if (state.selectedMarket && !isAggregateValue(state.selectedMarket, 'market')) {
+                    filtered = filtered.filter(d => d.Market === state.selectedMarket);
+                }
+                // Filter by channel if a specific channel is selected (not null/aggregate)
+                if (state.selectedChannel && !isAggregateValue(state.selectedChannel, 'channel')) {
+                    filtered = filtered.filter(d => d.Channel === state.selectedChannel);
+                }
+            }
+            return filtered;
+        }
 
         // Utility functions
         function formatValue(value, format) {
@@ -1423,68 +2489,161 @@
             return change >= 0 ? 'up' : 'down';
         }
 
-        function parseCSV(text) {
+        // Parse CSV text into data array
+        function parseCSV(text, mode = 'MUSE') {
             const lines = text.trim().split('\n');
             const headers = lines[0].split(',').map(h => h.trim());
             const data = [];
 
-            // Check if using new format (has KPI column instead of Key)
-            const hasKPIColumn = headers.includes('KPI');
-            const hasKeyColumn = headers.includes('Key');
-
             for (let i = 1; i < lines.length; i++) {
                 const values = lines[i].split(',');
+                if (values.length < 3) continue; // Skip empty lines
                 const row = {};
                 headers.forEach((h, idx) => {
                     let val = values[idx]?.trim();
                     if (['YTD', 'LYTD', 'R12M', 'LMR12M', 'Target'].includes(h)) {
-                        row[h] = val === '' ? null : parseFloat(val);
+                        row[h] = val === '' || val === undefined ? null : parseFloat(val);
                     } else if (h === 'KPI') {
-                        // Map human-readable KPI name to internal key
-                        row['Key'] = KPI_NAME_MAP[val] || val;
+                        // For MC mode, keep KPI name as-is; for MUSE, map to internal key
+                        if (mode === 'MUSE') {
+                            row['Key'] = MUSE_KPI_NAME_MAP[val] || val;
+                        } else {
+                            row['Key'] = val;
+                        }
+                    } else if (h === 'Key') {
+                        row['Key'] = val;
                     } else if (h === 'Month') {
-                        // Normalize month format to "XX - Mon" for consistency
+                        // Normalize month format
                         if (val && val.match(/^\d{2}-[A-Za-z]{3}$/)) {
                             val = val.replace('-', ' - ');
                         }
                         row[h] = val;
+                    } else if (h === 'BU') {
+                        row['BU'] = val || (mode === 'MUSE' ? 'MUSE' : 'All');
+                    } else if (h === 'Channel') {
+                        row['Channel'] = val || 'All';
                     } else {
                         row[h] = val;
                     }
                 });
+
+                // Ensure BU and Channel exist
+                if (!row.BU) row.BU = mode === 'MUSE' ? 'MUSE' : 'All';
+                if (!row.Channel) row.Channel = 'All';
+
                 // Support both old format (Key) and new format (KPI mapped to Key)
                 if (row.Market && row.Key) data.push(row);
             }
             return data;
         }
 
-        function getLatestData(market, kpiKey) {
-            if (!state.data) return null;
-            const rows = state.data.filter(d => d.Market === market && d.Key === kpiKey);
-            return rows.find(d => d.Month === '12 - Dec') || rows[rows.length - 1];
+        // Parse Excel workbook with MUSE and MC sheets
+        function parseExcel(workbook) {
+            const result = { muse: null, mc: null };
+
+            // Parse MUSE sheet
+            if (workbook.SheetNames.includes('MUSE')) {
+                const sheet = workbook.Sheets['MUSE'];
+                const csv = XLSX.utils.sheet_to_csv(sheet);
+                result.muse = parseCSV(csv, 'MUSE');
+            }
+
+            // Parse MC sheet
+            if (workbook.SheetNames.includes('MC')) {
+                const sheet = workbook.Sheets['MC'];
+                const csv = XLSX.utils.sheet_to_csv(sheet);
+                result.mc = parseCSV(csv, 'MC');
+            }
+
+            return result;
         }
 
-        function getMonthlyData(market, kpiKey) {
-            if (!state.data) return [];
-            return state.data.filter(d => d.Market === market && d.Key === kpiKey)
-                .sort((a, b) => a.Month.localeCompare(b.Month));
+        // Get latest data for a specific combination of filters
+        // IMPORTANT: For MC mode, data is pre-aggregated. To get totals:
+        // - Total overall: Market='All' AND Channel='All'
+        // - Total for market: Market='UAE' AND Channel='All'
+        // - Total for channel: Market='All' AND Channel='Retail'
+        function getLatestData(market, kpiKey, channel = null) {
+            const data = getData();
+            if (!data) return null;
+
+            let rows = data.filter(d => d.Market === market && d.Key === kpiKey);
+
+            if (state.mode === 'MC') {
+                // Always filter by BU='MC' (the aggregate)
+                rows = rows.filter(d => d.BU === 'MC');
+
+                // CRITICAL: Always explicitly filter by channel
+                // If channel is specified, use it; otherwise use the aggregate channel
+                const channelAgg = getAggregateValue('channel');
+                const targetChannel = channel !== null ? channel : channelAgg;
+                rows = rows.filter(d => d.Channel === targetChannel);
+            }
+
+            // Find December data or latest available
+            const decRow = rows.find(d =>
+                d.Month === '12 - Dec' ||
+                d.Month === 'Dec-25' ||
+                d.Month?.includes('Dec')
+            );
+            return decRow || rows[rows.length - 1];
         }
 
-        function getMarkets() {
-            if (!state.data) return [];
-            const markets = [...new Set(state.data.map(d => d.Market))];
-            return MARKET_ORDER.filter(m => markets.includes(m));
+        // Get monthly data for charts
+        function getMonthlyData(market, kpiKey, channel = null) {
+            const data = getData();
+            if (!data) return [];
+
+            let rows = data.filter(d => d.Market === market && d.Key === kpiKey);
+
+            if (state.mode === 'MC') {
+                // Always filter by BU='MC' (the aggregate)
+                rows = rows.filter(d => d.BU === 'MC');
+
+                // CRITICAL: Always explicitly filter by channel
+                const channelAgg = getAggregateValue('channel');
+                const targetChannel = channel !== null ? channel : channelAgg;
+                rows = rows.filter(d => d.Channel === targetChannel);
+            }
+
+            return rows.sort((a, b) => (a.Month || '').localeCompare(b.Month || ''));
         }
 
-        function getKPIs() {
-            if (!state.data) return [];
-            return [...new Set(state.data.map(d => d.Key))].filter(k => KPI_CONFIG[k]);
+        // Get data for dimension analysis (Market, Channel)
+        function getDimensionData(dimension, kpiKey) {
+            const data = getData();
+            const config = getKPIConfig();
+            if (!data || !config[kpiKey]) return [];
+
+            let items = [];
+
+            if (dimension === 'market') {
+                items = getMarkets();
+            } else if (dimension === 'channel') {
+                items = getChannels();
+            }
+
+            const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
+
+            return items.map(item => {
+                const latest = getLatestData(
+                    dimension === 'market' ? item : (isAggregateValue(state.selectedMarket, 'market') ? marketAgg : state.selectedMarket),
+                    kpiKey,
+                    dimension === 'channel' ? item : (isAggregateValue(state.selectedChannel, 'channel') ? channelAgg : state.selectedChannel)
+                );
+                return {
+                    name: item,
+                    data: latest,
+                    isTotal: isAggregateValue(item, dimension)
+                };
+            }).filter(d => d.data);
         }
 
         // Generate insights without suggestions
         function generateInsights() {
             const insights = [];
-            const market = 'All Markets';
+            const market = getAggregateValue('market');
 
             const sales = getLatestData(market, 'SLS_TTL');
             if (sales) {
@@ -1525,7 +2684,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🎯', color: 'amber',
-                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
+                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')} vs LY)`
                     });
                 }
             }
@@ -1536,7 +2695,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🔄', color: 'amber',
-                        text: `<strong>Cross-brand engagement:</strong> Multi-brand shoppers at ${formatValue(xbp.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
+                        text: `<strong>Cross-brand engagement:</strong> Multi-brand shoppers at ${formatValue(xbp.YTD, 'percent')} (${formatChange(change, 'percent')} vs LY)`
                     });
                 }
             }
@@ -1547,7 +2706,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🎁', color: 'amber',
-                        text: `<strong>Redemption activation:</strong> Point usage at ${formatValue(rdm.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
+                        text: `<strong>Redemption activation:</strong> Point usage at ${formatValue(rdm.YTD, 'percent')} (${formatChange(change, 'percent')} vs LY)`
                     });
                 }
             }
@@ -1557,7 +2716,7 @@
 
         function render() {
             const app = document.getElementById('app');
-            if (state.showUpload) {
+            if (!state.dataLoaded) {
                 app.innerHTML = renderUpload();
             } else {
                 app.innerHTML = renderDashboard();
@@ -1566,72 +2725,128 @@
         }
 
         function renderUpload() {
+            const museFileName = state.museFileName || '';
+            const mcFileName = state.mcFileName || '';
+            const hasAnyFile = museFileName || mcFileName;
+
             return `
                 <div class="upload-overlay">
                     <div class="upload-box">
                         <div class="upload-logo">${LOGO_SVG}</div>
-                        <h2>2025 Performance Review</h2>
-                        <p>Upload your KPI data to generate the presentation dashboard</p>
-                        <div class="dropzone" id="dropzone">
-                            <p class="dropzone-text"><span>Click to upload</span> or drag & drop CSV</p>
-                            <input type="file" id="fileInput" accept=".csv" style="display:none">
+                        <h2>${CURRENT_YEAR} Performance Review</h2>
+                        <p>Upload CSV files for each mode</p>
+
+                        <div class="csv-upload-grid">
+                            <div class="csv-upload-card">
+                                <div class="csv-upload-header">
+                                    <span class="csv-upload-icon">💎</span>
+                                    <span class="csv-upload-title">MUSE Data</span>
+                                </div>
+                                <div class="csv-upload-zone" id="museDropzone">
+                                    <input type="file" id="museFileInput" accept=".csv" style="display:none">
+                                    ${museFileName
+                                        ? `<div class="csv-file-selected">✓ ${museFileName}</div>`
+                                        : '<p class="csv-upload-text">Click or drop CSV</p>'}
+                                </div>
+                            </div>
+                            <div class="csv-upload-card">
+                                <div class="csv-upload-header">
+                                    <span class="csv-upload-icon">📊</span>
+                                    <span class="csv-upload-title">MC Data</span>
+                                </div>
+                                <div class="csv-upload-zone" id="mcDropzone">
+                                    <input type="file" id="mcFileInput" accept=".csv" style="display:none">
+                                    ${mcFileName
+                                        ? `<div class="csv-file-selected">✓ ${mcFileName}</div>`
+                                        : '<p class="csv-upload-text">Click or drop CSV</p>'}
+                                </div>
+                            </div>
                         </div>
-                        <button class="btn-primary" id="demoBtn">Load Demo Data</button>
+
+                        <p class="upload-hint">Upload at least one CSV file to continue</p>
+
+                        <div class="upload-actions">
+                            <button class="btn-primary" id="startBtn" ${hasAnyFile ? '' : 'disabled'}>
+                                Start Dashboard
+                            </button>
+                            <button class="btn-secondary" id="demoBtn">Load Demo Data</button>
+                        </div>
                     </div>
                 </div>
             `;
         }
 
         function renderDashboard() {
+            const hasBothModes = state.museData && state.mcData;
+            const modeLabel = state.mode === 'MC' ? 'Multi-Channel' : 'MUSE Loyalty';
+
+            // Different tabs for MC mode
+            const mcTabs = `
+                <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
+                <div class="nav-tab ${state.activeTab === 'segmentation' ? 'active' : ''}" data-tab="segmentation">Customer Segments</div>
+                <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
+                <div class="nav-tab ${state.activeTab === 'channel' ? 'active' : ''}" data-tab="channel">Channel Analysis</div>
+                <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
+            `;
+
+            const museTabs = `
+                <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
+                <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
+                <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
+            `;
+
             return `
                 <header class="header">
                     <div class="header-left">
                         <div class="logo-container">${LOGO_SVG}</div>
                         <div class="header-text">
-                            <h1>2025 Performance Review</h1>
-                            <p>Year-over-Year Analysis | Strategic KPI Dashboard</p>
+                            <h1>${CURRENT_YEAR} Performance Review</h1>
+                            <p>Year-over-Year Analysis | ${modeLabel} Dashboard</p>
                         </div>
                     </div>
-                    <span class="header-badge">Full Year Results</span>
+                    ${hasBothModes ? `
+                    <div class="header-mode-switcher">
+                        <div class="mode-toggle">
+                            <button class="mode-toggle-btn ${state.mode === 'MUSE' ? 'active' : ''}" data-mode="MUSE">MUSE</button>
+                            <button class="mode-toggle-btn ${state.mode === 'MC' ? 'active' : ''}" data-mode="MC">MC</button>
+                        </div>
+                    </div>
+                    ` : `<span class="header-badge">${state.mode} Mode</span>`}
                 </header>
                 <nav class="nav-tabs">
-                    <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
-                    <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
-                    <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
+                    ${state.mode === 'MC' ? mcTabs : museTabs}
                 </nav>
                 <main class="main">
                     ${state.activeTab === 'summary' ? renderSummaryTab() : ''}
+                    ${state.activeTab === 'segmentation' && state.mode === 'MC' ? renderSegmentationTab() : ''}
                     ${state.activeTab === 'markets' ? renderMarketsTab() : ''}
+                    ${state.activeTab === 'channel' && state.mode === 'MC' ? renderChannelTab() : ''}
                     ${state.activeTab === 'kpi' ? renderKPITab() : ''}
                 </main>
             `;
         }
 
         function renderSummaryTab() {
-            const market = 'All Markets';
-            const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF'];
-            const loyaltyKPIs = ['SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
+            if (state.mode === 'MC') {
+                return renderMCSummaryTab();
+            }
+            return renderMUSESummaryTab();
+        }
+
+        function renderMUSESummaryTab() {
+            const market = getAggregateValue('market');
+            const allKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF', 'SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
             const insights = generateInsights();
 
             return `
                 <div class="section-header">
                     <div>
                         <div class="section-title">Key Performance Indicators</div>
-                        <div class="section-subtitle">Full Year 2025 vs 2024 | All Markets</div>
+                        <div class="section-subtitle">Full Year ${CURRENT_YEAR} vs ${PREVIOUS_YEAR} | ${market}</div>
                     </div>
                 </div>
                 <div class="exec-summary">
-                    ${keyKPIs.map(key => renderMetricCard(market, key)).join('')}
-                </div>
-
-                <div class="section-header">
-                    <div>
-                        <div class="section-title">Loyalty KPIs</div>
-                        <div class="section-subtitle">Member engagement metrics</div>
-                    </div>
-                </div>
-                <div class="exec-summary">
-                    ${loyaltyKPIs.map(key => renderLoyaltyCard(market, key)).join('')}
+                    ${allKPIs.map(key => renderMetricCard(market, key)).join('')}
                 </div>
 
                 <div class="insights-panel">
@@ -1650,8 +2865,671 @@
             `;
         }
 
-        // Icons for metrics
+        function renderMCSummaryTab() {
+            // 3+3+4 KPI layout:
+            // Top row: 3 main KPIs
+            const topRowKPIs = ['TOTAL OWN BRAND SALES', 'KNOWN SALES', 'SALES LINKAGE'];
+            // Middle row: 3 KPIs with new/returning share split
+            const shareRowKPIs = [
+                { base: 'CUSTOMER COUNT', new: 'NEW CUSTOMER COUNT', returning: 'RETURNING CUSTOMER COUNT' },
+                { base: 'TRANSACTION COUNT', new: 'NEW CUSTOMERS TRANSACTION COUNT', returning: 'RETURNING CUSTOMERS TRANSACTION COUNT' },
+                { base: 'KNOWN SALES', new: 'NEW CUSTOMERS KNOWN SALES', returning: 'RETURNING CUSTOMERS KNOWN SALES' }
+            ];
+            // Bottom row: 4 smaller metric tiles
+            const bottomRowKPIs = ['AOV', 'AVERAGE FREQUENCY', 'ACV', 'UPT'];
+            // Comparison tables - 4 KPIs
+            const comparisonKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'SALES LINKAGE'];
+
+            const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
+
+            // Use selected values for filtering, fallback to aggregate
+            const selectedMarket = state.selectedMarket || marketAgg;
+            const selectedChannel = state.selectedChannel || channelAgg;
+
+            const marketLabel = isAggregateValue(selectedMarket, 'market') ? marketAgg : selectedMarket;
+            const channelLabel = isAggregateValue(selectedChannel, 'channel') ? channelAgg : selectedChannel;
+
+            return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Key Performance Indicators</div>
+                        <div class="section-subtitle">Full Year ${CURRENT_YEAR} vs ${PREVIOUS_YEAR} | ${marketLabel} | ${channelLabel}</div>
+                    </div>
+                </div>
+
+                ${renderMCFilters()}
+
+                <!-- Top Row: 3 Main KPIs -->
+                <div class="kpi-row-3">
+                    ${topRowKPIs.map(key => renderMetricCard(selectedMarket, key, selectedChannel)).join('')}
+                </div>
+
+                <!-- Middle Row: 3 KPIs with New/Returning Share Split -->
+                <div class="kpi-row-3">
+                    ${shareRowKPIs.map(kpi => renderShareTile(selectedMarket, kpi.base, kpi.new, kpi.returning, selectedChannel)).join('')}
+                </div>
+
+                <!-- Bottom Row: 4 Smaller Tiles -->
+                <div class="kpi-row-4">
+                    ${bottomRowKPIs.map(key => renderSmallTile(selectedMarket, key, selectedChannel)).join('')}
+                </div>
+
+                <!-- Market & Channel Comparison Tables (stacked) -->
+                <div class="comparison-stack" style="margin-top: 32px;">
+                    ${renderDimensionComparisonTable('market', 'Market Comparison', comparisonKPIs)}
+                    ${renderDimensionComparisonTable('channel', 'Channel Comparison', comparisonKPIs)}
+                </div>
+            `;
+        }
+
+        // Render cascade filters for MC mode (Market -> Channel)
+        function renderMCFilters() {
+            const markets = getMarkets();
+            const channels = getChannels();
+
+            return `
+                <div class="filter-row filter-cascade" style="margin-bottom: 24px;">
+                    <div class="filter-group">
+                        <label>Market</label>
+                        <select class="filter-select" id="marketFilter">
+                            ${markets.map(m => `<option value="${m}" ${(state.selectedMarket === null ? isAggregateValue(m, 'market') : m === state.selectedMarket) ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Channel</label>
+                        <select class="filter-select" id="channelFilter">
+                            ${channels.map(c => `<option value="${c}" ${(state.selectedChannel === null ? isAggregateValue(c, 'channel') : c === state.selectedChannel) ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render comparison table for a dimension (market, channel)
+        // For market comparison: Show each market with Channel='All' (market totals)
+        // For channel comparison: Show each channel for the SELECTED market (or all markets if none selected)
+        function renderDimensionComparisonTable(dimension, title, kpis) {
+            const config = getKPIConfig();
+            const items = dimension === 'market' ? getMarkets() : getChannels();
+
+            // Filter to show only available KPIs
+            const availableKPIs = kpis.filter(k => config[k]);
+            if (availableKPIs.length === 0) return '';
+
+            const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
+
+            // For channel comparison, use selected market (so user sees channel breakdown for their selected market)
+            const selectedMarket = state.selectedMarket || marketAgg;
+
+            // Get data for each item
+            const itemsData = items.map(item => {
+                const kpiData = {};
+                availableKPIs.forEach(kpi => {
+                    kpiData[kpi] = getLatestData(
+                        // Market comparison: use each market with Channel='All'
+                        // Channel comparison: use selected market (or all) with each channel
+                        dimension === 'market' ? item : selectedMarket,
+                        kpi,
+                        dimension === 'channel' ? item : channelAgg
+                    );
+                });
+                return { name: item, kpiData, isTotal: isAggregateValue(item, dimension) };
+            }).filter(d => Object.values(d.kpiData).some(v => v));
+
+            // Separate total row
+            const totalItem = itemsData.find(d => d.isTotal);
+            const otherItems = itemsData.filter(d => !d.isTotal)
+                .sort((a, b) => {
+                    const aVal = a.kpiData[availableKPIs[0]]?.YTD || 0;
+                    const bVal = b.kpiData[availableKPIs[0]]?.YTD || 0;
+                    return bVal - aVal;
+                });
+
+            function renderRow(item, isTotal = false) {
+                return `
+                    <tr class="${isTotal ? 'total-row' : ''}">
+                        <td class="market-cell">${item.name}</td>
+                        ${availableKPIs.map(kpi => {
+                            const kpiConfig = config[kpi];
+                            const data = item.kpiData[kpi];
+                            if (!data) return '<td class="compare-cell">—</td>';
+
+                            const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
+                            const changeClass = getChangeClass(change, kpiConfig.format);
+
+                            let targetPart = '';
+                            if (data.Target) {
+                                const tGap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
+                                const tGapClass = getChangeClass(tGap, kpiConfig.format);
+                                targetPart = `<span class="cell-divider">|</span><span class="cell-compare-label">TGT:</span> <span class="cell-compare-value ${tGapClass}">${formatChange(tGap, kpiConfig.format)}</span>`;
+                            }
+
+                            return `
+                                <td class="compare-cell">
+                                    <div class="value-cell">${formatValue(data.YTD, kpiConfig.format)}</div>
+                                    <div class="cell-compare-inline">
+                                        <span class="cell-compare-label">LY:</span> <span class="cell-compare-value ${changeClass}">${formatChange(change, kpiConfig.format)}</span>
+                                        ${targetPart}
+                                    </div>
+                                </td>
+                            `;
+                        }).join('')}
+                    </tr>
+                `;
+            }
+
+            return `
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">${title}</div>
+                    </div>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>${dimension === 'market' ? 'Market' : 'Channel'}</th>
+                                ${availableKPIs.map(k => `<th class="center">${config[k]?.name || k}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${otherItems.map(item => renderRow(item, false)).join('')}
+                            ${totalItem ? renderRow(totalItem, true) : ''}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Channel Analysis Tab
+        function renderChannelTab() {
+            const kpis = getKPIs();
+            const markets = getMarkets();
+            const channels = getChannels();
+            const defaultKPI = kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0];
+
+            return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Channel Analysis</div>
+                        <div class="section-subtitle">Performance breakdown by sales channel</div>
+                    </div>
+                </div>
+
+                <div class="filter-row" style="margin-bottom: 24px;">
+                    <div class="filter-group">
+                        <label>Market</label>
+                        <select class="filter-select" id="marketFilter">
+                            ${markets.map(m => `<option value="${m}" ${(state.selectedMarket === null ? isAggregateValue(m, 'market') : m === state.selectedMarket) ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Channel</label>
+                        <select class="filter-select" id="channelFilter">
+                            ${channels.map(c => `<option value="${c}" ${(state.selectedChannel === null ? isAggregateValue(c, 'channel') : c === state.selectedChannel) ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>KPI Metric</label>
+                        ${renderKPIDropdown(kpis, defaultKPI, 'channelKpiSelect')}
+                    </div>
+                </div>
+                <div id="channelAnalysisContent">
+                    ${renderDimensionAnalysis('channel', defaultKPI)}
+                </div>
+            `;
+        }
+
+        // Customer Segmentation Tab - New vs Returning analysis (table format)
+        function renderSegmentationTab() {
+            // Top 3 KPI groups with visual split bars (additive KPIs)
+            const primaryKPIs = [
+                { base: 'CUSTOMER COUNT', new: 'NEW CUSTOMER COUNT', returning: 'RETURNING CUSTOMER COUNT', label: 'Customers' },
+                { base: 'TRANSACTION COUNT', new: 'NEW CUSTOMERS TRANSACTION COUNT', returning: 'RETURNING CUSTOMERS TRANSACTION COUNT', label: 'Transactions' },
+                { base: 'KNOWN SALES', new: 'NEW CUSTOMERS KNOWN SALES', returning: 'RETURNING CUSTOMERS KNOWN SALES', label: 'Known Sales' }
+            ];
+
+            // Secondary KPIs (non-additive, show comparison only)
+            const secondaryKPIs = [
+                { base: 'AOV', new: 'NEW CUSTOMERS AOV', returning: 'RETURNING CUSTOMERS AOV', label: 'Avg Order Value' },
+                { base: 'ACV', new: 'NEW CUSTOMERS ACV', returning: 'RETURNING CUSTOMERS ACV', label: 'Avg Customer Value' },
+                { base: 'AVERAGE FREQUENCY', new: 'NEW CUSTOMERS AVERAGE FREQUENCY', returning: 'RETURNING CUSTOMERS AVERAGE FREQUENCY', label: 'Frequency' }
+            ];
+
+            const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
+            const config = getKPIConfig();
+
+            // Use selected values for filtering
+            const selectedMarket = state.selectedMarket || marketAgg;
+            const selectedChannel = state.selectedChannel || channelAgg;
+
+            // Get data for a KPI
+            function getSegmentData(kpiKey) {
+                const kpiConfig = config[kpiKey];
+                if (!kpiConfig) return null;
+                const data = getLatestData(selectedMarket, kpiKey, selectedChannel);
+                if (!data) return null;
+                const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
+                const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, kpiConfig.format) : null;
+                return { data, change, targetGap, format: kpiConfig.format, config: kpiConfig };
+            }
+
+            // Render a visual card for primary KPIs with split bar
+            function renderVisualCard(g) {
+                const totalData = getSegmentData(g.base);
+                const newData = getSegmentData(g.new);
+                const returningData = getSegmentData(g.returning);
+
+                if (!totalData) return '';
+
+                const totalValue = totalData.data.YTD || 1;
+                const newShare = newData ? (newData.data.YTD / totalValue) * 100 : 0;
+                const returnShare = returningData ? (returningData.data.YTD / totalValue) * 100 : 0;
+
+                const totalChangeClass = getChangeClass(totalData.change, totalData.format);
+                const newChangeClass = newData ? getChangeClass(newData.change, newData.format) : '';
+                const returnChangeClass = returningData ? getChangeClass(returningData.change, returningData.format) : '';
+                const targetGapClass = totalData.targetGap !== null ? getChangeClass(totalData.targetGap, totalData.format) : '';
+
+                return `
+                    <div class="segment-visual-card">
+                        <div class="segment-visual-header">
+                            <div class="segment-visual-title">${g.label}</div>
+                            <div class="segment-visual-total">
+                                <div class="segment-visual-value">${formatValue(totalData.data.YTD, totalData.format)}</div>
+                                ${totalData.data.Target ? `
+                                    <div class="segment-visual-target">
+                                        Target: ${formatValue(totalData.data.Target, totalData.format)}
+                                        <span class="segment-visual-target-badge ${targetGapClass}">${formatChange(totalData.targetGap, totalData.format)}</span>
+                                    </div>
+                                ` : ''}
+                                <div class="segment-visual-change">
+                                    <span class="${totalChangeClass}">${formatChange(totalData.change, totalData.format)}</span>
+                                    <span style="color: var(--text-muted);">vs LY</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="segment-split-bar">
+                            <div class="segment-split-new" style="width: ${newShare}%;">
+                                ${newShare >= 15 ? newShare.toFixed(0) + '%' : ''}
+                            </div>
+                            <div class="segment-split-returning" style="width: ${returnShare}%;">
+                                ${returnShare >= 15 ? returnShare.toFixed(0) + '%' : ''}
+                            </div>
+                        </div>
+
+                        <div class="segment-split-details">
+                            <div class="segment-split-section new">
+                                <div class="segment-split-section-label">New Customers</div>
+                                <div>
+                                    <span class="segment-split-section-value">${newData ? formatValue(newData.data.YTD, newData.format) : '—'}</span>
+                                    <span class="segment-split-section-share">(${newShare.toFixed(0)}%)</span>
+                                </div>
+                                ${newData ? `<div class="segment-split-section-change ${newChangeClass}">${formatChange(newData.change, newData.format)} vs LY</div>` : ''}
+                            </div>
+                            <div class="segment-split-section returning">
+                                <div class="segment-split-section-label">Returning</div>
+                                <div>
+                                    <span class="segment-split-section-value">${returningData ? formatValue(returningData.data.YTD, returningData.format) : '—'}</span>
+                                    <span class="segment-split-section-share">(${returnShare.toFixed(0)}%)</span>
+                                </div>
+                                ${returningData ? `<div class="segment-split-section-change ${returnChangeClass}">${formatChange(returningData.change, returningData.format)} vs LY</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Render secondary comparison table
+            function renderSecondaryTable() {
+                const rows = secondaryKPIs.map(g => {
+                    const totalData = getSegmentData(g.base);
+                    const newData = getSegmentData(g.new);
+                    const returningData = getSegmentData(g.returning);
+
+                    if (!totalData) return '';
+
+                    return `
+                        <tr>
+                            <td class="market-cell">${g.label}</td>
+                            <td class="compare-cell">
+                                <div class="value-cell">${formatValue(totalData.data.YTD, totalData.format)}</div>
+                                <div class="cell-compare-inline">
+                                    <span class="cell-compare-label">LY:</span>
+                                    <span class="cell-compare-value ${getChangeClass(totalData.change, totalData.format)}">${formatChange(totalData.change, totalData.format)}</span>
+                                </div>
+                            </td>
+                            <td class="compare-cell">
+                                ${newData ? `
+                                    <div class="value-cell">${formatValue(newData.data.YTD, newData.format)}</div>
+                                    <div class="cell-compare-inline">
+                                        <span class="cell-compare-label">LY:</span>
+                                        <span class="cell-compare-value ${getChangeClass(newData.change, newData.format)}">${formatChange(newData.change, newData.format)}</span>
+                                    </div>
+                                ` : '—'}
+                            </td>
+                            <td class="compare-cell">
+                                ${returningData ? `
+                                    <div class="value-cell">${formatValue(returningData.data.YTD, returningData.format)}</div>
+                                    <div class="cell-compare-inline">
+                                        <span class="cell-compare-label">LY:</span>
+                                        <span class="cell-compare-value ${getChangeClass(returningData.change, returningData.format)}">${formatChange(returningData.change, returningData.format)}</span>
+                                    </div>
+                                ` : '—'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="chart-container" style="margin-top: 24px;">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th class="left">Metric</th>
+                                    <th class="center">Total</th>
+                                    <th class="center" style="background: var(--positive);">New</th>
+                                    <th class="center" style="background: var(--steel-blue);">Returning</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Customer Segment Analysis</div>
+                        <div class="section-subtitle">New vs Returning Customer Performance Breakdown</div>
+                    </div>
+                </div>
+
+                ${renderMCFilters()}
+
+                <div class="segment-visual-grid">
+                    ${primaryKPIs.map(g => renderVisualCard(g)).join('')}
+                </div>
+
+                ${renderSecondaryTable()}
+            `;
+        }
+
+        // Target Scorecard with traffic lights - shows all KPIs with NA for missing targets
+        function renderTargetScorecard() {
+            const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
+            const config = getKPIConfig();
+
+            // Use selected values for filtering
+            const selectedMarket = state.selectedMarket || marketAgg;
+            const selectedChannel = state.selectedChannel || channelAgg;
+
+            // Use hero KPIs for scorecard (10 items = 5x2 grid)
+            const scorecardKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'AVERAGE FREQUENCY', 'SALES LINKAGE',
+                                   'NEW CUSTOMER COUNT', 'RETURNING CUSTOMER COUNT', 'TRANSACTION COUNT', 'UPT', 'ACV'];
+
+            function getIndicator(gap, format, hasTarget) {
+                if (!hasTarget) return { class: 'neutral', icon: '—' };
+                const threshold = format === 'percent' ? 0.5 : 2;
+                if (gap >= 0) return { class: 'green', icon: '✓' };
+                if (gap >= -threshold) return { class: 'amber', icon: '~' };
+                return { class: 'red', icon: '✗' };
+            }
+
+            const items = scorecardKPIs.map(k => {
+                const kpiConfig = config[k];
+                if (!kpiConfig) return null;
+                const data = getLatestData(selectedMarket, k, selectedChannel);
+                if (!data) return null;
+
+                const hasTarget = data.Target != null;
+                const gap = hasTarget ? calcTargetGap(data.YTD, data.Target, kpiConfig.format) : null;
+                const indicator = getIndicator(gap, kpiConfig.format, hasTarget);
+
+                return {
+                    name: kpiConfig.name,
+                    value: formatValue(data.YTD, kpiConfig.format),
+                    target: hasTarget ? formatValue(data.Target, kpiConfig.format) : 'NA',
+                    gap,
+                    gapFormatted: hasTarget ? formatChange(gap, kpiConfig.format) : 'NA',
+                    gapClass: hasTarget ? getChangeClass(gap, kpiConfig.format) : '',
+                    indicator,
+                    hasTarget
+                };
+            }).filter(Boolean);
+
+            if (items.length === 0) return '';
+
+            return `
+                <div class="chart-container" style="margin-top: 24px;">
+                    <div class="chart-header">
+                        <div class="chart-title">Target Achievement Scorecard</div>
+                    </div>
+                    <div class="scorecard-grid">
+                        ${items.map(item => `
+                            <div class="scorecard-item">
+                                <div class="scorecard-indicator ${item.indicator.class}">${item.indicator.icon}</div>
+                                <div class="scorecard-details">
+                                    <div class="scorecard-kpi">${item.name}</div>
+                                    <div class="scorecard-value">${item.value}</div>
+                                    <div class="scorecard-gap ${item.gapClass}">vs Target: ${item.gapFormatted}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Channel Mix Analysis - shows channel breakdown for selected market
+        function renderChannelMix() {
+            const channels = getChannels();
+            const channelAgg = getAggregateValue('channel');
+            const nonAggChannels = channels.filter(c => !isAggregateValue(c, 'channel'));
+
+            if (nonAggChannels.length === 0) return '';
+
+            const config = getKPIConfig();
+            const kpiKey = 'TOTAL OWN BRAND SALES';
+            const kpiConfig = config[kpiKey];
+            if (!kpiConfig) return '';
+
+            const marketAgg = getAggregateValue('market');
+            // Use selected market - show channel mix FOR that market
+            const selectedMarket = state.selectedMarket || marketAgg;
+
+            // Get total for the selected market (with Channel='All')
+            const totalData = getLatestData(selectedMarket, kpiKey, channelAgg);
+            const totalYTD = totalData?.YTD || 1;
+            const totalLYTD = totalData?.LYTD || 1;
+
+            // Get each channel's data for the selected market
+            const channelData = nonAggChannels.map(ch => {
+                const data = getLatestData(selectedMarket, kpiKey, ch);
+                if (!data) return null;
+                const shareYTD = (data.YTD / totalYTD) * 100;
+                const shareLYTD = data.LYTD ? (data.LYTD / totalLYTD) * 100 : 0;
+                const shift = shareYTD - shareLYTD;
+                return { channel: ch, value: data.YTD, shareYTD, shareLYTD, shift };
+            }).filter(Boolean).sort((a, b) => b.shareYTD - a.shareYTD);
+
+            if (channelData.length === 0) return '';
+
+            return `
+                <div class="chart-container" style="margin-top: 24px;">
+                    <div class="chart-header">
+                        <div class="chart-title">Channel Mix Analysis</div>
+                    </div>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Channel</th>
+                                <th class="center">2025 Share</th>
+                                <th class="center">2024 Share</th>
+                                <th class="center">Shift</th>
+                                <th class="center">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${channelData.map(item => `
+                                <tr>
+                                    <td class="market-cell">${item.channel}</td>
+                                    <td class="value-cell">${item.shareYTD.toFixed(1)}%</td>
+                                    <td class="compare-cell">${item.shareLYTD.toFixed(1)}%</td>
+                                    <td class="compare-cell">
+                                        <span class="${item.shift >= 0 ? 'up' : 'down'}">${item.shift >= 0 ? '+' : ''}${item.shift.toFixed(1)} PP</span>
+                                    </td>
+                                    <td class="value-cell">${formatValue(item.value, kpiConfig.format)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Render dimension analysis (similar to market analysis)
+        // For market analysis: Show each market, respecting selected channel filter
+        // For channel analysis: Show each channel for the SELECTED market
+        function renderDimensionAnalysis(dimension, kpiKey) {
+            const config = getKPIConfig();
+            const kpiConfig = config[kpiKey];
+            if (!kpiConfig) return '<p>No data available</p>';
+
+            const items = dimension === 'market' ? getMarkets() : getChannels();
+
+            const hasShare = kpiConfig.hasShare === true;
+            const marketAgg = getAggregateValue('market');
+            const channelAgg = getAggregateValue('channel');
+
+            // Respect user's filter selections
+            const selectedMarket = state.selectedMarket || marketAgg;
+            const selectedChannel = state.selectedChannel || channelAgg;
+
+            // Get data for all items
+            const allData = items.map(item => {
+                const data = getLatestData(
+                    // Market analysis: use each market with selected channel
+                    // Channel analysis: use selected market with each channel
+                    dimension === 'market' ? item : selectedMarket,
+                    kpiKey,
+                    dimension === 'channel' ? item : selectedChannel
+                );
+                return { name: item, data, isTotal: isAggregateValue(item, dimension) };
+            }).filter(d => d.data);
+
+            const totalData = allData.find(d => d.isTotal);
+            const totalValue = totalData?.data?.YTD || 0;
+
+            const itemData = allData.filter(d => !d.isTotal)
+                .sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
+
+            const maxShare = Math.max(...itemData.map(d => totalValue > 0 ? (d.data.YTD / totalValue) * 100 : 0));
+
+            function renderShareCell(value, isTotal = false) {
+                if (!hasShare) {
+                    return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
+                }
+                if (isTotal) {
+                    return '<td class="compare-cell"><span style="font-weight:600;color:var(--navy)">100%</span></td>';
+                }
+                const share = totalValue > 0 ? (value / totalValue) * 100 : 0;
+                const barWidth = maxShare > 0 ? (share / maxShare) * 100 : 0;
+                return `
+                    <td class="compare-cell">
+                        <div class="share-cell">
+                            <span class="share-value">${share.toFixed(0)}%</span>
+                            <div class="share-bar-bg">
+                                <div class="share-bar" style="width: ${barWidth}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+            }
+
+            // Helper to render target cell (always show column, NA if no target)
+            function renderTargetCell(data) {
+                if (data.Target) {
+                    const tGap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
+                    const tGapClass = getChangeClass(tGap, kpiConfig.format);
+                    return `
+                        <td class="compare-cell">
+                            <div class="compare-group">
+                                <span class="compare-value">${formatValue(data.Target, kpiConfig.format)}</span>
+                                <span class="compare-badge ${tGapClass}">${formatChange(tGap, kpiConfig.format)}</span>
+                            </div>
+                        </td>
+                    `;
+                }
+                return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
+            }
+
+            const dimensionLabel = dimension === 'market' ? 'Market' : 'Channel';
+
+            return `
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">${kpiConfig?.name || kpiKey} by ${dimensionLabel}</div>
+                    </div>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>${dimensionLabel}</th>
+                                <th class="center">2025</th>
+                                <th class="center">2024</th>
+                                <th class="center">Target</th>
+                                <th class="center">Share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemData.map(({name, data}) => {
+                                const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
+                                const changeClass = getChangeClass(change, kpiConfig.format);
+
+                                return `
+                                    <tr>
+                                        <td class="market-cell">${name}</td>
+                                        <td class="value-cell">${formatValue(data.YTD, kpiConfig.format)}</td>
+                                        <td class="compare-cell">
+                                            <div class="compare-group">
+                                                <span class="compare-value">${formatValue(data.LYTD, kpiConfig.format)}</span>
+                                                <span class="compare-badge ${changeClass}">${formatChange(change, kpiConfig.format)}</span>
+                                            </div>
+                                        </td>
+                                        ${renderTargetCell(data)}
+                                        ${renderShareCell(data.YTD)}
+                                    </tr>
+                                `;
+                            }).join('')}
+                            ${totalData ? `
+                                <tr class="total-row">
+                                    <td class="market-cell">${totalData.name}</td>
+                                    <td class="value-cell">${formatValue(totalData.data.YTD, kpiConfig.format)}</td>
+                                    <td class="compare-cell">
+                                        <div class="compare-group">
+                                            <span class="compare-value">${formatValue(totalData.data.LYTD, kpiConfig.format)}</span>
+                                            <span class="compare-badge ${getChangeClass(calcChange(totalData.data.YTD, totalData.data.LYTD, kpiConfig.format), kpiConfig.format)}">${formatChange(calcChange(totalData.data.YTD, totalData.data.LYTD, kpiConfig.format), kpiConfig.format)}</span>
+                                        </div>
+                                    </td>
+                                    ${renderTargetCell(totalData.data)}
+                                    ${renderShareCell(totalData.data.YTD, true)}
+                                </tr>
+                            ` : ''}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Icons for metrics (both MUSE and MC modes)
         const METRIC_ICONS = {
+            // MUSE mode icons
             'SLS_TTL': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
             'MBR_TTL': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
             'AVG_AOV': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
@@ -1659,20 +3537,178 @@
             'SLS_PEN': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
             'PCT_NBA': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>',
             'PCT_XBP': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
-            'PCT_RDM': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>'
+            'PCT_RDM': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
+            // MC mode icons
+            'TOTAL OWN BRAND SALES': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+            'KNOWN SALES': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+            'CUSTOMER COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+            'NEW CUSTOMER COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>',
+            'RETURNING CUSTOMER COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="23 6 23 1 18 1"/><path d="M16 8l7-7"/></svg>',
+            'AOV': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+            'ACV': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+            'AVERAGE FREQUENCY': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+            'SALES LINKAGE': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+            'UPT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+            'TRANSACTION COUNT': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>'
         };
 
-        function renderMetricCard(market, kpiKey) {
-            const config = KPI_CONFIG[kpiKey];
-            const data = getLatestData(market, kpiKey);
+        // Share Tile - shows total with new/returning split below
+        function renderShareTile(market, baseKpi, newKpi, returningKpi, channel = null) {
+            const config = getKPIConfig();
+            const baseConfig = config[baseKpi];
+            if (!baseConfig) return '';
+
+            const baseData = getLatestData(market, baseKpi, channel);
+            const newData = getLatestData(market, newKpi, channel);
+            const returningData = getLatestData(market, returningKpi, channel);
+
+            if (!baseData) return '';
+
+            const baseChange = calcChange(baseData.YTD, baseData.LYTD, baseConfig.format);
+            const baseChangeClass = getChangeClass(baseChange, baseConfig.format);
+            const targetGap = baseData.Target ? calcTargetGap(baseData.YTD, baseData.Target, baseConfig.format) : null;
+            const targetGapClass = targetGap !== null ? getChangeClass(targetGap, baseConfig.format) : '';
+
+            // Calculate shares
+            const totalValue = baseData.YTD || 1;
+            const newShare = newData ? (newData.YTD / totalValue) * 100 : 0;
+            const returningShare = returningData ? (returningData.YTD / totalValue) * 100 : 0;
+
+            // New customer change
+            const newConfig = config[newKpi];
+            const newChange = newData && newConfig ? calcChange(newData.YTD, newData.LYTD, newConfig.format) : null;
+            const newChangeClass = newChange !== null ? getChangeClass(newChange, newConfig?.format) : '';
+
+            // Returning customer change
+            const retConfig = config[returningKpi];
+            const retChange = returningData && retConfig ? calcChange(returningData.YTD, returningData.LYTD, retConfig.format) : null;
+            const retChangeClass = retChange !== null ? getChangeClass(retChange, retConfig?.format) : '';
+
+            // Arrow SVGs
+            const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
+            const arrowDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+            const arrowNeutral = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/></svg>';
+            const vsArrow = baseChangeClass === 'up' ? arrowUp : (baseChangeClass === 'down' ? arrowDown : arrowNeutral);
+
+            // Target row
+            let targetRow = '';
+            if (baseData.Target) {
+                targetRow = `
+                    <div class="metric-target-row">
+                        <div class="metric-target-left">
+                            <span>Target:</span>
+                            <span class="metric-target-val">${formatValue(baseData.Target, baseConfig.format)}</span>
+                        </div>
+                        <span class="metric-target-badge ${targetGapClass}">${formatChange(targetGap, baseConfig.format)}</span>
+                    </div>
+                `;
+            }
+
+            // Arrows for new/returning
+            const newArrow = newChangeClass === 'up' ? arrowUp : (newChangeClass === 'down' ? arrowDown : arrowNeutral);
+            const retArrow = retChangeClass === 'up' ? arrowUp : (retChangeClass === 'down' ? arrowDown : arrowNeutral);
+
+            return `
+                <div class="share-tile">
+                    <div class="share-tile-header">
+                        <div class="share-tile-icon">${METRIC_ICONS[baseKpi] || ''}</div>
+                        <div class="share-tile-label">${baseConfig.name}</div>
+                    </div>
+                    <div class="metric-value">${formatValue(baseData.YTD, baseConfig.format)}</div>
+                    ${targetRow}
+                    <div class="metric-vs-row">
+                        <span class="metric-vs-arrow ${baseChangeClass}">
+                            ${vsArrow}
+                            ${formatChange(baseChange, baseConfig.format)}
+                        </span>
+                        <span>vs LY</span>
+                    </div>
+                    <div class="share-tile-split" style="margin-top: 16px;">
+                        <div class="share-split-item">
+                            <span class="share-split-label">New Customers</span>
+                            <div class="share-split-row">
+                                <span class="share-split-value">${newData ? formatValue(newData.YTD, newConfig?.format || 'number') : '—'}</span>
+                                <span class="share-split-pct" title="Share">(${newShare.toFixed(0)}%)</span>
+                            </div>
+                            ${newChange !== null ? `
+                                <div class="share-split-vs">
+                                    <span class="share-split-arrow ${newChangeClass}">${newArrow}</span>
+                                    <span class="share-split-change ${newChangeClass}">${formatChange(newChange, newConfig?.format)}</span>
+                                    <span class="share-split-vs-label">vs LY</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="share-split-item">
+                            <span class="share-split-label">Returning</span>
+                            <div class="share-split-row">
+                                <span class="share-split-value">${returningData ? formatValue(returningData.YTD, retConfig?.format || 'number') : '—'}</span>
+                                <span class="share-split-pct" title="Share">(${returningShare.toFixed(0)}%)</span>
+                            </div>
+                            ${retChange !== null ? `
+                                <div class="share-split-vs">
+                                    <span class="share-split-arrow ${retChangeClass}">${retArrow}</span>
+                                    <span class="share-split-change ${retChangeClass}">${formatChange(retChange, retConfig?.format)}</span>
+                                    <span class="share-split-vs-label">vs LY</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Small Tile - compact version for bottom row with target support
+        function renderSmallTile(market, kpiKey, channel = null) {
+            const config = getKPIConfig()[kpiKey];
+            const data = getLatestData(market, kpiKey, channel);
+            if (!data || !config) return '';
+
+            const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
+            const changeClass = getChangeClass(changeVsLY, config.format);
+            const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
+            const targetGapClass = targetGap !== null ? getChangeClass(targetGap, config.format) : '';
+
+            // Arrow SVGs
+            const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
+            const arrowDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+            const arrowNeutral = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/></svg>';
+            const vsArrow = changeClass === 'up' ? arrowUp : (changeClass === 'down' ? arrowDown : arrowNeutral);
+
+            // Target row for small tiles
+            let targetRow = '';
+            if (data.Target) {
+                targetRow = `
+                    <div class="small-tile-target">
+                        <span>Target: ${formatValue(data.Target, config.format)}</span>
+                        <span class="small-tile-target-badge ${targetGapClass}">${formatChange(targetGap, config.format)}</span>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="small-tile">
+                    <div class="small-tile-header">
+                        <div class="small-tile-icon">${METRIC_ICONS[kpiKey] || ''}</div>
+                        <div class="small-tile-label">${config.name}</div>
+                    </div>
+                    <div class="small-tile-value">${formatValue(data.YTD, config.format)}</div>
+                    ${targetRow}
+                    <div class="small-tile-footer">
+                        <span class="small-tile-arrow ${changeClass}">${vsArrow}</span>
+                        <span class="small-tile-change ${changeClass}">${formatChange(changeVsLY, config.format)}</span>
+                        <span class="small-tile-label-vs">vs LY</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMetricCard(market, kpiKey, channel = null) {
+            const config = getKPIConfig()[kpiKey];
+            const data = getLatestData(market, kpiKey, channel);
             if (!data || !config) return '';
 
             const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
             const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
-
-            // Card accent based on TARGET if available, otherwise vs LY - uses same thresholds as badges
-            const accentChange = targetGap !== null ? targetGap : changeVsLY;
-            const cardAccentClass = getChangeClass(accentChange, config.format) || 'neutral';
 
             // Arrow SVGs
             const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
@@ -1694,7 +3730,7 @@
                 `;
             }
 
-            // vs 2024 - subtle with arrow
+            // vs LY - subtle with arrow
             const vsLYClass = getChangeClass(changeVsLY, config.format);
             const vsArrow = vsLYClass === 'up' ? arrowUp : (vsLYClass === 'down' ? arrowDown : arrowNeutral);
             const vsRow = `
@@ -1703,12 +3739,12 @@
                         ${vsArrow}
                         ${formatChange(changeVsLY, config.format)}
                     </span>
-                    <span>vs 2024</span>
+                    <span>vs LY</span>
                 </div>
             `;
 
             return `
-                <div class="metric-card ${cardAccentClass}">
+                <div class="metric-card">
                     <div class="metric-header">
                         <div class="metric-icon">${METRIC_ICONS[kpiKey] || ''}</div>
                         <div class="metric-label">${config.name}</div>
@@ -1727,14 +3763,15 @@
 
         function renderMarketSummaryTable() {
             const markets = getMarkets();
+            const kpiConfig = getKPIConfig();
             const kpis = ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
 
-            // Separate individual markets from All Markets, sort by Total Sales value
-            const individualMarkets = markets.filter(m => m !== 'All Markets')
+            // Separate individual markets from aggregate, sort by Total Sales value
+            const individualMarkets = markets.filter(m => !isAggregateValue(m, 'market'))
                 .map(m => ({ market: m, data: getLatestData(m, 'SLS_TTL') }))
                 .sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0))
                 .map(d => d.market);
-            const totalMarket = markets.find(m => m === 'All Markets');
+            const totalMarket = markets.find(m => isAggregateValue(m, 'market'));
 
             // Helper to render a market row
             function renderMarketRow(m, isTotal = false) {
@@ -1742,7 +3779,7 @@
                     <tr class="${isTotal ? 'total-row' : ''}">
                         <td class="market-cell">${m}</td>
                         ${kpis.map(k => {
-                            const config = KPI_CONFIG[k];
+                            const config = kpiConfig[k];
                             const data = getLatestData(m, k);
                             if (!data) return '<td class="compare-cell">—</td>';
                             const change = calcChange(data.YTD, data.LYTD, config.format);
@@ -1778,7 +3815,7 @@
                         <thead>
                             <tr>
                                 <th>Market</th>
-                                ${kpis.map(k => `<th class="center">${KPI_CONFIG[k]?.name || k}</th>`).join('')}
+                                ${kpis.map(k => `<th class="center">${kpiConfig[k]?.name || k}</th>`).join('')}
                             </tr>
                         </thead>
                         <tbody>
@@ -1792,36 +3829,69 @@
 
         function renderMarketsTab() {
             const kpis = getKPIs();
+            const config = getKPIConfig();
+            const markets = getMarkets();
+            const channels = getChannels();
+            const defaultKPI = state.mode === 'MC'
+                ? (kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0])
+                : (kpis.includes('SLS_TTL') ? 'SLS_TTL' : kpis[0]);
+
+            const mcFilters = state.mode === 'MC' ? `
+                <div class="filter-group">
+                    <label>Market</label>
+                    <select class="filter-select" id="marketFilter">
+                        ${markets.map(m => `<option value="${m}" ${(state.selectedMarket === null ? isAggregateValue(m, 'market') : m === state.selectedMarket) ? 'selected' : ''}>${m}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Channel</label>
+                    <select class="filter-select" id="channelFilter">
+                        ${channels.map(c => `<option value="${c}" ${(state.selectedChannel === null ? isAggregateValue(c, 'channel') : c === state.selectedChannel) ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
+                </div>
+            ` : '';
 
             return `
-                <div class="filter-row">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Market Analysis</div>
+                        <div class="section-subtitle">Performance breakdown by market region</div>
+                    </div>
+                </div>
+
+                <div class="filter-row" style="margin-bottom: 24px;">
+                    ${mcFilters}
                     <div class="filter-group">
-                        <label>Select KPI</label>
-                        <select class="filter-select" id="marketKpiSelect">
-                            ${kpis.map(k => `<option value="${k}" ${k === 'SLS_TTL' ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
-                        </select>
+                        <label>KPI Metric</label>
+                        ${renderKPIDropdown(kpis, defaultKPI, 'marketKpiSelect')}
                     </div>
                 </div>
                 <div id="marketComparisonContent">
-                    ${renderMarketAnalysis('SLS_TTL')}
+                    ${renderMarketAnalysis(defaultKPI)}
                 </div>
             `;
         }
 
         function renderMarketAnalysis(kpiKey) {
-            const config = KPI_CONFIG[kpiKey];
+            const config = getKPIConfig()[kpiKey];
+            if (!config) return '<p>No data available</p>';
+
             const markets = getMarkets();
             const hasShare = config.hasShare === true;
 
-            const totalData = getLatestData('All Markets', kpiKey);
+            // For MC mode, respect channel selection
+            const channelAgg = getAggregateValue('channel');
+            const selectedChannel = state.selectedChannel || channelAgg;
+
+            // Use helper to get market aggregate
+            const totalMarketName = getAggregateValue('market');
+            const totalData = getLatestData(totalMarketName, kpiKey, selectedChannel);
             const totalValue = totalData?.YTD || 0;
 
             const allMarketData = markets.map(m => {
-                const data = getLatestData(m, kpiKey);
-                return { market: m, data, isTotal: m === 'All Markets' };
+                const data = getLatestData(m, kpiKey, selectedChannel);
+                return { market: m, data, isTotal: isAggregateValue(m, 'market') };
             }).filter(d => d.data);
-
-            const hasTargets = allMarketData.some(d => d.data?.Target);
 
             // Non-total markets sorted by value
             const marketData = allMarketData.filter(d => !d.isTotal).sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
@@ -1833,7 +3903,7 @@
             // Helper to render share cell with bar
             function renderShareCell(value, isTotal = false) {
                 if (!hasShare) {
-                    return '<td class="compare-cell"><span class="cell-na">N/A</span></td>';
+                    return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
                 }
                 if (isTotal) {
                     return '<td class="compare-cell"><span style="font-weight:600;color:var(--navy)">100%</span></td>';
@@ -1852,6 +3922,23 @@
                 `;
             }
 
+            // Helper to render target cell (always show column, NA if no target)
+            function renderTargetCell(data) {
+                if (data.Target) {
+                    const tGap = calcTargetGap(data.YTD, data.Target, config.format);
+                    const tGapClass = getChangeClass(tGap, config.format);
+                    return `
+                        <td class="compare-cell">
+                            <div class="compare-group">
+                                <span class="compare-value">${formatValue(data.Target, config.format)}</span>
+                                <span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>
+                            </div>
+                        </td>
+                    `;
+                }
+                return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
+            }
+
             return `
                 <div class="chart-container">
                     <div class="chart-header">
@@ -1863,7 +3950,7 @@
                                 <th>Market</th>
                                 <th class="center">2025</th>
                                 <th class="center">2024</th>
-                                ${hasTargets ? '<th class="center">Target</th>' : ''}
+                                <th class="center">Target</th>
                                 <th class="center">Share</th>
                             </tr>
                         </thead>
@@ -1871,24 +3958,6 @@
                             ${marketData.map(({market, data}) => {
                                 const change = calcChange(data.YTD, data.LYTD, config.format);
                                 const changeClass = getChangeClass(change, config.format);
-
-                                let targetHTML = '';
-                                if (hasTargets) {
-                                    if (data.Target) {
-                                        const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                        const tGapClass = getChangeClass(tGap, config.format);
-                                        targetHTML = `
-                                            <td class="compare-cell">
-                                                <div class="compare-group">
-                                                    <span class="compare-value">${formatValue(data.Target, config.format)}</span>
-                                                    <span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>
-                                                </div>
-                                            </td>
-                                        `;
-                                    } else {
-                                        targetHTML = '<td class="compare-cell">—</td>';
-                                    }
-                                }
 
                                 return `
                                     <tr>
@@ -1900,14 +3969,14 @@
                                                 <span class="compare-badge ${changeClass}">${formatChange(change, config.format)}</span>
                                             </div>
                                         </td>
-                                        ${targetHTML}
+                                        ${renderTargetCell(data)}
                                         ${renderShareCell(data.YTD)}
                                     </tr>
                                 `;
                             }).join('')}
                             ${totalRow ? `
                                 <tr class="total-row">
-                                    <td class="market-cell">All Markets</td>
+                                    <td class="market-cell">${totalRow.market}</td>
                                     <td class="value-cell">${formatValue(totalRow.data.YTD, config.format)}</td>
                                     <td class="compare-cell">
                                         <div class="compare-group">
@@ -1915,14 +3984,7 @@
                                             <span class="compare-badge ${getChangeClass(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
                                         </div>
                                     </td>
-                                    ${hasTargets && totalRow.data.Target ? `
-                                        <td class="compare-cell">
-                                            <div class="compare-group">
-                                                <span class="compare-value">${formatValue(totalRow.data.Target, config.format)}</span>
-                                                <span class="compare-badge ${getChangeClass(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}">${formatChange(calcTargetGap(totalRow.data.YTD, totalRow.data.Target, config.format), config.format)}</span>
-                                            </div>
-                                        </td>
-                                    ` : (hasTargets ? '<td class="compare-cell">—</td>' : '')}
+                                    ${renderTargetCell(totalRow.data)}
                                     ${renderShareCell(totalRow.data.YTD, true)}
                                     </tr>
                                 ` : ''}
@@ -1934,11 +3996,34 @@
 
         function renderKPITab() {
             const kpis = getKPIs();
+            const kpiConfig = getKPIConfig();
             const markets = getMarkets();
-            const selectedKPI = state.selectedKPI || 'SLS_TTL';
-            const selectedMarket = state.selectedMarket || 'All Markets';
+            const channels = getChannels();
+
+            const defaultKPI = state.mode === 'MC'
+                ? (kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0])
+                : (kpis.includes('SLS_TTL') ? 'SLS_TTL' : kpis[0]);
+            const defaultMarket = getAggregateValue('market');
+
+            const selectedKPI = state.selectedKPI || defaultKPI;
+            const selectedMarket = state.selectedMarket || defaultMarket;
+
+            const channelFilter = state.mode === 'MC' ? `
+                <div class="filter-group">
+                    <label>Channel</label>
+                    <select class="filter-select" id="kpiChannelSelect">
+                        ${channels.map(c => `<option value="${c}" ${(state.selectedChannel === null ? isAggregateValue(c, 'channel') : c === state.selectedChannel) ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
+                </div>
+            ` : '';
 
             return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">KPI Deep Dive</div>
+                        <div class="section-subtitle">Detailed monthly trend analysis and performance tracking</div>
+                    </div>
+                </div>
                 <div class="filter-row">
                     <div class="filter-group">
                         <label>Market</label>
@@ -1946,23 +4031,78 @@
                             ${markets.map(m => `<option value="${m}" ${m === selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
                         </select>
                     </div>
+                    ${channelFilter}
                     <div class="filter-group">
                         <label>KPI Metric</label>
-                        <select class="filter-select" id="kpiSelect">
-                            ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
-                        </select>
+                        ${renderKPIDropdown(kpis, selectedKPI, 'kpiSelect')}
                     </div>
                 </div>
                 <div id="kpiDetailContent">
-                    ${renderKPIDetail(selectedMarket, selectedKPI)}
+                    ${renderKPIDetail(selectedMarket, selectedKPI, state.selectedChannel)}
                 </div>
             `;
         }
 
-        function renderKPIDetail(market, kpiKey) {
-            const config = KPI_CONFIG[kpiKey];
-            const monthlyData = getMonthlyData(market, kpiKey);
-            const latestData = getLatestData(market, kpiKey);
+        // Render breakdown card for market or channel
+        function renderBreakdownCard(dimension, selectedValue, kpiKey, config, otherDimValue, totalValue) {
+            const isAggregate = isAggregateValue(selectedValue, dimension);
+            const items = dimension === 'market' ? getMarkets() : getChannels();
+            const channelAgg = getAggregateValue('channel');
+            const marketAgg = getAggregateValue('market');
+
+            if (isAggregate) {
+                // Show breakdown by dimension
+                const breakdown = items
+                    .filter(item => !isAggregateValue(item, dimension))
+                    .map(item => {
+                        const data = dimension === 'market'
+                            ? getLatestData(item, kpiKey, otherDimValue || channelAgg)
+                            : getLatestData(otherDimValue || marketAgg, kpiKey, item);
+                        return { name: item, value: data?.YTD || 0 };
+                    })
+                    .sort((a, b) => b.value - a.value);
+
+                const maxValue = breakdown[0]?.value || 1;
+                const title = dimension === 'market' ? 'By Market' : 'By Channel';
+
+                return `
+                    <div class="market-breakdown-card">
+                        <div class="market-breakdown-title">${title}</div>
+                        <div class="market-breakdown-list">
+                            ${breakdown.map((item, i) => {
+                                const share = totalValue > 0 ? ((item.value / totalValue) * 100).toFixed(0) : 0;
+                                const barWidth = (item.value / maxValue) * 100;
+                                return `
+                                    <div class="market-breakdown-item">
+                                        <div class="market-breakdown-header">
+                                            <span class="market-breakdown-name">${item.name}</span>
+                                            <span class="market-breakdown-value">${formatValue(item.value, config.format)} (${share}%)</span>
+                                        </div>
+                                        <div class="market-breakdown-bar-bg">
+                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: ${barWidth}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Single selection - just show the name as a simple card
+                const label = dimension === 'market' ? 'Market' : 'Channel';
+                return `
+                    <div class="market-breakdown-card">
+                        <div class="market-breakdown-title">${label}</div>
+                        <div class="breakdown-single-value">${selectedValue}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderKPIDetail(market, kpiKey, channel = null) {
+            const config = getKPIConfig()[kpiKey];
+            const monthlyData = getMonthlyData(market, kpiKey, channel);
+            const latestData = getLatestData(market, kpiKey, channel);
 
             if (!config || monthlyData.length === 0) {
                 return '<p>No data available for selection</p>';
@@ -1990,18 +4130,27 @@
             const chartWidth = width - marginLeft - marginRight;
             const chartHeight = height - marginTop - marginBottom;
 
-            const allVals = chartData.flatMap(d => [d.ytd, d.lytd, d.target]).filter(v => v !== null);
+            const allVals = chartData.flatMap(d => [d.ytd, d.lytd, d.target]).filter(v => v !== null && !isNaN(v));
+
+            // Handle empty data gracefully
+            if (allVals.length === 0) {
+                return '<div class="chart-container"><p style="text-align:center; padding:40px; color:var(--text-muted);">No chart data available for this selection</p></div>';
+            }
+
             const minVal = Math.min(...allVals) * 0.9;
             const maxVal = Math.max(...allVals) * 1.1;
 
+            // Prevent division by zero if all values are the same
+            const valueRange = maxVal - minVal || 1;
+
             const xScale = i => marginLeft + (i * chartWidth / 11);
-            const yScale = v => marginTop + chartHeight - ((v - minVal) / (maxVal - minVal)) * chartHeight;
+            const yScale = v => marginTop + chartHeight - ((v - minVal) / valueRange) * chartHeight;
 
             let pathYTD = '', pathLYTD = '', pathTarget = '';
             let dotsYTD = '', dotsLYTD = '';
             let fillAreas = '';
 
-            // Build fill areas between 2025 and 2024 lines
+            // Build fill areas between current and previous year lines
             for (let i = 0; i < chartData.length - 1; i++) {
                 const d1 = chartData[i];
                 const d2 = chartData[i + 1];
@@ -2067,15 +4216,10 @@
                 `;
             }).join('');
 
-            // Determine overall status based on target or YoY
-            // Determine accent color based on vs Target (or vs LY if no target)
-            const accentValue = ytdVsTarget !== null ? ytdVsTarget : ytdVsLytd;
-            const accentClass = getChangeClass(accentValue, config.format);
-
-            // Get market breakdown data (only show for All Markets)
-            const isAllMarkets = market === 'All Markets';
+            // Get market breakdown data (only show for aggregate market)
+            const isAllMarkets = isAggregateValue(market, 'market');
             const marketBreakdown = isAllMarkets ? getMarkets()
-                .filter(m => m !== 'All Markets')
+                .filter(m => !isAggregateValue(m, 'market'))
                 .map(m => {
                     const data = getLatestData(m, kpiKey);
                     return { market: m, value: data?.YTD || 0 };
@@ -2087,8 +4231,8 @@
 
             return `
                 <div class="kpi-hero-row">
-                    <div class="kpi-hero-card ${accentClass}">
-                        <div class="kpi-hero-label">${config.name} — 2025 YTD${!isAllMarkets ? ` (${market})` : ''}</div>
+                    <div class="kpi-hero-card">
+                        <div class="kpi-hero-label">${config.name} — 2025${!isAllMarkets ? ` (${market})` : ''}</div>
                         <div class="kpi-hero-content">
                             <div class="kpi-hero-main">
                                 <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
@@ -2105,7 +4249,7 @@
                             <div class="kpi-hero-secondary">
                                 <div class="kpi-secondary-item">
                                     <div class="kpi-secondary-info">
-                                        <span class="kpi-secondary-label">vs 2024</span>
+                                        <span class="kpi-secondary-label">vs LY</span>
                                         <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
                                     </div>
                                     <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
@@ -2114,7 +4258,7 @@
                                 <div class="kpi-secondary-item">
                                     <div class="kpi-secondary-info">
                                         <span class="kpi-secondary-label">R12M Momentum</span>
-                                        <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)} vs LR12M: ${formatValue(latestData?.LR12M, config.format)}</span>
+                                        <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)} vs LMR12M: ${formatValue(latestData?.LMR12M, config.format)}</span>
                                     </div>
                                     <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
                                 </div>
@@ -2122,53 +4266,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="market-breakdown-card">
-                        ${isAllMarkets ? `
-                        <div class="market-breakdown-title">By Market</div>
-                        <div class="market-breakdown-list">
-                            ${marketBreakdown.map((m, i) => {
-                                const share = ((m.value / totalValue) * 100).toFixed(0);
-                                const barWidth = (m.value / maxMarketValue) * 100;
-                                return `
-                                    <div class="market-breakdown-item">
-                                        <div class="market-breakdown-header">
-                                            <span class="market-breakdown-name">${m.market}</span>
-                                            <span class="market-breakdown-value">${formatValue(m.value, config.format)} (${share}%)</span>
-                                        </div>
-                                        <div class="market-breakdown-bar-bg">
-                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: ${barWidth}%"></div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        ` : `
-                        <div class="market-breakdown-title">vs All Markets</div>
-                        <div class="market-breakdown-list">
-                            ${['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'].map((k, i) => {
-                                const kConfig = KPI_CONFIG[k];
-                                const marketData = getLatestData(market, k);
-                                const allData = getLatestData('All Markets', k);
-                                if (!marketData || !allData) return '';
-                                const diff = kConfig.format === 'percent'
-                                    ? (marketData.YTD - allData.YTD)
-                                    : ((marketData.YTD - allData.YTD) / allData.YTD) * 100;
-                                const diffClass = getChangeClass(diff, kConfig.format);
-                                return `
-                                    <div class="market-breakdown-item">
-                                        <div class="market-breakdown-header">
-                                            <span class="market-breakdown-name">${kConfig.name}</span>
-                                            <span class="market-breakdown-value ${diffClass}">${diff >= 0 ? '+' : ''}${kConfig.format === 'percent' ? diff.toFixed(1) + ' PP' : diff.toFixed(1) + '%'}</span>
-                                        </div>
-                                        <div class="market-breakdown-bar-bg">
-                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: ${Math.min(Math.abs(diff) * 5, 100)}%"></div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        `}
-                    </div>
+                    ${renderBreakdownCard('market', market, kpiKey, config, channel, totalValue)}
+                    ${state.mode === 'MC' ? renderBreakdownCard('channel', channel, kpiKey, config, market, totalValue) : ''}
                 </div>
 
                 <div class="chart-with-badges">
@@ -2198,23 +4297,72 @@
         }
 
         function attachEvents() {
-            const dropzone = document.getElementById('dropzone');
-            const fileInput = document.getElementById('fileInput');
+            const museDropzone = document.getElementById('museDropzone');
+            const mcDropzone = document.getElementById('mcDropzone');
+            const museFileInput = document.getElementById('museFileInput');
+            const mcFileInput = document.getElementById('mcFileInput');
+            const startBtn = document.getElementById('startBtn');
             const demoBtn = document.getElementById('demoBtn');
 
-            if (dropzone) {
-                dropzone.onclick = () => fileInput.click();
-                dropzone.ondragover = e => { e.preventDefault(); dropzone.style.borderColor = 'var(--navy)'; };
-                dropzone.ondragleave = () => { dropzone.style.borderColor = 'var(--light-steel)'; };
-                dropzone.ondrop = e => {
+            // Mode toggle in header
+            document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
+                btn.onclick = () => {
+                    state.mode = btn.dataset.mode;
+                    state.activeTab = 'summary'; // Reset to summary when switching modes
+                    state.selectedMarket = null;
+                    state.selectedChannel = null;
+                    state.selectedKPI = null;
+                    render();
+                };
+            });
+
+            // MUSE file upload
+            if (museDropzone) {
+                museDropzone.onclick = () => museFileInput.click();
+                museDropzone.ondragover = e => { e.preventDefault(); museDropzone.style.background = 'var(--light-bg)'; };
+                museDropzone.ondragleave = () => { museDropzone.style.background = ''; };
+                museDropzone.ondrop = e => {
                     e.preventDefault();
+                    museDropzone.style.background = '';
                     const file = e.dataTransfer.files[0];
-                    if (file) loadFile(file);
+                    if (file && file.name.endsWith('.csv')) loadCSVFile(file, 'MUSE');
                 };
             }
 
-            if (fileInput) {
-                fileInput.onchange = e => { if (e.target.files[0]) loadFile(e.target.files[0]); };
+            if (museFileInput) {
+                museFileInput.onchange = e => { if (e.target.files[0]) loadCSVFile(e.target.files[0], 'MUSE'); };
+            }
+
+            // MC file upload
+            if (mcDropzone) {
+                mcDropzone.onclick = () => mcFileInput.click();
+                mcDropzone.ondragover = e => { e.preventDefault(); mcDropzone.style.background = 'var(--light-bg)'; };
+                mcDropzone.ondragleave = () => { mcDropzone.style.background = ''; };
+                mcDropzone.ondrop = e => {
+                    e.preventDefault();
+                    mcDropzone.style.background = '';
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.name.endsWith('.csv')) loadCSVFile(file, 'MC');
+                };
+            }
+
+            if (mcFileInput) {
+                mcFileInput.onchange = e => { if (e.target.files[0]) loadCSVFile(e.target.files[0], 'MC'); };
+            }
+
+            // Start button
+            if (startBtn) {
+                startBtn.onclick = () => {
+                    // Set mode based on which data is available (prefer MC if both)
+                    if (state.mcData) {
+                        state.mode = 'MC';
+                    } else if (state.museData) {
+                        state.mode = 'MUSE';
+                    }
+                    state.dataLoaded = true;
+                    state.activeTab = 'summary';
+                    render();
+                };
             }
 
             if (demoBtn) {
@@ -2228,6 +4376,35 @@
                 };
             });
 
+            // Cascade filter handlers for MC mode
+            const marketFilter = document.getElementById('marketFilter');
+            const channelFilter = document.getElementById('channelFilter');
+
+            if (marketFilter) {
+                marketFilter.onchange = () => {
+                    state.selectedMarket = marketFilter.value;
+                    // Reset dependent filter
+                    state.selectedChannel = null;
+                    render();
+                };
+            }
+
+            if (channelFilter) {
+                channelFilter.onchange = () => {
+                    state.selectedChannel = channelFilter.value;
+                    render();
+                };
+            }
+
+            // Channel Analysis tab KPI select
+            const channelKpiSelect = document.getElementById('channelKpiSelect');
+            if (channelKpiSelect) {
+                channelKpiSelect.onchange = () => {
+                    document.getElementById('channelAnalysisContent').innerHTML = renderDimensionAnalysis('channel', channelKpiSelect.value);
+                };
+            }
+
+            // Market Analysis tab KPI select
             const marketKpiSelect = document.getElementById('marketKpiSelect');
             if (marketKpiSelect) {
                 marketKpiSelect.onchange = () => {
@@ -2235,22 +4412,44 @@
                 };
             }
 
+            // KPI Deep Dive selectors
             const kpiMarketSelect = document.getElementById('kpiMarketSelect');
+            const kpiChannelSelect = document.getElementById('kpiChannelSelect');
             const kpiSelect = document.getElementById('kpiSelect');
+
+            const defaultKPI = state.mode === 'MC' ? 'TOTAL OWN BRAND SALES' : 'SLS_TTL';
+            const defaultMarket = getAggregateValue('market');
 
             if (kpiMarketSelect) {
                 kpiMarketSelect.onchange = () => {
                     state.selectedMarket = kpiMarketSelect.value;
-                    document.getElementById('kpiDetailContent').innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || 'SLS_TTL');
-                    attachChartTooltips();
+                    const content = document.getElementById('kpiDetailContent');
+                    if (content) {
+                        content.innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || defaultKPI, state.selectedChannel);
+                        attachChartTooltips();
+                    }
+                };
+            }
+
+            if (kpiChannelSelect) {
+                kpiChannelSelect.onchange = () => {
+                    state.selectedChannel = kpiChannelSelect.value;
+                    const content = document.getElementById('kpiDetailContent');
+                    if (content) {
+                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI || defaultKPI, state.selectedChannel);
+                        attachChartTooltips();
+                    }
                 };
             }
 
             if (kpiSelect) {
                 kpiSelect.onchange = () => {
                     state.selectedKPI = kpiSelect.value;
-                    document.getElementById('kpiDetailContent').innerHTML = renderKPIDetail(state.selectedMarket || 'All Markets', state.selectedKPI);
-                    attachChartTooltips();
+                    const content = document.getElementById('kpiDetailContent');
+                    if (content) {
+                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI, state.selectedChannel);
+                        attachChartTooltips();
+                    }
                 };
             }
 
@@ -2273,7 +4472,7 @@
                             <span class="tooltip-value">${formatValue(info.ytd, info.format)}</span>
                         </div>
                         <div class="tooltip-row">
-                            <span class="tooltip-label">vs 2024:</span>
+                            <span class="tooltip-label">vs LY:</span>
                             <span class="tooltip-value">${formatValue(info.lytd, info.format)} <span style="color:${changeVsLY >= 0 ? '#2E7D5A' : '#C4314B'}">(${formatChange(changeVsLY, info.format)})</span></span>
                         </div>
                         ${info.target ? `
@@ -2298,12 +4497,82 @@
         }
 
         function loadFile(file) {
+            const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+            if (isExcel) {
+                // Load Excel file with SheetJS
+                const reader = new FileReader();
+                reader.onload = e => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const result = parseExcel(workbook);
+
+                        if (result.muse && result.muse.length > 0) {
+                            state.museData = result.muse;
+                        }
+                        if (result.mc && result.mc.length > 0) {
+                            state.mcData = result.mc;
+                        }
+
+                        // Auto-select mode based on available data
+                        if (state.mcData && !state.museData) {
+                            state.mode = 'MC';
+                        } else if (state.museData && !state.mcData) {
+                            state.mode = 'MUSE';
+                        }
+                        // If both available, keep user's selection
+
+                        if (state.museData || state.mcData) {
+                            state.dataLoaded = true;
+                            state.selectedMarket = null;
+                            state.selectedChannel = null;
+                            render();
+                        } else {
+                            alert('Could not find MUSE or MC sheets in the workbook.');
+                        }
+                    } catch (err) {
+                        alert('Could not parse Excel file. Please check the format.');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                // Load CSV file
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const data = parseCSV(e.target.result, state.mode);
+                    if (data.length > 0) {
+                        if (state.mode === 'MC') {
+                            state.mcData = data;
+                        } else {
+                            state.museData = data;
+                        }
+                        state.dataLoaded = true;
+                        state.selectedMarket = null;
+                        state.selectedChannel = null;
+                        render();
+                    } else {
+                        alert('Could not parse CSV. Please check the format.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Load CSV file for specific mode
+        function loadCSVFile(file, mode) {
             const reader = new FileReader();
             reader.onload = e => {
-                const data = parseCSV(e.target.result);
+                const data = parseCSV(e.target.result, mode);
                 if (data.length > 0) {
-                    state.data = data;
-                    state.showUpload = false;
+                    if (mode === 'MC') {
+                        state.mcData = data;
+                        state.mcFileName = file.name;
+                    } else {
+                        state.museData = data;
+                        state.museFileName = file.name;
+                    }
+                    // Re-render upload screen to show selected file
                     render();
                 } else {
                     alert('Could not parse CSV. Please check the format.');
@@ -2313,18 +4582,20 @@
         }
 
         function loadDemoData() {
+            // Load demo CSV data for MUSE mode
             fetch('data.csv')
                 .then(r => r.text())
                 .then(text => {
-                    const data = parseCSV(text);
+                    const data = parseCSV(text, 'MUSE');
                     if (data.length > 0) {
-                        state.data = data;
-                        state.showUpload = false;
+                        state.museData = data;
+                        state.mode = 'MUSE';
+                        state.dataLoaded = true;
                         render();
                     }
                 })
                 .catch(() => {
-                    alert('Could not load demo data. Please upload a CSV file.');
+                    alert('Could not load demo data. Please upload a file.');
                 });
         }
 

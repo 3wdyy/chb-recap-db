@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 Performance Review | KPI Dashboard</title>
+    <title>Performance Review | KPI Dashboard</title>
     <!-- SheetJS for Excel parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -52,9 +52,12 @@
             padding: 8px;
         }
 
-        .logo-container svg {
+        .logo-container svg,
+        .logo-container img {
             height: 70px;
             width: auto;
+            max-width: 200px;
+            object-fit: contain;
         }
 
         .header-text h1 {
@@ -204,7 +207,7 @@
             color: var(--neutral);
         }
 
-        /* vs 2024 - secondary with arrow */
+        /* vs LY - secondary with arrow */
         .metric-vs-row {
             display: flex;
             align-items: center;
@@ -2353,22 +2356,12 @@
             return 'All';
         }
 
-        // Company Logo SVG - simplified clean design on white background
-        const LOGO_SVG = `<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
-            <!-- White background -->
-            <rect width="120" height="60" fill="#FFFFFF"/>
-            <!-- Vertical bars with gradient heights -->
-            <rect x="10" y="18" width="8" height="32" rx="2" fill="#B8D4E8"/>
-            <rect x="22" y="12" width="8" height="38" rx="2" fill="#8FAFD4"/>
-            <rect x="34" y="6" width="8" height="44" rx="2" fill="#8FAFD4"/>
-            <rect x="46" y="2" width="8" height="48" rx="2" fill="#1B365D"/>
-            <!-- Wave accent at bottom -->
-            <path d="M10 50 Q30 56, 54 50" stroke="#1B365D" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <!-- Diamond accents -->
-            <rect x="68" y="10" width="10" height="10" transform="rotate(45 73 15)" fill="#1B365D"/>
-            <rect x="82" y="18" width="8" height="8" transform="rotate(45 86 22)" fill="#8FAFD4"/>
-            <rect x="70" y="28" width="8" height="8" transform="rotate(45 74 32)" fill="#B8D4E8"/>
-        </svg>`;
+        // Company Logo - Replace logo.png with your company logo
+        const LOGO_SVG = `<img src="logo.png" alt="Company Logo" style="height: 60px; width: auto;" onerror="this.style.display='none'">`;
+
+        // Year configuration - update these for different reporting periods
+        const CURRENT_YEAR = 2025;
+        const PREVIOUS_YEAR = 2024;
 
         let state = {
             mode: 'MUSE', // 'MUSE' or 'MC'
@@ -2727,7 +2720,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🎯', color: 'amber',
-                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
+                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')} vs LY)`
                     });
                 }
             }
@@ -2738,7 +2731,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🔄', color: 'amber',
-                        text: `<strong>Cross-brand engagement:</strong> Multi-brand shoppers at ${formatValue(xbp.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
+                        text: `<strong>Cross-brand engagement:</strong> Multi-brand shoppers at ${formatValue(xbp.YTD, 'percent')} (${formatChange(change, 'percent')} vs LY)`
                     });
                 }
             }
@@ -2749,7 +2742,7 @@
                 if (change < 0) {
                     insights.push({
                         icon: '🎁', color: 'amber',
-                        text: `<strong>Redemption activation:</strong> Point usage at ${formatValue(rdm.YTD, 'percent')} (${formatChange(change, 'percent')} vs 2024)`
+                        text: `<strong>Redemption activation:</strong> Point usage at ${formatValue(rdm.YTD, 'percent')} (${formatChange(change, 'percent')} vs LY)`
                     });
                 }
             }
@@ -2776,7 +2769,7 @@
                 <div class="upload-overlay">
                     <div class="upload-box">
                         <div class="upload-logo">${LOGO_SVG}</div>
-                        <h2>2025 Performance Review</h2>
+                        <h2>${CURRENT_YEAR} Performance Review</h2>
                         <p>Upload CSV files for each mode</p>
 
                         <div class="csv-upload-grid">
@@ -2843,21 +2836,18 @@
                     <div class="header-left">
                         <div class="logo-container">${LOGO_SVG}</div>
                         <div class="header-text">
-                            <h1>2025 Performance Review</h1>
+                            <h1>${CURRENT_YEAR} Performance Review</h1>
                             <p>Year-over-Year Analysis | ${modeLabel} Dashboard</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 16px;">
-                        ${hasBothModes ? `
-                        <div class="header-mode-switcher">
-                            <div class="mode-toggle">
-                                <button class="mode-toggle-btn ${state.mode === 'MUSE' ? 'active' : ''}" data-mode="MUSE">MUSE</button>
-                                <button class="mode-toggle-btn ${state.mode === 'MC' ? 'active' : ''}" data-mode="MC">MC</button>
-                            </div>
+                    ${hasBothModes ? `
+                    <div class="header-mode-switcher">
+                        <div class="mode-toggle">
+                            <button class="mode-toggle-btn ${state.mode === 'MUSE' ? 'active' : ''}" data-mode="MUSE">MUSE</button>
+                            <button class="mode-toggle-btn ${state.mode === 'MC' ? 'active' : ''}" data-mode="MC">MC</button>
                         </div>
-                        ` : ''}
-                        <span class="header-badge">${state.mode} Mode</span>
                     </div>
+                    ` : `<span class="header-badge">${state.mode} Mode</span>`}
                 </header>
                 <nav class="nav-tabs">
                     ${state.mode === 'MC' ? mcTabs : museTabs}
@@ -2889,7 +2879,7 @@
                 <div class="section-header">
                     <div>
                         <div class="section-title">Key Performance Indicators</div>
-                        <div class="section-subtitle">Full Year 2025 vs 2024 | ${market}</div>
+                        <div class="section-subtitle">Full Year ${CURRENT_YEAR} vs ${PREVIOUS_YEAR} | ${market}</div>
                     </div>
                 </div>
                 <div class="exec-summary">
@@ -2951,7 +2941,7 @@
                 <div class="section-header">
                     <div>
                         <div class="section-title">Key Performance Indicators</div>
-                        <div class="section-subtitle">Full Year 2025 vs 2024 | ${marketLabel} | ${channelLabel}</div>
+                        <div class="section-subtitle">Full Year ${CURRENT_YEAR} vs ${PREVIOUS_YEAR} | ${marketLabel} | ${channelLabel}</div>
                     </div>
                 </div>
 
@@ -3106,6 +3096,13 @@
             const defaultKPI = kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0];
 
             return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Channel Analysis</div>
+                        <div class="section-subtitle">Performance breakdown by sales channel</div>
+                    </div>
+                </div>
+
                 <div class="filter-row" style="margin-bottom: 24px;">
                     <div class="filter-group">
                         <label>Market</label>
@@ -3196,7 +3193,7 @@
                                 ` : ''}
                                 <div class="segment-visual-change">
                                     <span class="${totalChangeClass}">${formatChange(totalData.change, totalData.format)}</span>
-                                    <span style="color: var(--text-muted);">vs 2024</span>
+                                    <span style="color: var(--text-muted);">vs LY</span>
                                 </div>
                             </div>
                         </div>
@@ -3217,7 +3214,7 @@
                                     <span class="segment-split-section-value">${newData ? formatValue(newData.data.YTD, newData.format) : '—'}</span>
                                     <span class="segment-split-section-share">(${newShare.toFixed(0)}%)</span>
                                 </div>
-                                ${newData ? `<div class="segment-split-section-change ${newChangeClass}">${formatChange(newData.change, newData.format)} vs 2024</div>` : ''}
+                                ${newData ? `<div class="segment-split-section-change ${newChangeClass}">${formatChange(newData.change, newData.format)} vs LY</div>` : ''}
                             </div>
                             <div class="segment-split-section returning">
                                 <div class="segment-split-section-label">Returning</div>
@@ -3225,7 +3222,7 @@
                                     <span class="segment-split-section-value">${returningData ? formatValue(returningData.data.YTD, returningData.format) : '—'}</span>
                                     <span class="segment-split-section-share">(${returnShare.toFixed(0)}%)</span>
                                 </div>
-                                ${returningData ? `<div class="segment-split-section-change ${returnChangeClass}">${formatChange(returningData.change, returningData.format)} vs 2024</div>` : ''}
+                                ${returningData ? `<div class="segment-split-section-change ${returnChangeClass}">${formatChange(returningData.change, returningData.format)} vs LY</div>` : ''}
                             </div>
                         </div>
                     </div>
@@ -3245,19 +3242,28 @@
                         <tr>
                             <td class="market-cell">${g.label}</td>
                             <td class="compare-cell">
-                                <div class="segment-cell-value">${formatValue(totalData.data.YTD, totalData.format)}</div>
-                                <div class="segment-cell-change ${getChangeClass(totalData.change, totalData.format)}">${formatChange(totalData.change, totalData.format)}</div>
+                                <div class="value-cell">${formatValue(totalData.data.YTD, totalData.format)}</div>
+                                <div class="cell-compare-inline">
+                                    <span class="cell-compare-label">LY:</span>
+                                    <span class="cell-compare-value ${getChangeClass(totalData.change, totalData.format)}">${formatChange(totalData.change, totalData.format)}</span>
+                                </div>
                             </td>
                             <td class="compare-cell">
                                 ${newData ? `
-                                    <div class="segment-cell-value">${formatValue(newData.data.YTD, newData.format)}</div>
-                                    <div class="segment-cell-change ${getChangeClass(newData.change, newData.format)}">${formatChange(newData.change, newData.format)}</div>
+                                    <div class="value-cell">${formatValue(newData.data.YTD, newData.format)}</div>
+                                    <div class="cell-compare-inline">
+                                        <span class="cell-compare-label">LY:</span>
+                                        <span class="cell-compare-value ${getChangeClass(newData.change, newData.format)}">${formatChange(newData.change, newData.format)}</span>
+                                    </div>
                                 ` : '—'}
                             </td>
                             <td class="compare-cell">
                                 ${returningData ? `
-                                    <div class="segment-cell-value">${formatValue(returningData.data.YTD, returningData.format)}</div>
-                                    <div class="segment-cell-change ${getChangeClass(returningData.change, returningData.format)}">${formatChange(returningData.change, returningData.format)}</div>
+                                    <div class="value-cell">${formatValue(returningData.data.YTD, returningData.format)}</div>
+                                    <div class="cell-compare-inline">
+                                        <span class="cell-compare-label">LY:</span>
+                                        <span class="cell-compare-value ${getChangeClass(returningData.change, returningData.format)}">${formatChange(returningData.change, returningData.format)}</span>
+                                    </div>
                                 ` : '—'}
                             </td>
                         </tr>
@@ -3270,9 +3276,9 @@
                             <thead>
                                 <tr>
                                     <th class="left">Metric</th>
-                                    <th class="center">Total<br><span style="font-size: 10px; font-weight: 400; opacity: 0.8;">vs 2024</span></th>
-                                    <th class="center" style="background: var(--positive);">New<br><span style="font-size: 10px; font-weight: 400; opacity: 0.8;">vs 2024</span></th>
-                                    <th class="center" style="background: var(--steel-blue);">Returning<br><span style="font-size: 10px; font-weight: 400; opacity: 0.8;">vs 2024</span></th>
+                                    <th class="center">Total</th>
+                                    <th class="center" style="background: var(--positive);">New</th>
+                                    <th class="center" style="background: var(--steel-blue);">Returning</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3662,7 +3668,7 @@
                             ${vsArrow}
                             ${formatChange(baseChange, baseConfig.format)}
                         </span>
-                        <span>vs 2024</span>
+                        <span>vs LY</span>
                     </div>
                     <div class="share-tile-split" style="margin-top: 16px;">
                         <div class="share-split-item">
@@ -3675,7 +3681,7 @@
                                 <div class="share-split-vs">
                                     <span class="share-split-arrow ${newChangeClass}">${newArrow}</span>
                                     <span class="share-split-change ${newChangeClass}">${formatChange(newChange, newConfig?.format)}</span>
-                                    <span class="share-split-vs-label">vs 2024</span>
+                                    <span class="share-split-vs-label">vs LY</span>
                                 </div>
                             ` : ''}
                         </div>
@@ -3689,7 +3695,7 @@
                                 <div class="share-split-vs">
                                     <span class="share-split-arrow ${retChangeClass}">${retArrow}</span>
                                     <span class="share-split-change ${retChangeClass}">${formatChange(retChange, retConfig?.format)}</span>
-                                    <span class="share-split-vs-label">vs 2024</span>
+                                    <span class="share-split-vs-label">vs LY</span>
                                 </div>
                             ` : ''}
                         </div>
@@ -3737,7 +3743,7 @@
                     <div class="small-tile-footer">
                         <span class="small-tile-arrow ${changeClass}">${vsArrow}</span>
                         <span class="small-tile-change ${changeClass}">${formatChange(changeVsLY, config.format)}</span>
-                        <span class="small-tile-label-vs">vs 2024</span>
+                        <span class="small-tile-label-vs">vs LY</span>
                     </div>
                 </div>
             `;
@@ -3771,7 +3777,7 @@
                 `;
             }
 
-            // vs 2024 - subtle with arrow
+            // vs LY - subtle with arrow
             const vsLYClass = getChangeClass(changeVsLY, config.format);
             const vsArrow = vsLYClass === 'up' ? arrowUp : (vsLYClass === 'down' ? arrowDown : arrowNeutral);
             const vsRow = `
@@ -3780,7 +3786,7 @@
                         ${vsArrow}
                         ${formatChange(changeVsLY, config.format)}
                     </span>
-                    <span>vs 2024</span>
+                    <span>vs LY</span>
                 </div>
             `;
 
@@ -3893,6 +3899,13 @@
             ` : '';
 
             return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Market Analysis</div>
+                        <div class="section-subtitle">Performance breakdown by market region</div>
+                    </div>
+                </div>
+
                 <div class="filter-row" style="margin-bottom: 24px;">
                     ${mcFilters}
                     <div class="filter-group">
@@ -4158,18 +4171,27 @@
             const chartWidth = width - marginLeft - marginRight;
             const chartHeight = height - marginTop - marginBottom;
 
-            const allVals = chartData.flatMap(d => [d.ytd, d.lytd, d.target]).filter(v => v !== null);
+            const allVals = chartData.flatMap(d => [d.ytd, d.lytd, d.target]).filter(v => v !== null && !isNaN(v));
+
+            // Handle empty data gracefully
+            if (allVals.length === 0) {
+                return '<div class="chart-container"><p style="text-align:center; padding:40px; color:var(--text-muted);">No chart data available for this selection</p></div>';
+            }
+
             const minVal = Math.min(...allVals) * 0.9;
             const maxVal = Math.max(...allVals) * 1.1;
 
+            // Prevent division by zero if all values are the same
+            const valueRange = maxVal - minVal || 1;
+
             const xScale = i => marginLeft + (i * chartWidth / 11);
-            const yScale = v => marginTop + chartHeight - ((v - minVal) / (maxVal - minVal)) * chartHeight;
+            const yScale = v => marginTop + chartHeight - ((v - minVal) / valueRange) * chartHeight;
 
             let pathYTD = '', pathLYTD = '', pathTarget = '';
             let dotsYTD = '', dotsLYTD = '';
             let fillAreas = '';
 
-            // Build fill areas between 2025 and 2024 lines
+            // Build fill areas between current and previous year lines
             for (let i = 0; i < chartData.length - 1; i++) {
                 const d1 = chartData[i];
                 const d2 = chartData[i + 1];
@@ -4268,7 +4290,7 @@
                             <div class="kpi-hero-secondary">
                                 <div class="kpi-secondary-item">
                                     <div class="kpi-secondary-info">
-                                        <span class="kpi-secondary-label">vs 2024</span>
+                                        <span class="kpi-secondary-label">vs LY</span>
                                         <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
                                     </div>
                                     <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
@@ -4491,7 +4513,7 @@
                             <span class="tooltip-value">${formatValue(info.ytd, info.format)}</span>
                         </div>
                         <div class="tooltip-row">
-                            <span class="tooltip-label">vs 2024:</span>
+                            <span class="tooltip-label">vs LY:</span>
                             <span class="tooltip-value">${formatValue(info.lytd, info.format)} <span style="color:${changeVsLY >= 0 ? '#2E7D5A' : '#C4314B'}">(${formatChange(changeVsLY, info.format)})</span></span>
                         </div>
                         ${info.target ? `
@@ -4551,7 +4573,6 @@
                             alert('Could not find MUSE or MC sheets in the workbook.');
                         }
                     } catch (err) {
-                        console.error('Excel parse error:', err);
                         alert('Could not parse Excel file. Please check the format.');
                     }
                 };

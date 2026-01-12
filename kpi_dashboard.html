@@ -642,6 +642,13 @@
         .small-tile-arrow.neutral { color: var(--neutral); }
 
         /* KPI Rows Layout */
+        .kpi-row-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .kpi-row-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -870,6 +877,58 @@
         .insight-text strong {
             color: var(--navy);
             font-weight: 600;
+        }
+
+        /* Collapsible Insights Panel */
+        .insights-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .insights-toggle {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-normal);
+            color: var(--steel-blue);
+            font-size: 16px;
+        }
+
+        .insights-toggle:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .insights-toggle svg {
+            transition: transform var(--transition-normal);
+        }
+
+        .insights-panel.collapsed .insights-toggle svg {
+            transform: rotate(-90deg);
+        }
+
+        .insights-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 1000px;
+            opacity: 1;
+        }
+
+        .insights-panel.collapsed .insights-content {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .insights-panel.collapsed .insights-title {
+            margin-bottom: 0;
         }
 
         /* Filters */
@@ -3502,15 +3561,24 @@
                     ${allKPIs.map((key, i) => `<div class="animate-fade-in-up stagger-${i + 1}">${renderMetricCard(market, key)}</div>`).join('')}
                 </div>
 
-                <div class="insights-panel">
-                    <div class="insights-title">Key Insights</div>
-                    <div class="insights-grid">
-                        ${insights.map(i => `
-                            <div class="insight-item">
-                                <div class="insight-icon ${i.color}">${i.icon}</div>
-                                <div class="insight-text">${i.text}</div>
-                            </div>
-                        `).join('')}
+                <div class="insights-panel" id="insightsPanel">
+                    <div class="insights-header" onclick="toggleInsightsPanel()">
+                        <div class="insights-title">Key Insights</div>
+                        <button class="insights-toggle" aria-label="Toggle insights">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="4 6 8 10 12 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="insights-content">
+                        <div class="insights-grid">
+                            ${insights.map(i => `
+                                <div class="insight-item">
+                                    <div class="insight-icon ${i.color}">${i.icon}</div>
+                                    <div class="insight-text">${i.text}</div>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
 
@@ -3519,9 +3587,9 @@
         }
 
         function renderMCSummaryTab() {
-            // 3+3+4 KPI layout:
-            // Top row: 3 main KPIs
-            const topRowKPIs = ['TOTAL OWN BRAND SALES', 'KNOWN SALES', 'SALES LINKAGE'];
+            // 2+3+4 KPI layout:
+            // Top row: 2 main KPIs (full width)
+            const topRowKPIs = ['TOTAL OWN BRAND SALES', 'SALES LINKAGE'];
             // Middle row: 3 KPIs with new/returning share split
             const shareRowKPIs = [
                 { base: 'CUSTOMER COUNT', new: 'NEW CUSTOMER COUNT', returning: 'RETURNING CUSTOMER COUNT' },
@@ -3554,8 +3622,8 @@
 
                 ${renderMCFilters()}
 
-                <!-- Top Row: 3 Main KPIs -->
-                <div class="kpi-row-3">
+                <!-- Top Row: 2 Main KPIs (Full Width) -->
+                <div class="kpi-row-2">
                     ${topRowKPIs.map((key, i) => `<div class="animate-fade-in-up stagger-${i + 1}">${renderMetricCard(selectedMarket, key, selectedChannel)}</div>`).join('')}
                 </div>
 
@@ -5255,6 +5323,14 @@
 
         render();
     })();
+
+    // Global function for collapsible insights panel
+    function toggleInsightsPanel() {
+        const panel = document.getElementById('insightsPanel');
+        if (panel) {
+            panel.classList.toggle('collapsed');
+        }
+    }
     </script>
 </body>
 </html>

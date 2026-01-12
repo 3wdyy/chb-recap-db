@@ -373,6 +373,52 @@
             color: var(--text-muted);
         }
 
+        .small-tile-target {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--light-steel);
+        }
+
+        .small-tile-target-badge {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .small-tile-target-badge.up {
+            background: rgba(46, 125, 90, 0.15);
+            color: var(--positive);
+        }
+
+        .small-tile-target-badge.down {
+            background: rgba(196, 49, 75, 0.15);
+            color: var(--negative);
+        }
+
+        .small-tile-target-badge.neutral {
+            background: rgba(184, 134, 11, 0.15);
+            color: var(--neutral);
+        }
+
+        .small-tile-arrow {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .small-tile-arrow svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .small-tile-arrow.up { color: var(--positive); }
+        .small-tile-arrow.down { color: var(--negative); }
+        .small-tile-arrow.neutral { color: var(--neutral); }
+
         /* KPI Rows Layout */
         .kpi-row-3 {
             display: grid;
@@ -1575,6 +1621,12 @@
             }
         }
 
+        .comparison-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
         /* Upload file type hint */
         .upload-hint {
             font-size: 12px;
@@ -1816,6 +1868,165 @@
         .segment-cell-change.up { color: var(--positive); }
         .segment-cell-change.down { color: var(--negative); }
         .segment-cell-change.neutral { color: var(--neutral); }
+
+        /* New Segment Visual Styles */
+        .segment-visual-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .segment-visual-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .segment-visual-card {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--light-steel);
+            padding: 24px;
+        }
+
+        .segment-visual-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .segment-visual-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .segment-visual-total {
+            text-align: right;
+        }
+
+        .segment-visual-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .segment-visual-target {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .segment-visual-target-badge {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+
+        .segment-visual-target-badge.up {
+            background: rgba(46, 125, 90, 0.15);
+            color: var(--positive);
+        }
+
+        .segment-visual-target-badge.down {
+            background: rgba(196, 49, 75, 0.15);
+            color: var(--negative);
+        }
+
+        .segment-visual-change {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .segment-visual-change span:first-child {
+            font-weight: 600;
+        }
+
+        /* Split Bar */
+        .segment-split-bar {
+            height: 24px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            margin: 16px 0;
+        }
+
+        .segment-split-new {
+            background: var(--positive);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        .segment-split-returning {
+            background: var(--steel-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        /* Split Details */
+        .segment-split-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .segment-split-section {
+            padding: 12px;
+            border-radius: 8px;
+            background: var(--light-bg);
+        }
+
+        .segment-split-section.new {
+            border-left: 3px solid var(--positive);
+        }
+
+        .segment-split-section.returning {
+            border-left: 3px solid var(--steel-blue);
+        }
+
+        .segment-split-section-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .segment-split-section-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .segment-split-section-share {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .segment-split-section-change {
+            font-size: 11px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .segment-split-section-change.up { color: var(--positive); }
+        .segment-split-section-change.down { color: var(--negative); }
+        .segment-split-section-change.neutral { color: var(--neutral); }
 
         /* Target Scorecard Styles */
         .scorecard-grid {
@@ -2682,8 +2893,8 @@
             ];
             // Bottom row: 4 smaller metric tiles
             const bottomRowKPIs = ['AOV', 'AVERAGE FREQUENCY', 'ACV', 'UPT'];
-            // Comparison tables
-            const comparisonKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV'];
+            // Comparison tables - 4 KPIs
+            const comparisonKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'KNOWN SALES'];
 
             const marketAgg = getAggregateValue('market');
             const channelAgg = getAggregateValue('channel');
@@ -2720,9 +2931,8 @@
                     ${bottomRowKPIs.map(key => renderSmallTile(selectedMarket, key, selectedChannel)).join('')}
                 </div>
 
-                ${renderTargetScorecard()}
-
-                <div class="comparison-grid" style="margin-top: 32px;">
+                <!-- Market & Channel Comparison Tables (stacked) -->
+                <div class="comparison-stack" style="margin-top: 32px;">
                     ${renderDimensionComparisonTable('market', 'Market Comparison', comparisonKPIs)}
                     ${renderDimensionComparisonTable('channel', 'Channel Comparison', comparisonKPIs)}
                 </div>
@@ -2881,16 +3091,18 @@
 
         // Customer Segmentation Tab - New vs Returning analysis (table format)
         function renderSegmentationTab() {
-            // KPI groups with Total/New/Returning variants
-            // hasShare: true for top 3 additive KPIs only (Customer Count, Transaction Count, Known Sales)
-            const kpiGroups = [
-                { base: 'CUSTOMER COUNT', new: 'NEW CUSTOMER COUNT', returning: 'RETURNING CUSTOMER COUNT', label: 'Customers', hasShare: true },
-                { base: 'TRANSACTION COUNT', new: 'NEW CUSTOMERS TRANSACTION COUNT', returning: 'RETURNING CUSTOMERS TRANSACTION COUNT', label: 'Transactions', hasShare: true },
-                { base: 'KNOWN SALES', new: 'NEW CUSTOMERS KNOWN SALES', returning: 'RETURNING CUSTOMERS KNOWN SALES', label: 'Known Sales', hasShare: true },
-                { base: 'AOV', new: 'NEW CUSTOMERS AOV', returning: 'RETURNING CUSTOMERS AOV', label: 'Avg Order Value', hasShare: false },
-                { base: 'ACV', new: 'NEW CUSTOMERS ACV', returning: 'RETURNING CUSTOMERS ACV', label: 'Avg Customer Value', hasShare: false },
-                { base: 'AVERAGE FREQUENCY', new: 'NEW CUSTOMERS AVERAGE FREQUENCY', returning: 'RETURNING CUSTOMERS AVERAGE FREQUENCY', label: 'Frequency', hasShare: false },
-                { base: 'UPT', new: 'NEW CUSTOMERS UPT', returning: 'RETURNING CUSTOMERS UPT', label: 'Units Per Transaction', hasShare: false }
+            // Top 3 KPI groups with visual split bars (additive KPIs)
+            const primaryKPIs = [
+                { base: 'CUSTOMER COUNT', new: 'NEW CUSTOMER COUNT', returning: 'RETURNING CUSTOMER COUNT', label: 'Customers' },
+                { base: 'TRANSACTION COUNT', new: 'NEW CUSTOMERS TRANSACTION COUNT', returning: 'RETURNING CUSTOMERS TRANSACTION COUNT', label: 'Transactions' },
+                { base: 'KNOWN SALES', new: 'NEW CUSTOMERS KNOWN SALES', returning: 'RETURNING CUSTOMERS KNOWN SALES', label: 'Known Sales' }
+            ];
+
+            // Secondary KPIs (non-additive, show comparison only)
+            const secondaryKPIs = [
+                { base: 'AOV', new: 'NEW CUSTOMERS AOV', returning: 'RETURNING CUSTOMERS AOV', label: 'Avg Order Value' },
+                { base: 'ACV', new: 'NEW CUSTOMERS ACV', returning: 'RETURNING CUSTOMERS ACV', label: 'Avg Customer Value' },
+                { base: 'AVERAGE FREQUENCY', new: 'NEW CUSTOMERS AVERAGE FREQUENCY', returning: 'RETURNING CUSTOMERS AVERAGE FREQUENCY', label: 'Frequency' }
             ];
 
             const marketAgg = getAggregateValue('market');
@@ -2908,17 +3120,12 @@
                 const data = getLatestData(selectedMarket, kpiKey, selectedChannel);
                 if (!data) return null;
                 const change = calcChange(data.YTD, data.LYTD, kpiConfig.format);
-                return { data, change, format: kpiConfig.format, config: kpiConfig };
+                const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, kpiConfig.format) : null;
+                return { data, change, targetGap, format: kpiConfig.format, config: kpiConfig };
             }
 
-            // Get total value for share calculation
-            function getTotalValue(baseKpiKey) {
-                const data = getLatestData(selectedMarket, baseKpiKey, selectedChannel);
-                return data?.YTD || 0;
-            }
-
-            // Render a table row for a KPI group
-            function renderTableRow(g) {
+            // Render a visual card for primary KPIs with split bar
+            function renderVisualCard(g) {
                 const totalData = getSegmentData(g.base);
                 const newData = getSegmentData(g.new);
                 const returningData = getSegmentData(g.returning);
@@ -2926,61 +3133,133 @@
                 if (!totalData) return '';
 
                 const totalValue = totalData.data.YTD || 1;
-                const newShare = newData && g.hasShare ? (newData.data.YTD / totalValue) * 100 : null;
-                const returnShare = returningData && g.hasShare ? (returningData.data.YTD / totalValue) * 100 : null;
+                const newShare = newData ? (newData.data.YTD / totalValue) * 100 : 0;
+                const returnShare = returningData ? (returningData.data.YTD / totalValue) * 100 : 0;
+
+                const totalChangeClass = getChangeClass(totalData.change, totalData.format);
+                const newChangeClass = newData ? getChangeClass(newData.change, newData.format) : '';
+                const returnChangeClass = returningData ? getChangeClass(returningData.change, returningData.format) : '';
+                const targetGapClass = totalData.targetGap !== null ? getChangeClass(totalData.targetGap, totalData.format) : '';
 
                 return `
-                    <tr>
-                        <td>${g.label}</td>
-                        <td>
-                            <span class="segment-cell-value">${formatValue(totalData.data.YTD, totalData.format)}</span>
-                            <span class="segment-cell-change ${getChangeClass(totalData.change, totalData.format)}">${formatChange(totalData.change, totalData.format)}</span>
-                        </td>
-                        <td>
-                            ${newData ? `
-                                <span class="segment-cell-value">${formatValue(newData.data.YTD, newData.format)}</span>
-                                ${g.hasShare && newShare !== null ? `<span class="segment-cell-share">(${newShare.toFixed(0)}%)</span>` : ''}
-                                <span class="segment-cell-change ${getChangeClass(newData.change, newData.format)}">${formatChange(newData.change, newData.format)}</span>
-                            ` : '—'}
-                        </td>
-                        <td>
-                            ${returningData ? `
-                                <span class="segment-cell-value">${formatValue(returningData.data.YTD, returningData.format)}</span>
-                                ${g.hasShare && returnShare !== null ? `<span class="segment-cell-share">(${returnShare.toFixed(0)}%)</span>` : ''}
-                                <span class="segment-cell-change ${getChangeClass(returningData.change, returningData.format)}">${formatChange(returningData.change, returningData.format)}</span>
-                            ` : '—'}
-                        </td>
-                    </tr>
+                    <div class="segment-visual-card">
+                        <div class="segment-visual-header">
+                            <div class="segment-visual-title">${g.label}</div>
+                            <div class="segment-visual-total">
+                                <div class="segment-visual-value">${formatValue(totalData.data.YTD, totalData.format)}</div>
+                                ${totalData.data.Target ? `
+                                    <div class="segment-visual-target">
+                                        Target: ${formatValue(totalData.data.Target, totalData.format)}
+                                        <span class="segment-visual-target-badge ${targetGapClass}">${formatChange(totalData.targetGap, totalData.format)}</span>
+                                    </div>
+                                ` : ''}
+                                <div class="segment-visual-change">
+                                    <span class="${totalChangeClass}">${formatChange(totalData.change, totalData.format)}</span>
+                                    <span style="color: var(--text-muted);">vs 2024</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="segment-split-bar">
+                            <div class="segment-split-new" style="width: ${newShare}%;">
+                                ${newShare >= 15 ? newShare.toFixed(0) + '%' : ''}
+                            </div>
+                            <div class="segment-split-returning" style="width: ${returnShare}%;">
+                                ${returnShare >= 15 ? returnShare.toFixed(0) + '%' : ''}
+                            </div>
+                        </div>
+
+                        <div class="segment-split-details">
+                            <div class="segment-split-section new">
+                                <div class="segment-split-section-label">New Customers</div>
+                                <div>
+                                    <span class="segment-split-section-value">${newData ? formatValue(newData.data.YTD, newData.format) : '—'}</span>
+                                    <span class="segment-split-section-share">(${newShare.toFixed(0)}%)</span>
+                                </div>
+                                ${newData ? `<div class="segment-split-section-change ${newChangeClass}">${formatChange(newData.change, newData.format)} vs 2024</div>` : ''}
+                            </div>
+                            <div class="segment-split-section returning">
+                                <div class="segment-split-section-label">Returning</div>
+                                <div>
+                                    <span class="segment-split-section-value">${returningData ? formatValue(returningData.data.YTD, returningData.format) : '—'}</span>
+                                    <span class="segment-split-section-share">(${returnShare.toFixed(0)}%)</span>
+                                </div>
+                                ${returningData ? `<div class="segment-split-section-change ${returnChangeClass}">${formatChange(returningData.change, returningData.format)} vs 2024</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
                 `;
             }
 
-            const rows = kpiGroups.map(g => renderTableRow(g)).filter(r => r).join('');
+            // Render secondary comparison table
+            function renderSecondaryTable() {
+                const rows = secondaryKPIs.map(g => {
+                    const totalData = getSegmentData(g.base);
+                    const newData = getSegmentData(g.new);
+                    const returningData = getSegmentData(g.returning);
+
+                    if (!totalData) return '';
+
+                    return `
+                        <tr>
+                            <td class="market-cell">${g.label}</td>
+                            <td class="compare-cell">
+                                <div class="segment-cell-value">${formatValue(totalData.data.YTD, totalData.format)}</div>
+                                <div class="segment-cell-change ${getChangeClass(totalData.change, totalData.format)}">${formatChange(totalData.change, totalData.format)}</div>
+                            </td>
+                            <td class="compare-cell">
+                                ${newData ? `
+                                    <div class="segment-cell-value">${formatValue(newData.data.YTD, newData.format)}</div>
+                                    <div class="segment-cell-change ${getChangeClass(newData.change, newData.format)}">${formatChange(newData.change, newData.format)}</div>
+                                ` : '—'}
+                            </td>
+                            <td class="compare-cell">
+                                ${returningData ? `
+                                    <div class="segment-cell-value">${formatValue(returningData.data.YTD, returningData.format)}</div>
+                                    <div class="segment-cell-change ${getChangeClass(returningData.change, returningData.format)}">${formatChange(returningData.change, returningData.format)}</div>
+                                ` : '—'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="chart-container" style="margin-top: 24px;">
+                        <div class="chart-header">
+                            <div class="chart-title">Per-Customer Metrics Comparison</div>
+                        </div>
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th class="left">Metric</th>
+                                    <th class="center">Total</th>
+                                    <th class="center" style="background: var(--positive);">New</th>
+                                    <th class="center" style="background: var(--steel-blue);">Returning</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
 
             return `
                 <div class="section-header">
                     <div>
                         <div class="section-title">Customer Segment Analysis</div>
-                        <div class="section-subtitle">Comparing Total, New, and Returning Customer Performance</div>
+                        <div class="section-subtitle">New vs Returning Customer Performance Breakdown</div>
                     </div>
                 </div>
 
                 ${renderMCFilters()}
 
-                <div class="segment-table-container">
-                    <table class="segment-table">
-                        <thead>
-                            <tr>
-                                <th>KPI</th>
-                                <th>Total</th>
-                                <th class="new-col">New Customers</th>
-                                <th class="returning-col">Returning</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rows}
-                        </tbody>
-                    </table>
+                <div class="segment-visual-grid">
+                    ${primaryKPIs.map(g => renderVisualCard(g)).join('')}
                 </div>
+
+                ${renderSecondaryTable()}
             `;
         }
 
@@ -3290,6 +3569,8 @@
 
             const baseChange = calcChange(baseData.YTD, baseData.LYTD, baseConfig.format);
             const baseChangeClass = getChangeClass(baseChange, baseConfig.format);
+            const targetGap = baseData.Target ? calcTargetGap(baseData.YTD, baseData.Target, baseConfig.format) : null;
+            const targetGapClass = targetGap !== null ? getChangeClass(targetGap, baseConfig.format) : '';
 
             // Calculate shares
             const totalValue = baseData.YTD || 1;
@@ -3306,15 +3587,40 @@
             const retChange = returningData && retConfig ? calcChange(returningData.YTD, returningData.LYTD, retConfig.format) : null;
             const retChangeClass = retChange !== null ? getChangeClass(retChange, retConfig?.format) : '';
 
+            // Arrow SVGs
+            const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
+            const arrowDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+            const arrowNeutral = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/></svg>';
+            const vsArrow = baseChangeClass === 'up' ? arrowUp : (baseChangeClass === 'down' ? arrowDown : arrowNeutral);
+
+            // Target row
+            let targetRow = '';
+            if (baseData.Target) {
+                targetRow = `
+                    <div class="metric-target-row">
+                        <div class="metric-target-left">
+                            <span>Target:</span>
+                            <span class="metric-target-val">${formatValue(baseData.Target, baseConfig.format)}</span>
+                        </div>
+                        <span class="metric-target-badge ${targetGapClass}">${formatChange(targetGap, baseConfig.format)}</span>
+                    </div>
+                `;
+            }
+
             return `
                 <div class="share-tile">
                     <div class="share-tile-header">
                         <div class="share-tile-icon">${METRIC_ICONS[baseKpi] || ''}</div>
                         <div class="share-tile-label">${baseConfig.name}</div>
                     </div>
-                    <div class="share-tile-main">
-                        <span class="share-tile-value">${formatValue(baseData.YTD, baseConfig.format)}</span>
-                        <span class="share-tile-change ${baseChangeClass}">${formatChange(baseChange, baseConfig.format)} vs LY</span>
+                    <div class="metric-value">${formatValue(baseData.YTD, baseConfig.format)}</div>
+                    ${targetRow}
+                    <div class="metric-vs-row">
+                        <span class="metric-vs-arrow ${baseChangeClass}">
+                            ${vsArrow}
+                            ${formatChange(baseChange, baseConfig.format)}
+                        </span>
+                        <span>vs 2024</span>
                     </div>
                     <div class="share-tile-split">
                         <div class="share-split-item">
@@ -3338,7 +3644,7 @@
             `;
         }
 
-        // Small Tile - compact version for bottom row
+        // Small Tile - compact version for bottom row with target support
         function renderSmallTile(market, kpiKey, channel = null) {
             const config = getKPIConfig()[kpiKey];
             const data = getLatestData(market, kpiKey, channel);
@@ -3346,6 +3652,25 @@
 
             const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
             const changeClass = getChangeClass(changeVsLY, config.format);
+            const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
+            const targetGapClass = targetGap !== null ? getChangeClass(targetGap, config.format) : '';
+
+            // Arrow SVGs
+            const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
+            const arrowDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+            const arrowNeutral = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/></svg>';
+            const vsArrow = changeClass === 'up' ? arrowUp : (changeClass === 'down' ? arrowDown : arrowNeutral);
+
+            // Target row for small tiles
+            let targetRow = '';
+            if (data.Target) {
+                targetRow = `
+                    <div class="small-tile-target">
+                        <span>Target: ${formatValue(data.Target, config.format)}</span>
+                        <span class="small-tile-target-badge ${targetGapClass}">${formatChange(targetGap, config.format)}</span>
+                    </div>
+                `;
+            }
 
             return `
                 <div class="small-tile">
@@ -3354,9 +3679,11 @@
                         <div class="small-tile-label">${config.name}</div>
                     </div>
                     <div class="small-tile-value">${formatValue(data.YTD, config.format)}</div>
+                    ${targetRow}
                     <div class="small-tile-footer">
+                        <span class="small-tile-arrow ${changeClass}">${vsArrow}</span>
                         <span class="small-tile-change ${changeClass}">${formatChange(changeVsLY, config.format)}</span>
-                        <span class="small-tile-label-vs">vs LY</span>
+                        <span class="small-tile-label-vs">vs 2024</span>
                     </div>
                 </div>
             `;

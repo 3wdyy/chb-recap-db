@@ -2690,15 +2690,6 @@
 <body>
     <div id="app"></div>
     <div class="chart-tooltip" id="chartTooltip"></div>
-    <button class="presentation-toggle" id="presentationToggle" style="display: none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
-        </svg>
-        <span>Present</span>
-    </button>
-    <div class="data-timestamp" id="dataTimestamp" style="display: none;">Data as of: December 2025</div>
 
     <script>
     (function() {
@@ -3339,7 +3330,7 @@
 
         function renderDashboard() {
             const hasBothModes = state.museData && state.mcData;
-            const modeLabel = state.mode === 'MC' ? 'Multi-Channel' : 'MUSE Loyalty';
+            const modeLabel = state.mode === 'MC' ? 'Managed Companies' : 'MUSE Loyalty';
 
             // Different tabs for MC mode
             const mcTabs = `
@@ -3426,8 +3417,8 @@
             const overallStatus = salesChange >= 0 && (salesTargetGap === null || salesTargetGap >= 0) ? 'positive' : 'attention';
             const statusIcon = overallStatus === 'positive' ? '📈' : '📊';
             const statusText = overallStatus === 'positive'
-                ? `Strong performance with ${formatChange(salesChange, config[salesKey]?.format)} growth`
-                : `Revenue ${salesChange >= 0 ? 'growing' : 'declining'} ${formatChange(Math.abs(salesChange), config[salesKey]?.format)}`;
+                ? `Strong performance with ${formatChange(salesChange, config[salesKey]?.format)} growth vs LY`
+                : `Revenue ${salesChange >= 0 ? 'growing' : 'declining'} ${formatChange(Math.abs(salesChange), config[salesKey]?.format)} vs LY`;
 
             return `
                 <div class="executive-headline animate-fade-in-up">
@@ -3437,27 +3428,27 @@
                                 ${statusIcon} ${CURRENT_YEAR} Performance Summary
                             </div>
                             <div class="executive-headline-subtitle">
-                                ${statusText}${salesTargetGap !== null ? ` | Target: ${salesTargetGap >= 0 ? 'Exceeded' : 'Gap'} ${formatChange(Math.abs(salesTargetGap), config[salesKey]?.format)}` : ''}
+                                ${statusText}${salesTargetGap !== null ? ` | Target: ${salesTargetGap >= 0 ? 'Exceeded' : 'Gap'} ${formatChange(Math.abs(salesTargetGap), config[salesKey]?.format)}` : ''} | Comparisons are vs LY
                             </div>
                         </div>
                         <div class="executive-headline-kpis">
                             <div class="headline-kpi">
                                 <div class="headline-kpi-value">${formatValue(salesData.YTD, config[salesKey]?.format)}</div>
                                 <div class="headline-kpi-label">${mode === 'MUSE' ? 'Revenue' : 'Sales'}</div>
-                                <div class="headline-kpi-badge ${salesChange >= 0 ? 'up' : 'down'}">${formatChange(salesChange, config[salesKey]?.format)}</div>
+                                <div class="headline-kpi-badge ${salesChange >= 0 ? 'up' : 'down'}">${formatChange(salesChange, config[salesKey]?.format)} vs LY</div>
                             </div>
                             ${membersData ? `
                             <div class="headline-kpi">
                                 <div class="headline-kpi-value">${formatValue(membersData.YTD, config[membersKey]?.format)}</div>
                                 <div class="headline-kpi-label">${mode === 'MUSE' ? 'Members' : 'Customers'}</div>
-                                <div class="headline-kpi-badge ${membersChange >= 0 ? 'up' : 'down'}">${formatChange(membersChange, config[membersKey]?.format)}</div>
+                                <div class="headline-kpi-badge ${membersChange >= 0 ? 'up' : 'down'}">${formatChange(membersChange, config[membersKey]?.format)} vs LY</div>
                             </div>
                             ` : ''}
                             ${aovData ? `
                             <div class="headline-kpi">
                                 <div class="headline-kpi-value">${formatValue(aovData.YTD, config[aovKey]?.format)}</div>
                                 <div class="headline-kpi-label">AOV</div>
-                                <div class="headline-kpi-badge ${aovChange >= 0 ? 'up' : 'down'}">${formatChange(aovChange, config[aovKey]?.format)}</div>
+                                <div class="headline-kpi-badge ${aovChange >= 0 ? 'up' : 'down'}">${formatChange(aovChange, config[aovKey]?.format)} vs LY</div>
                             </div>
                             ` : ''}
                         </div>
@@ -4938,29 +4929,6 @@
             const mcFileInput = document.getElementById('mcFileInput');
             const startBtn = document.getElementById('startBtn');
             const demoBtn = document.getElementById('demoBtn');
-            const presentationToggle = document.getElementById('presentationToggle');
-            const dataTimestamp = document.getElementById('dataTimestamp');
-
-            // Show/hide presentation toggle and timestamp based on data loaded state
-            if (state.dataLoaded) {
-                if (presentationToggle) presentationToggle.style.display = 'flex';
-                if (dataTimestamp) dataTimestamp.style.display = 'block';
-            } else {
-                if (presentationToggle) presentationToggle.style.display = 'none';
-                if (dataTimestamp) dataTimestamp.style.display = 'none';
-            }
-
-            // Presentation mode toggle
-            if (presentationToggle) {
-                presentationToggle.onclick = () => {
-                    document.body.classList.toggle('presentation-mode');
-                    const isPresenting = document.body.classList.contains('presentation-mode');
-                    presentationToggle.innerHTML = isPresenting
-                        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span>Exit</span>`
-                        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>Present</span>`;
-                    if (dataTimestamp) dataTimestamp.style.display = isPresenting ? 'none' : 'block';
-                };
-            }
 
             // Mode toggle in header
             document.querySelectorAll('.mode-toggle-btn').forEach(btn => {

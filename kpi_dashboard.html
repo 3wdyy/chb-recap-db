@@ -2274,6 +2274,9 @@
 
         // Helper to check if a value is an aggregate/total
         function isAggregateValue(value, dimension) {
+            // null means "use aggregate" in our state model
+            if (value === null) return true;
+
             if (dimension === 'bu') {
                 return value === 'MC' || value === 'All' || value === 'MUSE';
             }
@@ -2281,7 +2284,7 @@
                 return value === 'All' || value === 'All Markets';
             }
             if (dimension === 'channel') {
-                return value === 'All';
+                return value === 'All' || value === 'All Channels';
             }
             return false;
         }

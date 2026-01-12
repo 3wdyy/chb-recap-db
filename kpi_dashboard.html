@@ -2047,6 +2047,30 @@
             cursor: not-allowed;
         }
 
+        .demo-btn-small {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--white);
+            color: var(--text-muted);
+            border: 1px solid var(--light-steel);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: var(--font-caption);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+            z-index: 100;
+        }
+
+        .demo-btn-small:hover {
+            background: var(--light-bg);
+            border-color: var(--steel-blue);
+            color: var(--navy);
+            box-shadow: var(--shadow-md);
+        }
+
         /* Segmentation Tab Styles */
         .segment-comparison-grid {
             display: grid;
@@ -3321,8 +3345,8 @@
                             <button class="btn-primary" id="startBtn" ${hasAnyFile ? '' : 'disabled'}>
                                 Start Dashboard
                             </button>
-                            <button class="btn-secondary" id="demoBtn">Load Demo Data</button>
                         </div>
+                        <button class="demo-btn-small" id="demoBtn">Demo</button>
                     </div>
                 </div>
             `;
@@ -3428,7 +3452,7 @@
                                 ${statusIcon} ${CURRENT_YEAR} Performance Summary
                             </div>
                             <div class="executive-headline-subtitle">
-                                ${statusText}${salesTargetGap !== null ? ` | Target: ${salesTargetGap >= 0 ? 'Exceeded' : 'Gap'} ${formatChange(Math.abs(salesTargetGap), config[salesKey]?.format)}` : ''} | Comparisons are vs LY
+                                ${statusText}${salesTargetGap !== null ? ` | Target: ${salesTargetGap >= 0 ? 'Exceeded' : 'Gap'} ${formatChange(Math.abs(salesTargetGap), config[salesKey]?.format)}` : ''}
                             </div>
                         </div>
                         <div class="executive-headline-kpis">

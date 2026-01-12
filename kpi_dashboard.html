@@ -321,6 +321,37 @@
             font-weight: 600;
         }
 
+        .share-split-change.up { color: var(--positive); }
+        .share-split-change.down { color: var(--negative); }
+        .share-split-change.neutral { color: var(--neutral); }
+
+        .share-split-vs {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-top: 2px;
+        }
+
+        .share-split-arrow {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .share-split-arrow svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .share-split-arrow.up { color: var(--positive); }
+        .share-split-arrow.down { color: var(--negative); }
+        .share-split-arrow.neutral { color: var(--neutral); }
+
+        .share-split-vs-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
         /* Small Tile - for bottom row (AOV, Frequency, ACV, UPT) */
         .small-tile {
             background: var(--white);
@@ -1925,6 +1956,8 @@
             padding: 2px 6px;
             border-radius: 4px;
             margin-left: 4px;
+            background: rgba(143, 175, 212, 0.2);
+            color: var(--navy);
         }
 
         .segment-visual-target-badge.up {
@@ -1935,6 +1968,11 @@
         .segment-visual-target-badge.down {
             background: rgba(196, 49, 75, 0.15);
             color: var(--negative);
+        }
+
+        .segment-visual-target-badge.neutral {
+            background: rgba(184, 134, 11, 0.15);
+            color: var(--neutral);
         }
 
         .segment-visual-change {
@@ -2897,7 +2935,7 @@
             // Bottom row: 4 smaller metric tiles
             const bottomRowKPIs = ['AOV', 'AVERAGE FREQUENCY', 'ACV', 'UPT'];
             // Comparison tables - 4 KPIs
-            const comparisonKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'KNOWN SALES'];
+            const comparisonKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'SALES LINKAGE'];
 
             const marketAgg = getAggregateValue('market');
             const channelAgg = getAggregateValue('channel');
@@ -3228,16 +3266,13 @@
 
                 return `
                     <div class="chart-container" style="margin-top: 24px;">
-                        <div class="chart-header">
-                            <div class="chart-title">Per-Customer Metrics Comparison</div>
-                        </div>
                         <table class="modern-table">
                             <thead>
                                 <tr>
                                     <th class="left">Metric</th>
-                                    <th class="center">Total</th>
-                                    <th class="center" style="background: var(--positive);">New</th>
-                                    <th class="center" style="background: var(--steel-blue);">Returning</th>
+                                    <th class="center">Total<br><span style="font-size: 10px; font-weight: 400; opacity: 0.8;">vs 2024</span></th>
+                                    <th class="center" style="background: var(--positive);">New<br><span style="font-size: 10px; font-weight: 400; opacity: 0.8;">vs 2024</span></th>
+                                    <th class="center" style="background: var(--steel-blue);">Returning<br><span style="font-size: 10px; font-weight: 400; opacity: 0.8;">vs 2024</span></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -3610,6 +3645,10 @@
                 `;
             }
 
+            // Arrows for new/returning
+            const newArrow = newChangeClass === 'up' ? arrowUp : (newChangeClass === 'down' ? arrowDown : arrowNeutral);
+            const retArrow = retChangeClass === 'up' ? arrowUp : (retChangeClass === 'down' ? arrowDown : arrowNeutral);
+
             return `
                 <div class="share-tile">
                     <div class="share-tile-header">
@@ -3625,22 +3664,34 @@
                         </span>
                         <span>vs 2024</span>
                     </div>
-                    <div class="share-tile-split">
+                    <div class="share-tile-split" style="margin-top: 16px;">
                         <div class="share-split-item">
-                            <span class="share-split-label">New</span>
+                            <span class="share-split-label">New Customers</span>
                             <div class="share-split-row">
                                 <span class="share-split-value">${newData ? formatValue(newData.YTD, newConfig?.format || 'number') : '—'}</span>
-                                <span class="share-split-pct">(${newShare.toFixed(0)}%)</span>
+                                <span class="share-split-pct" title="Share">(${newShare.toFixed(0)}%)</span>
                             </div>
-                            ${newChange !== null ? `<span class="share-split-change ${newChangeClass}">${formatChange(newChange, newConfig?.format)}</span>` : ''}
+                            ${newChange !== null ? `
+                                <div class="share-split-vs">
+                                    <span class="share-split-arrow ${newChangeClass}">${newArrow}</span>
+                                    <span class="share-split-change ${newChangeClass}">${formatChange(newChange, newConfig?.format)}</span>
+                                    <span class="share-split-vs-label">vs 2024</span>
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="share-split-item">
                             <span class="share-split-label">Returning</span>
                             <div class="share-split-row">
                                 <span class="share-split-value">${returningData ? formatValue(returningData.YTD, retConfig?.format || 'number') : '—'}</span>
-                                <span class="share-split-pct">(${returningShare.toFixed(0)}%)</span>
+                                <span class="share-split-pct" title="Share">(${returningShare.toFixed(0)}%)</span>
                             </div>
-                            ${retChange !== null ? `<span class="share-split-change ${retChangeClass}">${formatChange(retChange, retConfig?.format)}</span>` : ''}
+                            ${retChange !== null ? `
+                                <div class="share-split-vs">
+                                    <span class="share-split-arrow ${retChangeClass}">${retArrow}</span>
+                                    <span class="share-split-change ${retChangeClass}">${formatChange(retChange, retConfig?.format)}</span>
+                                    <span class="share-split-vs-label">vs 2024</span>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>

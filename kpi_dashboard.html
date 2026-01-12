@@ -93,7 +93,7 @@
             color: white;
             padding: 8px 20px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
         }
 
@@ -192,21 +192,21 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 14px;
+            font-size: var(--font-body-sm);
             color: var(--text-muted);
         }
 
         .metric-target-val {
             font-weight: 700;
             color: var(--navy);
-            font-size: 15px;
+            font-size: var(--font-body-sm);
         }
 
         .metric-target-badge {
             padding: 5px 12px;
             border-radius: 14px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: var(--font-body-sm);
         }
 
         .metric-target-badge.up {
@@ -229,7 +229,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
         }
 
@@ -293,7 +293,7 @@
         }
 
         .share-tile-change {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
         }
 
@@ -312,7 +312,7 @@
         }
 
         .share-split-label {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -325,19 +325,19 @@
         }
 
         .share-split-value {
-            font-size: 15px;
+            font-size: var(--font-body);
             font-weight: 600;
             color: var(--navy);
         }
 
         .share-split-pct {
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
             font-weight: 500;
         }
 
         .share-split-change {
-            font-size: 11px;
+            font-size: var(--font-label);
             font-weight: 600;
         }
 
@@ -367,7 +367,7 @@
         .share-split-arrow.neutral { color: var(--neutral); }
 
         .share-split-vs-label {
-            font-size: 10px;
+            font-size: var(--font-micro);
             color: var(--text-muted);
             margin-left: 2px;
         }
@@ -413,7 +413,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 11px;
+            font-size: var(--font-label);
         }
 
         .small-tile-change {
@@ -428,7 +428,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             margin-bottom: 6px;
             padding-bottom: 6px;
@@ -568,7 +568,7 @@
             justify-content: center;
             gap: 6px;
             margin-top: 4px;
-            font-size: 12px;
+            font-size: var(--font-caption);
             font-weight: 500;
         }
 
@@ -578,7 +578,7 @@
         .cell-divider { color: var(--text-muted); }
 
         .cell-sub {
-            font-size: 11px;
+            font-size: var(--font-label);
             font-weight: 500;
         }
 
@@ -628,7 +628,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: var(--font-h3);
             flex-shrink: 0;
         }
 
@@ -695,7 +695,7 @@
 
         .filter-select option {
             padding: 12px 16px;
-            font-size: 15px;
+            font-size: var(--font-body-lg);
             color: var(--navy);
             background: var(--white);
         }
@@ -708,7 +708,7 @@
             font-weight: 700;
             color: var(--navy);
             background: var(--light-bg);
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -742,7 +742,7 @@
         .upload-logo { margin-bottom: 24px; }
         .upload-logo svg { height: 100px; }
 
-        .upload-box h2 { font-size: 24px; color: var(--navy); margin-bottom: 8px; }
+        .upload-box h2 { font-size: var(--font-h1); color: var(--navy); margin-bottom: 8px; }
         .upload-box p { color: var(--text-muted); margin-bottom: 24px; }
 
         .dropzone {
@@ -764,7 +764,7 @@
             border: none;
             padding: 14px 28px;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: var(--font-body);
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
@@ -806,7 +806,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             color: var(--text-muted);
         }
 
@@ -840,64 +840,11 @@
         .kpi-hero-card.neutral { border-left-color: var(--neutral); }
 
         .kpi-hero-label {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 8px;
-        }
-
-        .kpi-hero-value {
-            font-size: 48px;
-            font-weight: 700;
-            color: var(--navy);
-            margin-bottom: 16px;
-        }
-
-        /* Primary comparison - vs Target */
-        .kpi-hero-target {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
-            background: var(--light-bg);
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .kpi-hero-target-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .kpi-hero-target-value {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--navy);
-        }
-
-        .kpi-hero-target-badge {
-            font-size: 22px;
-            font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 8px;
-        }
-
-        .kpi-hero-target-badge.up {
-            background: rgba(46, 125, 90, 0.12);
-            color: var(--positive);
-        }
-
-        .kpi-hero-target-badge.down {
-            background: rgba(196, 49, 75, 0.12);
-            color: var(--negative);
-        }
-
-        .kpi-hero-target-badge.neutral {
-            background: rgba(184, 134, 11, 0.12);
-            color: var(--neutral);
         }
 
         /* Hero card main layout - two columns */
@@ -935,7 +882,7 @@
         }
 
         .kpi-hero-target-label {
-            font-size: 12px;
+            font-size: var(--font-caption);
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -943,7 +890,7 @@
         }
 
         .kpi-hero-target-detail {
-            font-size: 16px;
+            font-size: var(--font-body);
             color: var(--navy);
             font-weight: 600;
         }
@@ -1003,7 +950,7 @@
         }
 
         .market-breakdown-title {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -1012,7 +959,7 @@
         }
 
         .breakdown-single-value {
-            font-size: 24px;
+            font-size: var(--font-value-md);
             font-weight: 600;
             color: var(--navy);
             text-align: center;
@@ -1038,13 +985,13 @@
         }
 
         .market-breakdown-name {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
             color: var(--navy);
         }
 
         .market-breakdown-value {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 700;
             color: var(--navy);
         }
@@ -1084,7 +1031,7 @@
         }
 
         .kpi-secondary-label {
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 700;
             color: var(--navy);
             text-transform: uppercase;
@@ -1092,7 +1039,7 @@
         }
 
         .kpi-secondary-detail {
-            font-size: 15px;
+            font-size: var(--font-body);
             color: var(--text-muted);
         }
 
@@ -1120,14 +1067,14 @@
         }
 
         .kpi-comp-label {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .kpi-comp-value {
-            font-size: 18px;
+            font-size: var(--font-h3);
             font-weight: 700;
         }
 
@@ -1136,7 +1083,7 @@
         .kpi-comp-value.neutral { color: var(--neutral); }
 
         .kpi-comp-detail {
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
         }
 
@@ -1186,25 +1133,25 @@
         }
 
         .trend-badges-right .trend-badge-month {
-            font-size: 11px;
+            font-size: var(--font-label);
             margin-bottom: 4px;
         }
 
         .trend-badges-right .trend-badge-actual {
-            font-size: 16px;
+            font-size: var(--font-body);
             margin-bottom: 4px;
         }
 
         .trend-badges-right .trend-badge-value {
-            font-size: 12px;
+            font-size: var(--font-caption);
         }
 
         .trend-badges-right .trend-badge-label {
-            font-size: 10px;
+            font-size: var(--font-micro);
         }
 
         .trend-badge-month {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
             color: var(--text-muted);
             margin-bottom: 6px;
@@ -1220,7 +1167,7 @@
         }
 
         .trend-badge-value {
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 600;
         }
 
@@ -1231,7 +1178,7 @@
         .trend-badge-label {
             font-weight: 400;
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: var(--font-caption);
         }
 
         /* Modern Market Table */
@@ -1284,7 +1231,7 @@
             font-weight: 600;
             color: var(--navy);
             white-space: nowrap;
-            font-size: 15px;
+            font-size: var(--font-body);
         }
 
         .modern-table .value-cell {
@@ -1307,7 +1254,7 @@
 
         .modern-table .compare-value {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: var(--font-body);
             font-variant-numeric: tabular-nums;
         }
 
@@ -1315,7 +1262,7 @@
             display: inline-block;
             padding: 3px 8px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: var(--font-caption);
             font-weight: 600;
             min-width: 52px;
             text-align: center;
@@ -1392,7 +1339,7 @@
         }
 
         .donut-title {
-            font-size: 12px;
+            font-size: var(--font-caption);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--text-muted);
@@ -1447,24 +1394,24 @@
 
         .donut-callout {
             position: absolute;
-            font-size: 11px;
+            font-size: var(--font-label);
             font-weight: 600;
             white-space: nowrap;
         }
 
         .donut-callout-label {
             color: var(--navy);
-            font-size: 12px;
+            font-size: var(--font-caption);
         }
 
         .donut-callout-value {
             color: var(--text-muted);
-            font-size: 11px;
+            font-size: var(--font-label);
         }
 
         .donut-legend {
             display: none;
-            font-size: 12px;
+            font-size: var(--font-caption);
         }
 
         .donut-legend-color {
@@ -1495,7 +1442,7 @@
             justify-content: center;
             gap: 4px;
             margin-top: 4px;
-            font-size: 12px;
+            font-size: var(--font-caption);
             flex-wrap: wrap;
         }
 
@@ -1524,7 +1471,7 @@
             color: white;
             padding: 10px 14px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             pointer-events: none;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -1588,19 +1535,19 @@
         }
 
         .mode-card-icon {
-            font-size: 32px;
+            font-size: var(--font-value-xl);
             margin-bottom: 12px;
         }
 
         .mode-card-title {
-            font-size: 18px;
+            font-size: var(--font-h3);
             font-weight: 700;
             color: var(--navy);
             margin-bottom: 4px;
         }
 
         .mode-card-desc {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             color: var(--text-muted);
         }
 
@@ -1622,7 +1569,7 @@
 
         .mode-toggle-btn {
             padding: 8px 16px;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
             color: var(--text-muted);
             background: transparent;
@@ -1680,7 +1627,7 @@
 
         /* Upload file type hint */
         .upload-hint {
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
             margin-top: 8px;
         }
@@ -1713,13 +1660,13 @@
         }
 
         .csv-upload-icon {
-            font-size: 16px;
+            font-size: var(--font-value-sm);
         }
 
         .csv-upload-title {
             font-weight: 600;
             color: var(--navy);
-            font-size: 13px;
+            font-size: var(--font-body-sm);
         }
 
         .csv-upload-zone {
@@ -1735,14 +1682,14 @@
 
         .csv-upload-text {
             color: var(--text-muted);
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             margin: 0;
         }
 
         .csv-file-selected {
             color: var(--positive);
             font-weight: 500;
-            font-size: 13px;
+            font-size: var(--font-body-sm);
         }
 
         .upload-actions {
@@ -1793,7 +1740,7 @@
         .segment-card.returning { border-left: 4px solid var(--steel-blue); }
 
         .segment-card-title {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -1811,18 +1758,18 @@
         .segment-metric:last-child { border-bottom: none; }
 
         .segment-metric-name {
-            font-size: 13px;
+            font-size: var(--font-body-sm);
             color: var(--text-secondary);
         }
 
         .segment-metric-value {
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 600;
             color: var(--navy);
         }
 
         .segment-metric-change {
-            font-size: 11px;
+            font-size: var(--font-label);
             margin-left: 8px;
         }
 
@@ -1833,7 +1780,7 @@
         }
 
         .segment-metric-share {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--steel-blue);
             font-weight: 500;
             min-width: 32px;
@@ -1904,14 +1851,14 @@
         }
 
         .segment-cell-share {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             margin-left: 4px;
         }
 
         .segment-cell-change {
             display: block;
-            font-size: 11px;
+            font-size: var(--font-label);
             margin-top: 2px;
             font-weight: 500;
         }
@@ -1948,7 +1895,7 @@
         }
 
         .segment-visual-title {
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 600;
             color: var(--navy);
             text-transform: uppercase;
@@ -1966,7 +1913,7 @@
         }
 
         .segment-visual-target {
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
             margin-top: 4px;
         }
@@ -1996,7 +1943,7 @@
         }
 
         .segment-visual-change {
-            font-size: 12px;
+            font-size: var(--font-caption);
             margin-top: 4px;
         }
 
@@ -2019,7 +1966,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 11px;
+            font-size: var(--font-label);
             font-weight: 600;
             min-width: 40px;
         }
@@ -2030,7 +1977,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 11px;
+            font-size: var(--font-label);
             font-weight: 600;
             min-width: 40px;
         }
@@ -2057,7 +2004,7 @@
         }
 
         .segment-split-section-label {
-            font-size: 11px;
+            font-size: var(--font-label);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -2065,19 +2012,19 @@
         }
 
         .segment-split-section-value {
-            font-size: 16px;
+            font-size: var(--font-body);
             font-weight: 600;
             color: var(--navy);
         }
 
         .segment-split-section-share {
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
             margin-left: 4px;
         }
 
         .segment-split-section-change {
-            font-size: 11px;
+            font-size: var(--font-label);
             margin-top: 4px;
             font-weight: 500;
         }
@@ -2110,7 +2057,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: var(--font-h3);
             flex-shrink: 0;
         }
 
@@ -2125,7 +2072,7 @@
         }
 
         .scorecard-kpi {
-            font-size: 12px;
+            font-size: var(--font-caption);
             color: var(--text-muted);
             white-space: nowrap;
             overflow: hidden;
@@ -2133,13 +2080,13 @@
         }
 
         .scorecard-value {
-            font-size: 14px;
+            font-size: var(--font-body);
             font-weight: 600;
             color: var(--navy);
         }
 
         .scorecard-gap {
-            font-size: 12px;
+            font-size: var(--font-caption);
             font-weight: 500;
         }
 

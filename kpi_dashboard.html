@@ -1472,10 +1472,16 @@
             margin-left: 8px;
         }
 
+        .segment-change-label {
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-right: 2px;
+        }
+
         /* Target Scorecard Styles */
         .scorecard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 12px;
         }
 
@@ -1503,7 +1509,7 @@
         .scorecard-indicator.green { background: rgba(46, 125, 90, 0.15); }
         .scorecard-indicator.amber { background: rgba(184, 134, 11, 0.15); }
         .scorecard-indicator.red { background: rgba(196, 49, 75, 0.15); }
-        .scorecard-indicator.na { background: var(--light-bg); }
+        .scorecard-indicator.neutral { background: var(--light-bg); color: var(--text-muted); }
 
         .scorecard-details {
             flex: 1;
@@ -1583,12 +1589,27 @@
         const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
         // Support both "01 - Jan" and "01-Jan" formats, and also "Mon-YY" format
         const MONTH_MAP = {
+            // Format: "01 - Jan"
             '01 - Jan':'JAN','02 - Feb':'FEB','03 - Mar':'MAR','04 - Apr':'APR','05 - May':'MAY','06 - Jun':'JUN',
             '07 - Jul':'JUL','08 - Aug':'AUG','09 - Sep':'SEP','10 - Oct':'OCT','11 - Nov':'NOV','12 - Dec':'DEC',
+            // Format: "01-Jan"
             '01-Jan':'JAN','02-Feb':'FEB','03-Mar':'MAR','04-Apr':'APR','05-May':'MAY','06-Jun':'JUN',
             '07-Jul':'JUL','08-Aug':'AUG','09-Sep':'SEP','10-Oct':'OCT','11-Nov':'NOV','12-Dec':'DEC',
+            // Format: "Mon-YY" (2024)
+            'Jan-24':'JAN','Feb-24':'FEB','Mar-24':'MAR','Apr-24':'APR','May-24':'MAY','Jun-24':'JUN',
+            'Jul-24':'JUL','Aug-24':'AUG','Sep-24':'SEP','Oct-24':'OCT','Nov-24':'NOV','Dec-24':'DEC',
+            // Format: "Mon-YY" (2025)
             'Jan-25':'JAN','Feb-25':'FEB','Mar-25':'MAR','Apr-25':'APR','May-25':'MAY','Jun-25':'JUN',
-            'Jul-25':'JUL','Aug-25':'AUG','Sep-25':'SEP','Oct-25':'OCT','Nov-25':'NOV','Dec-25':'DEC'
+            'Jul-25':'JUL','Aug-25':'AUG','Sep-25':'SEP','Oct-25':'OCT','Nov-25':'NOV','Dec-25':'DEC',
+            // Short format: "Jan", "Feb", etc.
+            'Jan':'JAN','Feb':'FEB','Mar':'MAR','Apr':'APR','May':'MAY','Jun':'JUN',
+            'Jul':'JUL','Aug':'AUG','Sep':'SEP','Oct':'OCT','Nov':'NOV','Dec':'DEC',
+            // Numeric format: "1", "2", etc.
+            '1':'JAN','2':'FEB','3':'MAR','4':'APR','5':'MAY','6':'JUN',
+            '7':'JUL','8':'AUG','9':'SEP','10':'OCT','11':'NOV','12':'DEC',
+            // Standard abbreviation
+            'JAN':'JAN','FEB':'FEB','MAR':'MAR','APR':'APR','MAY':'MAY','JUN':'JUN',
+            'JUL':'JUL','AUG':'AUG','SEP':'SEP','OCT':'OCT','NOV':'NOV','DEC':'DEC'
         };
 
         // MUSE mode KPI configurations
@@ -2317,6 +2338,8 @@
                     ${heroKPIs.map(key => renderMetricCard(selectedMarket, key, selectedChannel)).join('')}
                 </div>
 
+                ${renderTargetScorecard()}
+
                 <div class="comparison-grid" style="margin-top: 32px;">
                     ${renderDimensionComparisonTable('market', 'Market Comparison', comparisonKPIs)}
                     ${renderDimensionComparisonTable('channel', 'Channel Comparison', comparisonKPIs)}
@@ -2511,9 +2534,11 @@
                         ${metrics.map(m => `
                             <div class="segment-metric">
                                 <span class="segment-metric-name">${m.label}</span>
-                                <span>
+                                <span class="segment-metric-values">
                                     <span class="segment-metric-value">${formatValue(m.data.YTD, m.format)}</span>
-                                    <span class="segment-metric-change ${getChangeClass(m.change, m.format)}">${formatChange(m.change, m.format)}</span>
+                                    <span class="segment-metric-change ${getChangeClass(m.change, m.format)}">
+                                        <span class="segment-change-label">vs LY</span> ${formatChange(m.change, m.format)}
+                                    </span>
                                 </span>
                             </div>
                         `).join('')}
@@ -2536,60 +2561,54 @@
                     ${renderSegmentCard('New Customers', 'new', g => g.new)}
                     ${renderSegmentCard('Returning Customers', 'returning', g => g.returning)}
                 </div>
-
-                ${renderTargetScorecard()}
-
-                ${renderChannelMix()}
             `;
         }
 
-        // Target Scorecard with traffic lights
+        // Target Scorecard with traffic lights - shows all KPIs with NA for missing targets
         function renderTargetScorecard() {
             const marketAgg = getAggregateValue('market');
             const channelAgg = getAggregateValue('channel');
             const config = getKPIConfig();
-            const kpis = getKPIs();
 
             // Use selected values for filtering
             const selectedMarket = state.selectedMarket || marketAgg;
             const selectedChannel = state.selectedChannel || channelAgg;
 
-            // Get KPIs that have targets for the selected market/channel
-            const kpisWithTargets = kpis.filter(k => {
-                const data = getLatestData(selectedMarket, k, selectedChannel);
-                return data && data.Target;
-            });
+            // Use hero KPIs for scorecard (10 items = 5x2 grid)
+            const scorecardKPIs = ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'AVERAGE FREQUENCY', 'SALES LINKAGE',
+                                   'NEW CUSTOMER COUNT', 'RETURNING CUSTOMER COUNT', 'TRANSACTION COUNT', 'UPT', 'ACV'];
 
-            if (kpisWithTargets.length === 0) {
-                return '';
-            }
-
-            function getIndicator(gap, format) {
+            function getIndicator(gap, format, hasTarget) {
+                if (!hasTarget) return { class: 'neutral', icon: '—' };
                 const threshold = format === 'percent' ? 0.5 : 2;
                 if (gap >= 0) return { class: 'green', icon: '✓' };
                 if (gap >= -threshold) return { class: 'amber', icon: '~' };
                 return { class: 'red', icon: '✗' };
             }
 
-            const items = kpisWithTargets.map(k => {
+            const items = scorecardKPIs.map(k => {
                 const kpiConfig = config[k];
+                if (!kpiConfig) return null;
                 const data = getLatestData(selectedMarket, k, selectedChannel);
-                const gap = calcTargetGap(data.YTD, data.Target, kpiConfig.format);
-                const indicator = getIndicator(gap, kpiConfig.format);
+                if (!data) return null;
+
+                const hasTarget = data.Target != null;
+                const gap = hasTarget ? calcTargetGap(data.YTD, data.Target, kpiConfig.format) : null;
+                const indicator = getIndicator(gap, kpiConfig.format, hasTarget);
+
                 return {
                     name: kpiConfig.name,
                     value: formatValue(data.YTD, kpiConfig.format),
-                    target: formatValue(data.Target, kpiConfig.format),
+                    target: hasTarget ? formatValue(data.Target, kpiConfig.format) : 'NA',
                     gap,
-                    gapFormatted: formatChange(gap, kpiConfig.format),
-                    gapClass: getChangeClass(gap, kpiConfig.format),
+                    gapFormatted: hasTarget ? formatChange(gap, kpiConfig.format) : 'NA',
+                    gapClass: hasTarget ? getChangeClass(gap, kpiConfig.format) : '',
                     indicator,
-                    format: kpiConfig.format
+                    hasTarget
                 };
-            });
+            }).filter(Boolean);
 
-            // Sort by gap (worst first)
-            items.sort((a, b) => a.gap - b.gap);
+            if (items.length === 0) return '';
 
             return `
                 <div class="chart-container" style="margin-top: 24px;">
@@ -2854,10 +2873,6 @@
             const changeVsLY = calcChange(data.YTD, data.LYTD, config.format);
             const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
 
-            // Card accent based on TARGET if available, otherwise vs LY - uses same thresholds as badges
-            const accentChange = targetGap !== null ? targetGap : changeVsLY;
-            const cardAccentClass = getChangeClass(accentChange, config.format) || 'neutral';
-
             // Arrow SVGs
             const arrowUp = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>';
             const arrowDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
@@ -2892,7 +2907,7 @@
             `;
 
             return `
-                <div class="metric-card ${cardAccentClass}">
+                <div class="metric-card">
                     <div class="metric-header">
                         <div class="metric-icon">${METRIC_ICONS[kpiKey] || ''}</div>
                         <div class="metric-label">${config.name}</div>
@@ -3281,11 +3296,6 @@
                 `;
             }).join('');
 
-            // Determine overall status based on target or YoY
-            // Determine accent color based on vs Target (or vs LY if no target)
-            const accentValue = ytdVsTarget !== null ? ytdVsTarget : ytdVsLytd;
-            const accentClass = getChangeClass(accentValue, config.format);
-
             // Get market breakdown data (only show for aggregate market)
             const isAllMarkets = isAggregateValue(market, 'market');
             const marketBreakdown = isAllMarkets ? getMarkets()
@@ -3301,8 +3311,8 @@
 
             return `
                 <div class="kpi-hero-row">
-                    <div class="kpi-hero-card ${accentClass}">
-                        <div class="kpi-hero-label">${config.name} — 2025 YTD${!isAllMarkets ? ` (${market})` : ''}</div>
+                    <div class="kpi-hero-card">
+                        <div class="kpi-hero-label">${config.name} — 2025${!isAllMarkets ? ` (${market})` : ''}</div>
                         <div class="kpi-hero-content">
                             <div class="kpi-hero-main">
                                 <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
@@ -3357,26 +3367,26 @@
                             }).join('')}
                         </div>
                         ` : `
-                        <div class="market-breakdown-title">vs ${getAggregateValue('market')}</div>
+                        <div class="market-breakdown-title">${market}</div>
                         <div class="market-breakdown-list">
                             ${(state.mode === 'MC' ? ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'AVERAGE FREQUENCY'] : ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM']).map((k, i) => {
                                 const kConfig = getKPIConfig()[k];
                                 if (!kConfig) return '';
-                                const marketData = getLatestData(market, k);
-                                const allData = getLatestData(getAggregateValue('market'), k);
-                                if (!marketData || !allData) return '';
-                                const diff = kConfig.format === 'percent'
-                                    ? (marketData.YTD - allData.YTD)
-                                    : ((marketData.YTD - allData.YTD) / allData.YTD) * 100;
-                                const diffClass = getChangeClass(diff, kConfig.format);
+                                const marketData = getLatestData(market, k, channel);
+                                if (!marketData) return '';
+                                const change = calcChange(marketData.YTD, marketData.LYTD, kConfig.format);
+                                const changeClass = getChangeClass(change, kConfig.format);
                                 return `
                                     <div class="market-breakdown-item">
                                         <div class="market-breakdown-header">
                                             <span class="market-breakdown-name">${kConfig.name}</span>
-                                            <span class="market-breakdown-value ${diffClass}">${diff >= 0 ? '+' : ''}${kConfig.format === 'percent' ? diff.toFixed(1) + ' PP' : diff.toFixed(1) + '%'}</span>
+                                            <span class="market-breakdown-value">${formatValue(marketData.YTD, kConfig.format)}</span>
                                         </div>
                                         <div class="market-breakdown-bar-bg">
-                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: ${Math.min(Math.abs(diff) * 5, 100)}%"></div>
+                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: 80%"></div>
+                                        </div>
+                                        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                                            vs LY: <span class="${changeClass}">${formatChange(change, kConfig.format)}</span>
                                         </div>
                                     </div>
                                 `;

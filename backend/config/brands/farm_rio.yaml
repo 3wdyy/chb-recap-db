@@ -1,0 +1,94 @@
+# Farm Rio - Shopify export
+# Single location (61201), direct currency from data
+
+brand:
+  name: Farm Rio
+  enabled: true
+  description: Shopify-based fashion brand with single location
+
+input_schema:
+  platform: shopify
+  required_columns:
+    - Fulfillment Status
+    - Fulfilled at
+    - Currency
+    - Name
+    - Shipping Country
+    - Shipping Phone
+    - Total
+    - Taxes
+  optional_columns: []
+
+filename_patterns:
+  - FARM RIO
+  - FARM_RIO
+  - FARMRIO
+
+pipeline:
+  # Step 1: Filter to fulfilled orders
+  - step: filter
+    config:
+      column: Fulfillment Status
+      operator: equals
+      value: fulfilled
+      case_sensitive: false
+
+  # Step 2: Transform to output schema
+  - step: transform
+    config:
+      mappings:
+        Brand:
+          type: static
+          value: Farm Rio
+
+        h_location:
+          type: static
+          value: 61201
+
+        h_bit_date:
+          type: date
+          date:
+            source_column: Fulfilled at
+            input_format: auto
+            output_format: "%Y-%m-%dT%H:%M"
+
+        h_bit_currency:
+          type: direct
+          source_column: Currency
+
+        h_bit_source_generated_id:
+          type: direct
+          source_column: Name
+          transform: to_string
+
+        h_mobile_number:
+          type: phone
+          phone:
+            country_column: Shipping Country
+            phone_column: Shipping Phone
+
+        h_original_bit_amount:
+          type: direct
+          source_column: Total
+          transform: to_numeric
+
+        h_bit_amount:
+          type: formula
+          formula:
+            expression: "{Total} - {Taxes}"
+            coerce_numeric: true
+
+        h_bit_source:
+          type: static
+          value: ECOMM
+
+output_columns:
+  - Brand
+  - h_location
+  - h_bit_date
+  - h_bit_currency
+  - h_bit_source_generated_id
+  - h_mobile_number
+  - h_original_bit_amount
+  - h_bit_amount
+  - h_bit_source

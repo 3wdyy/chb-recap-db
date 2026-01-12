@@ -1,0 +1,101 @@
+# Jacquemus - Salesforce export
+# Location/currency by order prefix (JQAE, JQSA)
+# Pre-calculated tax columns, no filter required
+
+brand:
+  name: Jacquemus
+  enabled: true
+  description: Fashion brand with order prefix-based routing
+
+input_schema:
+  platform: salesforce
+  required_columns:
+    - OrderNo
+    - Date created
+    - Shipping Country
+    - Shipping Phone
+    - Order Total Including VAT
+    - Order Total Excluding VAT
+  optional_columns: []
+
+filename_patterns:
+  - JACQUEMUS
+  - JACQUEMUS_
+
+pipeline:
+  # No filter step - process all rows
+
+  # Step 1: Transform to output schema
+  - step: transform
+    config:
+      mappings:
+        Brand:
+          type: static
+          value: Jacquemus
+
+        h_location:
+          type: lookup
+          lookup:
+            strategy: order_prefix
+            source_column: OrderNo
+            prefix_length: 4
+            mapping:
+              JQAE: 79701
+              JQSA: 79703
+            default: null
+
+        h_bit_date:
+          type: date
+          date:
+            source_column: Date created
+            input_format: "%d.%m.%Y %H:%M"
+            output_format: "%Y-%m-%dT%H:%M"
+
+        h_bit_currency:
+          type: lookup
+          lookup:
+            strategy: order_prefix
+            source_column: OrderNo
+            prefix_length: 4
+            mapping:
+              JQAE: AED
+              JQSA: SAR
+            default: null
+
+        h_bit_source_generated_id:
+          type: direct
+          source_column: OrderNo
+          transform: to_string
+
+        h_mobile_number:
+          type: phone
+          phone:
+            country_column: Shipping Country
+            phone_column: Shipping Phone
+
+        h_original_bit_amount:
+          type: direct
+          source_column: Order Total Including VAT
+          transform: to_numeric
+
+        h_bit_amount:
+          type: tax_exclude
+          tax:
+            strategy: pre_calculated
+            amount_column: Order Total Including VAT
+            pre_tax_column: Order Total Excluding VAT
+
+        h_bit_source:
+          type: static
+          value: ECOMM
+
+output_columns:
+  - Brand
+  - h_location
+  - h_bit_date
+  - h_bit_currency
+  - h_bit_source_generated_id
+  - h_mobile_number
+  - h_original_bit_amount
+  - h_bit_amount
+  - h_bit_source

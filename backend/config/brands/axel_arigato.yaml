@@ -1,0 +1,129 @@
+# Axel Arigato - Custom export with USD amounts
+# Line-item data requiring aggregation
+# Amounts in USD requiring currency conversion
+
+brand:
+  name: Axel Arigato
+  enabled: true
+  description: Custom export with USD amounts requiring conversion and aggregation
+
+input_schema:
+  platform: custom
+  required_columns:
+    - Order ID
+    - Order Date
+    - Country
+    - Contact Number
+    - Gross Revenue (USD)
+  optional_columns: []
+
+filename_patterns:
+  - AXEL ARIGATO
+  - AXEL_ARIGATO
+  - AXELARIGATO
+
+pipeline:
+  # Step 1: Filter to supported countries
+  - step: filter
+    config:
+      column: Country
+      operator: in
+      value: "$ref:global.supported_countries"
+
+  # Step 2: Aggregate line items to order level
+  - step: aggregate
+    config:
+      group_by: Order ID
+      aggregations:
+        order_total_usd:
+          source: Gross Revenue (USD)
+          function: sum
+          coerce_numeric: true
+        order_date:
+          source: Order Date
+          function: first_non_null
+        country:
+          source: Country
+          function: first_non_null
+        contact_number:
+          source: Contact Number
+          function: first_non_null
+
+  # Step 3: Transform to output schema
+  - step: transform
+    config:
+      mappings:
+        Brand:
+          type: static
+          value: Axel Arigato
+
+        h_location:
+          type: lookup
+          lookup:
+            strategy: country_map
+            source_column: country
+            mapping:
+              United Arab Emirates: 99901
+              Saudi Arabia: 99902
+              Kuwait: 99903
+            default: null
+
+        h_bit_date:
+          type: date
+          date:
+            source_column: order_date
+            input_format: auto
+            output_format: "%Y-%m-%dT%H:%M"
+
+        h_bit_currency:
+          type: lookup
+          lookup:
+            strategy: country_map
+            source_column: country
+            mapping:
+              United Arab Emirates: AED
+              Saudi Arabia: SAR
+              Kuwait: KWD
+            default: null
+
+        h_bit_source_generated_id:
+          type: direct
+          source_column: Order ID
+          transform: to_string
+
+        h_mobile_number:
+          type: phone
+          phone:
+            country_column: country
+            phone_column: contact_number
+
+        h_original_bit_amount:
+          type: currency_convert
+          currency:
+            source_column: order_total_usd
+            source_currency: USD
+            target_currency_column: country
+            rates_ref: "$ref:global.conversion_rates"
+
+        h_bit_amount:
+          type: tax_exclude
+          tax:
+            strategy: divide
+            amount_column: h_original_bit_amount
+            divisor_lookup_column: country
+            divisors_ref: "$ref:global.tax_divisors"
+
+        h_bit_source:
+          type: static
+          value: ECOMM
+
+output_columns:
+  - Brand
+  - h_location
+  - h_bit_date
+  - h_bit_currency
+  - h_bit_source_generated_id
+  - h_mobile_number
+  - h_original_bit_amount
+  - h_bit_amount
+  - h_bit_source

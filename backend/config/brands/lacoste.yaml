@@ -1,0 +1,108 @@
+# Lacoste - Custom export with USD amounts
+# Order-level data, requires currency conversion and tax calculation
+
+brand:
+  name: Lacoste
+  enabled: true
+  description: Fashion brand with USD amounts requiring conversion
+
+input_schema:
+  platform: custom
+  required_columns:
+    - Country
+    - Record Date
+    - Order ID
+    - Contact Number
+    - Gross Revenue (USD)
+  optional_columns: []
+
+filename_patterns:
+  - LACOSTE
+  - LACOSTE_
+
+pipeline:
+  # Step 1: Filter to supported countries
+  - step: filter
+    config:
+      column: Country
+      operator: in
+      value: "$ref:global.supported_countries"
+
+  # Step 2: Transform to output schema
+  - step: transform
+    config:
+      mappings:
+        Brand:
+          type: static
+          value: Lacoste
+
+        h_location:
+          type: lookup
+          lookup:
+            strategy: country_map
+            source_column: Country
+            mapping:
+              United Arab Emirates: 52052
+              Saudi Arabia: 52053
+              Kuwait: 52060
+            default: null
+
+        h_bit_date:
+          type: date
+          date:
+            source_column: Record Date
+            input_format: auto
+            output_format: "%Y-%m-%dT%H:%M"
+
+        h_bit_currency:
+          type: lookup
+          lookup:
+            strategy: country_map
+            source_column: Country
+            mapping:
+              United Arab Emirates: AED
+              Saudi Arabia: SAR
+              Kuwait: KWD
+            default: null
+
+        h_bit_source_generated_id:
+          type: direct
+          source_column: Order ID
+          transform: to_string
+
+        h_mobile_number:
+          type: phone
+          phone:
+            country_column: Country
+            phone_column: Contact Number
+
+        h_original_bit_amount:
+          type: currency_convert
+          currency:
+            source_column: Gross Revenue (USD)
+            source_currency: USD
+            target_currency_column: Country
+            rates_ref: "$ref:global.conversion_rates"
+
+        h_bit_amount:
+          type: tax_exclude
+          tax:
+            strategy: divide
+            amount_column: h_original_bit_amount
+            divisor_lookup_column: Country
+            divisors_ref: "$ref:global.tax_divisors"
+
+        h_bit_source:
+          type: static
+          value: ECOMM
+
+output_columns:
+  - Brand
+  - h_location
+  - h_bit_date
+  - h_bit_currency
+  - h_bit_source_generated_id
+  - h_mobile_number
+  - h_original_bit_amount
+  - h_bit_amount
+  - h_bit_source

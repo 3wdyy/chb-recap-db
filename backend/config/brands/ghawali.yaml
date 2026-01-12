@@ -1,0 +1,101 @@
+# Ghawali - Shopify-based perfume brand
+# Location determined by currency (AED/SAR)
+
+brand:
+  name: Ghawali
+  enabled: true
+  description: Shopify-based perfume brand with UAE and Saudi operations
+
+input_schema:
+  platform: shopify
+  required_columns:
+    - Fulfillment Status
+    - Fulfilled at
+    - Currency
+    - Name
+    - Shipping Country
+    - Shipping Phone
+    - Subtotal
+    - Taxes
+  optional_columns:
+    - Discount Code
+    - Notes
+
+filename_patterns:
+  - GHAWALI
+  - GHAWALI_
+
+pipeline:
+  # Step 1: Filter to fulfilled orders only
+  - step: filter
+    config:
+      column: Fulfillment Status
+      operator: equals
+      value: fulfilled
+      case_sensitive: false
+
+  # Step 2: Transform to output schema
+  - step: transform
+    config:
+      mappings:
+        Brand:
+          type: static
+          value: Ghawali
+
+        h_location:
+          type: lookup
+          lookup:
+            strategy: currency_map
+            source_column: Currency
+            mapping:
+              AED: 13010
+              SAR: 13009
+            default: null
+
+        h_bit_date:
+          type: date
+          date:
+            source_column: Fulfilled at
+            input_format: auto
+            output_format: "%Y-%m-%dT%H:%M"
+
+        h_bit_currency:
+          type: direct
+          source_column: Currency
+
+        h_bit_source_generated_id:
+          type: direct
+          source_column: Name
+          transform: to_string
+
+        h_mobile_number:
+          type: phone
+          phone:
+            country_column: Shipping Country
+            phone_column: Shipping Phone
+
+        h_original_bit_amount:
+          type: direct
+          source_column: Subtotal
+          transform: to_numeric
+
+        h_bit_amount:
+          type: formula
+          formula:
+            expression: "{Subtotal} - {Taxes}"
+            coerce_numeric: true
+
+        h_bit_source:
+          type: static
+          value: ECOMM
+
+output_columns:
+  - Brand
+  - h_location
+  - h_bit_date
+  - h_bit_currency
+  - h_bit_source_generated_id
+  - h_mobile_number
+  - h_original_bit_amount
+  - h_bit_amount
+  - h_bit_source

@@ -1,0 +1,147 @@
+# Tumi - Salesforce Commerce Cloud
+# Line-item data requiring aggregation to order level
+# Location/currency determined by order prefix (TUAE, TUSA, TUKW)
+
+brand:
+  name: Tumi
+  enabled: true
+  description: Salesforce Commerce Cloud with line-item data requiring aggregation
+
+input_schema:
+  platform: salesforce
+  required_columns:
+    - OrderNo
+    - Date created
+    - Total
+    - Tax
+    - Shipping Country
+    - Shipping Phone
+  optional_columns:
+    - Payment Status
+    - Confirmation Status
+    - Export Status
+
+filename_patterns:
+  - TUMI
+  - TUMI_
+
+pipeline:
+  # Step 1: Filter by payment/confirmation/export status (optional columns)
+  - step: filter
+    config:
+      mode: all_of
+      conditions:
+        - column: Payment Status
+          operator: equals
+          value: PAID
+          case_sensitive: false
+          skip_if_column_missing: true
+        - column: Confirmation Status
+          operator: equals
+          value: CONFIRMED
+          case_sensitive: false
+          skip_if_column_missing: true
+        - column: Export Status
+          operator: equals
+          value: EXPORTED
+          case_sensitive: false
+          skip_if_column_missing: true
+
+  # Step 2: Aggregate line items to order level
+  - step: aggregate
+    config:
+      group_by: OrderNo
+      aggregations:
+        order_total:
+          source: Total
+          function: max
+          coerce_numeric: true
+        order_tax:
+          source: Tax
+          function: sum
+          coerce_numeric: true
+        date_created:
+          source: Date created
+          function: first_non_null
+        ship_country:
+          source: Shipping Country
+          function: first_non_null
+        ship_phone:
+          source: Shipping Phone
+          function: first_non_null
+
+  # Step 3: Transform to output schema
+  - step: transform
+    config:
+      mappings:
+        Brand:
+          type: static
+          value: Tumi
+
+        h_location:
+          type: lookup
+          lookup:
+            strategy: order_prefix
+            source_column: OrderNo
+            prefix_length: 4
+            mapping:
+              TUAE: 32028
+              TUSA: 32029
+              TUKW: 32030
+            default: null
+
+        h_bit_date:
+          type: date
+          date:
+            source_column: date_created
+            input_format: "%d.%m.%Y %H:%M"
+            output_format: "%Y-%m-%dT%H:%M"
+
+        h_bit_currency:
+          type: lookup
+          lookup:
+            strategy: order_prefix
+            source_column: OrderNo
+            prefix_length: 4
+            mapping:
+              TUAE: AED
+              TUSA: SAR
+              TUKW: KWD
+            default: null
+
+        h_bit_source_generated_id:
+          type: direct
+          source_column: OrderNo
+          transform: to_string
+
+        h_mobile_number:
+          type: phone
+          phone:
+            country_column: ship_country
+            phone_column: ship_phone
+
+        h_original_bit_amount:
+          type: direct
+          source_column: order_total
+          transform: to_numeric
+
+        h_bit_amount:
+          type: formula
+          formula:
+            expression: "{order_total} - COALESCE({order_tax}, 0)"
+            coerce_numeric: true
+
+        h_bit_source:
+          type: static
+          value: ECOMM
+
+output_columns:
+  - Brand
+  - h_location
+  - h_bit_date
+  - h_bit_currency
+  - h_bit_source_generated_id
+  - h_mobile_number
+  - h_original_bit_amount
+  - h_bit_amount
+  - h_bit_source

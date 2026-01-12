@@ -1151,20 +1151,21 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 20px;
+            padding: 12px 16px;
             background: linear-gradient(135deg, var(--light-bg) 0%, rgba(219, 234, 254, 0.5) 100%);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid rgba(219, 234, 254, 0.5);
+            gap: 16px;
         }
 
         .kpi-hero-target-info {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
         }
 
         .kpi-hero-target-label {
-            font-size: var(--font-caption);
+            font-size: var(--font-label);
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -1172,16 +1173,17 @@
         }
 
         .kpi-hero-target-detail {
-            font-size: var(--font-body-sm);
+            font-size: var(--font-caption);
             color: var(--navy);
             font-weight: 600;
         }
 
         .kpi-hero-target-badge {
-            font-size: var(--font-value-md);
+            font-size: var(--font-body-lg);
             font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 8px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
         }
 
         .kpi-hero-target-badge.up {

@@ -755,6 +755,14 @@
             margin-bottom: 20px;
         }
 
+        .breakdown-single-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--navy);
+            text-align: center;
+            padding: 30px 0;
+        }
+
         .market-breakdown-list {
             display: flex;
             flex-direction: column;
@@ -1562,6 +1570,14 @@
             margin-right: 2px;
         }
 
+        .segment-metric-share {
+            font-size: 11px;
+            color: var(--steel-blue);
+            font-weight: 500;
+            min-width: 32px;
+            text-align: right;
+        }
+
         /* Target Scorecard Styles */
         .scorecard-grid {
             display: grid;
@@ -1869,8 +1885,8 @@
             mcData: null,
             museFileName: null,
             mcFileName: null,
-            selectedMarket: 'All',
-            selectedChannel: 'All',
+            selectedMarket: null,  // null = use aggregate
+            selectedChannel: null, // null = use aggregate
             selectedKPI: null,
             activeTab: 'summary',
             dataLoaded: false
@@ -1949,10 +1965,12 @@
             if (state.mode === 'MC') {
                 // Always filter by BU='MC' (the aggregate)
                 filtered = filtered.filter(d => d.BU === 'MC');
-                if (state.selectedMarket !== 'All') {
+                // Filter by market if a specific market is selected (not null/aggregate)
+                if (state.selectedMarket && !isAggregateValue(state.selectedMarket, 'market')) {
                     filtered = filtered.filter(d => d.Market === state.selectedMarket);
                 }
-                if (state.selectedChannel !== 'All') {
+                // Filter by channel if a specific channel is selected (not null/aggregate)
+                if (state.selectedChannel && !isAggregateValue(state.selectedChannel, 'channel')) {
                     filtered = filtered.filter(d => d.Channel === state.selectedChannel);
                 }
             }
@@ -2571,11 +2589,24 @@
         // Channel Analysis Tab
         function renderChannelTab() {
             const kpis = getKPIs();
+            const markets = getMarkets();
+            const channels = getChannels();
             const defaultKPI = kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0];
 
             return `
-                ${renderMCFilters()}
-                <div class="filter-row">
+                <div class="filter-row" style="margin-bottom: 24px;">
+                    <div class="filter-group">
+                        <label>Market</label>
+                        <select class="filter-select" id="marketFilter">
+                            ${markets.map(m => `<option value="${m}" ${m === state.selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Channel</label>
+                        <select class="filter-select" id="channelFilter">
+                            ${channels.map(c => `<option value="${c}" ${c === state.selectedChannel ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
+                    </div>
                     <div class="filter-group">
                         <label>KPI Metric</label>
                         ${renderKPIDropdown(kpis, defaultKPI, 'channelKpiSelect')}
@@ -2590,14 +2621,15 @@
         // Customer Segmentation Tab - New vs Returning analysis
         function renderSegmentationTab() {
             // KPI groups with Total/New/Returning variants
+            // hasShare: true for additive KPIs where New + Returning = Total
             const kpiGroups = [
-                { base: 'CUSTOMER COUNT', new: 'NEW CUSTOMER COUNT', returning: 'RETURNING CUSTOMER COUNT', label: 'Customers' },
-                { base: 'TRANSACTION COUNT', new: 'NEW CUSTOMERS TRANSACTION COUNT', returning: 'RETURNING CUSTOMERS TRANSACTION COUNT', label: 'Transactions' },
-                { base: 'KNOWN SALES', new: 'NEW CUSTOMERS KNOWN SALES', returning: 'RETURNING CUSTOMERS KNOWN SALES', label: 'Known Sales' },
-                { base: 'AOV', new: 'NEW CUSTOMERS AOV', returning: 'RETURNING CUSTOMERS AOV', label: 'Avg Order Value' },
-                { base: 'ACV', new: 'NEW CUSTOMERS ACV', returning: 'RETURNING CUSTOMERS ACV', label: 'Avg Customer Value' },
-                { base: 'AVERAGE FREQUENCY', new: 'NEW CUSTOMERS AVERAGE FREQUENCY', returning: 'RETURNING CUSTOMERS AVERAGE FREQUENCY', label: 'Frequency' },
-                { base: 'UPT', new: 'NEW CUSTOMERS UPT', returning: 'RETURNING CUSTOMERS UPT', label: 'Units Per Transaction' }
+                { base: 'CUSTOMER COUNT', new: 'NEW CUSTOMER COUNT', returning: 'RETURNING CUSTOMER COUNT', label: 'Customers', hasShare: true },
+                { base: 'TRANSACTION COUNT', new: 'NEW CUSTOMERS TRANSACTION COUNT', returning: 'RETURNING CUSTOMERS TRANSACTION COUNT', label: 'Transactions', hasShare: true },
+                { base: 'KNOWN SALES', new: 'NEW CUSTOMERS KNOWN SALES', returning: 'RETURNING CUSTOMERS KNOWN SALES', label: 'Known Sales', hasShare: true },
+                { base: 'AOV', new: 'NEW CUSTOMERS AOV', returning: 'RETURNING CUSTOMERS AOV', label: 'Avg Order Value', hasShare: false },
+                { base: 'ACV', new: 'NEW CUSTOMERS ACV', returning: 'RETURNING CUSTOMERS ACV', label: 'Avg Customer Value', hasShare: false },
+                { base: 'AVERAGE FREQUENCY', new: 'NEW CUSTOMERS AVERAGE FREQUENCY', returning: 'RETURNING CUSTOMERS AVERAGE FREQUENCY', label: 'Frequency', hasShare: false },
+                { base: 'UPT', new: 'NEW CUSTOMERS UPT', returning: 'RETURNING CUSTOMERS UPT', label: 'Units Per Transaction', hasShare: false }
             ];
 
             const marketAgg = getAggregateValue('market');
@@ -2619,12 +2651,30 @@
                 return { data, change, targetGap, format: kpiConfig.format };
             }
 
+            // Get total data for share calculation
+            function getTotalValue(baseKpiKey) {
+                const data = getLatestData(selectedMarket, baseKpiKey, selectedChannel);
+                return data?.YTD || 0;
+            }
+
             function renderSegmentCard(title, type, getKpiKey) {
+                const showShare = type !== 'total'; // Only show share for New and Returning
+
                 const metrics = kpiGroups.map(g => {
                     const kpiKey = getKpiKey(g);
                     const segData = getSegmentData(kpiKey);
                     if (!segData) return null;
-                    return { label: g.label, ...segData };
+
+                    // Calculate share for applicable KPIs
+                    let share = null;
+                    if (showShare && g.hasShare) {
+                        const totalValue = getTotalValue(g.base);
+                        if (totalValue > 0) {
+                            share = (segData.data.YTD / totalValue) * 100;
+                        }
+                    }
+
+                    return { label: g.label, hasShare: g.hasShare, share, ...segData };
                 }).filter(Boolean);
 
                 if (metrics.length === 0) return '';
@@ -2637,6 +2687,9 @@
                                 <span class="segment-metric-name">${m.label}</span>
                                 <span class="segment-metric-values">
                                     <span class="segment-metric-value">${formatValue(m.data.YTD, m.format)}</span>
+                                    ${showShare ? `
+                                        <span class="segment-metric-share">${m.share !== null ? m.share.toFixed(0) + '%' : ''}</span>
+                                    ` : ''}
                                     <span class="segment-metric-change">
                                         <span class="segment-change-label">vs LY</span>
                                         <span class="${getChangeClass(m.change, m.format)}">${formatChange(m.change, m.format)}</span>
@@ -3086,13 +3139,30 @@
         function renderMarketsTab() {
             const kpis = getKPIs();
             const config = getKPIConfig();
+            const markets = getMarkets();
+            const channels = getChannels();
             const defaultKPI = state.mode === 'MC'
                 ? (kpis.includes('TOTAL OWN BRAND SALES') ? 'TOTAL OWN BRAND SALES' : kpis[0])
                 : (kpis.includes('SLS_TTL') ? 'SLS_TTL' : kpis[0]);
 
+            const mcFilters = state.mode === 'MC' ? `
+                <div class="filter-group">
+                    <label>Market</label>
+                    <select class="filter-select" id="marketFilter">
+                        ${markets.map(m => `<option value="${m}" ${m === state.selectedMarket ? 'selected' : ''}>${m}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Channel</label>
+                    <select class="filter-select" id="channelFilter">
+                        ${channels.map(c => `<option value="${c}" ${c === state.selectedChannel ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
+                </div>
+            ` : '';
+
             return `
-                ${state.mode === 'MC' ? renderMCFilters() : ''}
-                <div class="filter-row">
+                <div class="filter-row" style="margin-bottom: 24px;">
+                    ${mcFilters}
                     <div class="filter-group">
                         <label>KPI Metric</label>
                         ${renderKPIDropdown(kpis, defaultKPI, 'marketKpiSelect')}
@@ -3269,6 +3339,62 @@
             `;
         }
 
+        // Render breakdown card for market or channel
+        function renderBreakdownCard(dimension, selectedValue, kpiKey, config, otherDimValue, totalValue) {
+            const isAggregate = isAggregateValue(selectedValue, dimension);
+            const items = dimension === 'market' ? getMarkets() : getChannels();
+            const channelAgg = getAggregateValue('channel');
+            const marketAgg = getAggregateValue('market');
+
+            if (isAggregate) {
+                // Show breakdown by dimension
+                const breakdown = items
+                    .filter(item => !isAggregateValue(item, dimension))
+                    .map(item => {
+                        const data = dimension === 'market'
+                            ? getLatestData(item, kpiKey, otherDimValue || channelAgg)
+                            : getLatestData(otherDimValue || marketAgg, kpiKey, item);
+                        return { name: item, value: data?.YTD || 0 };
+                    })
+                    .sort((a, b) => b.value - a.value);
+
+                const maxValue = breakdown[0]?.value || 1;
+                const title = dimension === 'market' ? 'By Market' : 'By Channel';
+
+                return `
+                    <div class="market-breakdown-card">
+                        <div class="market-breakdown-title">${title}</div>
+                        <div class="market-breakdown-list">
+                            ${breakdown.map((item, i) => {
+                                const share = totalValue > 0 ? ((item.value / totalValue) * 100).toFixed(0) : 0;
+                                const barWidth = (item.value / maxValue) * 100;
+                                return `
+                                    <div class="market-breakdown-item">
+                                        <div class="market-breakdown-header">
+                                            <span class="market-breakdown-name">${item.name}</span>
+                                            <span class="market-breakdown-value">${formatValue(item.value, config.format)} (${share}%)</span>
+                                        </div>
+                                        <div class="market-breakdown-bar-bg">
+                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: ${barWidth}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Single selection - just show the name as a simple card
+                const label = dimension === 'market' ? 'Market' : 'Channel';
+                return `
+                    <div class="market-breakdown-card">
+                        <div class="market-breakdown-title">${label}</div>
+                        <div class="breakdown-single-value">${selectedValue}</div>
+                    </div>
+                `;
+            }
+        }
+
         function renderKPIDetail(market, kpiKey, channel = null) {
             const config = getKPIConfig()[kpiKey];
             const monthlyData = getMonthlyData(market, kpiKey, channel);
@@ -3427,54 +3553,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="market-breakdown-card">
-                        ${isAllMarkets ? `
-                        <div class="market-breakdown-title">By Market</div>
-                        <div class="market-breakdown-list">
-                            ${marketBreakdown.map((m, i) => {
-                                const share = ((m.value / totalValue) * 100).toFixed(0);
-                                const barWidth = (m.value / maxMarketValue) * 100;
-                                return `
-                                    <div class="market-breakdown-item">
-                                        <div class="market-breakdown-header">
-                                            <span class="market-breakdown-name">${m.market}</span>
-                                            <span class="market-breakdown-value">${formatValue(m.value, config.format)} (${share}%)</span>
-                                        </div>
-                                        <div class="market-breakdown-bar-bg">
-                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: ${barWidth}%"></div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        ` : `
-                        <div class="market-breakdown-title">${market}</div>
-                        <div class="market-breakdown-list">
-                            ${(state.mode === 'MC' ? ['TOTAL OWN BRAND SALES', 'CUSTOMER COUNT', 'AOV', 'AVERAGE FREQUENCY'] : ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM']).map((k, i) => {
-                                const kConfig = getKPIConfig()[k];
-                                if (!kConfig) return '';
-                                const marketData = getLatestData(market, k, channel);
-                                if (!marketData) return '';
-                                const change = calcChange(marketData.YTD, marketData.LYTD, kConfig.format);
-                                const changeClass = getChangeClass(change, kConfig.format);
-                                return `
-                                    <div class="market-breakdown-item">
-                                        <div class="market-breakdown-header">
-                                            <span class="market-breakdown-name">${kConfig.name}</span>
-                                            <span class="market-breakdown-value">${formatValue(marketData.YTD, kConfig.format)}</span>
-                                        </div>
-                                        <div class="market-breakdown-bar-bg">
-                                            <div class="market-breakdown-bar bar-${i + 1}" style="width: 80%"></div>
-                                        </div>
-                                        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-                                            vs LY: <span class="${changeClass}">${formatChange(change, kConfig.format)}</span>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        `}
-                    </div>
+                    ${renderBreakdownCard('market', market, kpiKey, config, channel, totalValue)}
+                    ${state.mode === 'MC' ? renderBreakdownCard('channel', channel, kpiKey, config, market, totalValue) : ''}
                 </div>
 
                 <div class="chart-with-badges">
@@ -3516,8 +3596,8 @@
                 btn.onclick = () => {
                     state.mode = btn.dataset.mode;
                     state.activeTab = 'summary'; // Reset to summary when switching modes
-                    state.selectedMarket = 'All';
-                    state.selectedChannel = 'All';
+                    state.selectedMarket = null;
+                    state.selectedChannel = null;
                     state.selectedKPI = null;
                     render();
                 };
@@ -3591,7 +3671,7 @@
                 marketFilter.onchange = () => {
                     state.selectedMarket = marketFilter.value;
                     // Reset dependent filter
-                    state.selectedChannel = 'All';
+                    state.selectedChannel = null;
                     render();
                 };
             }
@@ -3732,8 +3812,8 @@
 
                         if (state.museData || state.mcData) {
                             state.dataLoaded = true;
-                            state.selectedMarket = 'All';
-                            state.selectedChannel = 'All';
+                            state.selectedMarket = null;
+                            state.selectedChannel = null;
                             render();
                         } else {
                             alert('Could not find MUSE or MC sheets in the workbook.');
@@ -3756,8 +3836,8 @@
                             state.museData = data;
                         }
                         state.dataLoaded = true;
-                        state.selectedMarket = 'All';
-                        state.selectedChannel = 'All';
+                        state.selectedMarket = null;
+                        state.selectedChannel = null;
                         render();
                     } else {
                         alert('Could not parse CSV. Please check the format.');

@@ -8,7 +8,7 @@ import { Settings } from './pages/Settings';
 
 function App() {
   return (
-    <BrowserRouter basename="/chb">
+    <BrowserRouter basename="/chb-ecom-process">
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />

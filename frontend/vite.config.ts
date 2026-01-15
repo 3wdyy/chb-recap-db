@@ -4,7 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/chb/',  // GitHub Pages subdirectory
+  base: '/chb-ecom-process/',  // GitHub Pages subdirectory
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

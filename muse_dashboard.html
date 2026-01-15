@@ -346,66 +346,6 @@
             margin: 0 4px;
         }
 
-        /* Insights Panel */
-        .insights-panel {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 28px;
-            border: 1px solid var(--light-steel);
-            border-left: 4px solid var(--steel-blue);
-            margin-bottom: 40px;
-        }
-
-        .insights-title {
-            font-size: var(--font-h3);
-            font-weight: 600;
-            color: var(--navy);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .insights-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        .insight-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: var(--light-bg);
-            border-radius: 8px;
-        }
-
-        .insight-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: var(--font-h3);
-            flex-shrink: 0;
-        }
-
-        .insight-icon.green { background: rgba(46, 125, 90, 0.15); }
-        .insight-icon.amber { background: rgba(245, 158, 11, 0.15); }
-        .insight-icon.blue { background: rgba(143, 175, 212, 0.3); }
-
-        .insight-text {
-            font-size: var(--font-body);
-            color: var(--text-dark);
-            line-height: 1.5;
-        }
-
-        .insight-text strong {
-            color: var(--navy);
-        }
-
         /* Filters */
         .filter-row {
             display: flex;
@@ -1290,58 +1230,6 @@
             return rows.sort((a, b) => (a.Month || '').localeCompare(b.Month || ''));
         }
 
-        // Generate insights
-        function generateInsights() {
-            const insights = [];
-            const market = getAggregateValue('market');
-
-            const sales = getLatestData(market, 'SLS_TTL');
-            if (sales) {
-                const change = calcChange(sales.YTD, sales.LYTD, 'currency');
-                if (change > 0) {
-                    insights.push({
-                        icon: '', color: 'green',
-                        text: `<strong>Revenue grew ${change.toFixed(1)}%</strong> YoY to ${formatValue(sales.YTD, 'currency')}, demonstrating strong commercial performance`
-                    });
-                }
-            }
-
-            const aov = getLatestData(market, 'AVG_AOV');
-            if (aov) {
-                const change = calcChange(aov.YTD, aov.LYTD, 'currency');
-                if (change > 0) {
-                    insights.push({
-                        icon: '', color: 'green',
-                        text: `<strong>Average basket size increased ${change.toFixed(1)}%</strong> to ${formatValue(aov.YTD, 'currency_small')}, indicating higher customer value per visit`
-                    });
-                }
-            }
-
-            const members = getLatestData(market, 'MBR_TTL');
-            if (members) {
-                const change = calcChange(members.YTD, members.LYTD, 'number');
-                if (change > 0) {
-                    insights.push({
-                        icon: '', color: 'green',
-                        text: `<strong>Member base expanded ${change.toFixed(1)}%</strong> to ${formatValue(members.YTD, 'number')}, showing continued program growth`
-                    });
-                }
-            }
-
-            const nba = getLatestData(market, 'PCT_NBA');
-            if (nba) {
-                const change = calcChange(nba.YTD, nba.LYTD, 'percent');
-                if (change < 0) {
-                    insights.push({
-                        icon: '', color: 'amber',
-                        text: `<strong>Brand discovery opportunity:</strong> New Brand Adopters at ${formatValue(nba.YTD, 'percent')} (${formatChange(change, 'percent')} vs LY)`
-                    });
-                }
-            }
-
-            return insights.slice(0, 4);
-        }
-
         // Icons
         const METRIC_ICONS = {
             'SLS_TTL': '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
@@ -1426,7 +1314,6 @@
         function renderSummaryTab() {
             const market = getAggregateValue('market');
             const allKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF', 'SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
-            const insights = generateInsights();
 
             return `
                 <div class="section-header">
@@ -1438,20 +1325,6 @@
                 <div class="exec-summary">
                     ${allKPIs.map(key => renderMetricCard(market, key)).join('')}
                 </div>
-
-                ${insights.length > 0 ? `
-                <div class="insights-panel">
-                    <div class="insights-title">Key Insights</div>
-                    <div class="insights-grid">
-                        ${insights.map(i => `
-                            <div class="insight-item">
-                                <div class="insight-icon ${i.color}">${i.icon}</div>
-                                <div class="insight-text">${i.text}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                ` : ''}
 
                 ${renderMarketSummaryTable()}
             `;

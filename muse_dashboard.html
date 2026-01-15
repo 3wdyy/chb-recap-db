@@ -136,6 +136,13 @@
             padding: 24px;
             border: 1px solid var(--light-steel);
             border-left: 4px solid var(--navy);
+            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(27, 54, 93, 0.15);
         }
 
         .metric-card.positive { border-left-color: var(--positive); }
@@ -462,10 +469,43 @@
             to { transform: rotate(360deg); }
         }
 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .loading-text {
             color: var(--text-muted);
             font-size: var(--font-body);
         }
+
+        .main {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .exec-summary .metric-card {
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .exec-summary .metric-card:nth-child(1) { animation-delay: 0.05s; }
+        .exec-summary .metric-card:nth-child(2) { animation-delay: 0.1s; }
+        .exec-summary .metric-card:nth-child(3) { animation-delay: 0.15s; }
+        .exec-summary .metric-card:nth-child(4) { animation-delay: 0.2s; }
+        .exec-summary .metric-card:nth-child(5) { animation-delay: 0.25s; }
+        .exec-summary .metric-card:nth-child(6) { animation-delay: 0.3s; }
+        .exec-summary .metric-card:nth-child(7) { animation-delay: 0.35s; }
+        .exec-summary .metric-card:nth-child(8) { animation-delay: 0.4s; }
 
         /* Chart Container */
         .chart-container {
@@ -474,6 +514,12 @@
             padding: 28px;
             border: 1px solid var(--light-steel);
             margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(27, 54, 93, 0.06);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .chart-container:hover {
+            box-shadow: 0 4px 20px rgba(27, 54, 93, 0.12);
         }
 
         .chart-header {
@@ -528,6 +574,12 @@
             border: 1px solid var(--light-steel);
             border-left: 5px solid var(--navy);
             margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(27, 54, 93, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .kpi-hero-card:hover {
+            box-shadow: 0 8px 32px rgba(27, 54, 93, 0.15);
         }
 
         .kpi-hero-card.up { border-left-color: var(--positive); }
@@ -637,6 +689,12 @@
             border-radius: 12px;
             padding: 24px;
             border: 1px solid var(--light-steel);
+            box-shadow: 0 2px 12px rgba(27, 54, 93, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .market-breakdown-card:hover {
+            box-shadow: 0 6px 20px rgba(27, 54, 93, 0.12);
         }
 
         .market-breakdown-title {
@@ -772,6 +830,13 @@
             border-radius: 8px;
             text-align: center;
             border: none;
+            transition: all 0.2s ease;
+        }
+
+        .trend-badge:hover {
+            background: var(--white);
+            box-shadow: 0 2px 8px rgba(27, 54, 93, 0.12);
+            transform: scale(1.02);
         }
 
         .trend-badge-month {
@@ -840,6 +905,14 @@
 
         .modern-table tr:last-child td {
             border-bottom: none;
+        }
+
+        .modern-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .modern-table tbody tr:hover td {
+            background: rgba(143, 175, 212, 0.08);
         }
 
         .modern-table .market-cell {

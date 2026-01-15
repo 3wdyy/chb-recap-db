@@ -8,7 +8,7 @@ import { Settings } from './pages/Settings';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/chb">
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />

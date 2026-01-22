@@ -1339,6 +1339,52 @@
             line-height: 1;
         }
 
+        .variance-arrow.arrow-up {
+            color: var(--positive);
+        }
+
+        .variance-arrow.arrow-down {
+            color: var(--negative);
+        }
+
+        .variance-arrow.arrow-neutral {
+            color: var(--neutral);
+        }
+
+        /* Order/Rank Column */
+        .scorecard-table thead th.order-header {
+            width: 50px;
+            min-width: 50px;
+            text-align: center;
+            border-right: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .scorecard-table thead tr.header-columns th.order-col {
+            width: 50px;
+            min-width: 50px;
+            text-align: center;
+            border-right: 2px solid var(--light-steel);
+        }
+
+        .scorecard-table tbody td.order-cell {
+            width: 50px;
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: var(--font-body-sm);
+            background: rgba(248, 250, 252, 0.5);
+            border-right: 1px solid rgba(184, 212, 232, 0.5);
+        }
+
+        /* Tolerance Text */
+        .scorecard-tolerance {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
         .variance-context {
             font-size: var(--font-micro);
             color: var(--text-muted);
@@ -2432,7 +2478,7 @@
                     <div class="filter-group">
                         <label>Period</label>
                         <select class="filter-select" id="scorecardMonthSelect">
-                            ${months.map(m => `<option value="${m}" ${m === defaultMonth ? 'selected' : ''}>${getMonthDisplayName(m)} (YTD)</option>`).join('')}
+                            ${months.map(m => `<option value="${m}" ${m === defaultMonth ? 'selected' : ''}>${getMonthDisplayName(m)}</option>`).join('')}
                         </select>
                     </div>
                 </div>
@@ -2448,8 +2494,8 @@
             const availableKPIs = getKPIs();
             const kpis = kpiOrder.filter(k => availableKPIs.includes(k));
 
-            // Get data for each KPI
-            let rows = kpis.map(kpiKey => {
+            // Get data for each KPI with original order
+            let rows = kpis.map((kpiKey, index) => {
                 const config = KPI_CONFIG[kpiKey];
                 if (!config) return null;
 
@@ -2471,6 +2517,7 @@
                     key: kpiKey,
                     name: config.name,
                     format: config.format,
+                    order: index + 1, // Original order (1-based)
                     ytd: dataRow.YTD,
                     target: dataRow.Target,
                     lytd: dataRow.LYTD,
@@ -2535,12 +2582,12 @@
                 }
             }
 
-            // Helper: Get trend arrow
+            // Helper: Get trend arrow with color class
             function getTrendArrow(variance) {
-                if (variance === null) return '';
-                if (variance > 0.5) return '↑';
-                if (variance < -0.5) return '↓';
-                return '→';
+                if (variance === null) return { arrow: '', colorClass: '' };
+                if (variance > 0.5) return { arrow: '↑', colorClass: 'arrow-up' };
+                if (variance < -0.5) return { arrow: '↓', colorClass: 'arrow-down' };
+                return { arrow: '→', colorClass: 'arrow-neutral' };
             }
 
             // Helper: Format variance cell with all enhancements
@@ -2554,7 +2601,7 @@
                 }
 
                 const intensityClass = getVarianceIntensity(variance, format);
-                const arrow = getTrendArrow(variance);
+                const { arrow, colorClass } = getTrendArrow(variance);
                 const formattedVariance = formatChange(variance, format);
                 const contextDisplay = contextValue !== null ? formatValue(contextValue, format) : '';
 
@@ -2564,7 +2611,7 @@
                     data-tooltip-variance="${formattedVariance}">
                     <div class="variance-content">
                         <span class="variance-main">
-                            <span class="variance-arrow">${arrow}</span>
+                            <span class="variance-arrow ${colorClass}">${arrow}</span>
                             ${formattedVariance}
                         </span>
                         ${contextDisplay ? `<span class="variance-context">${contextLabel}: ${contextDisplay}</span>` : ''}
@@ -2583,7 +2630,7 @@
                 }
 
                 const intensityClass = getVarianceIntensity(row.vsTarget, row.format);
-                const arrow = getTrendArrow(row.vsTarget);
+                const { arrow, colorClass } = getTrendArrow(row.vsTarget);
                 const formattedVariance = formatChange(row.vsTarget, row.format);
                 const formattedTarget = formatValue(row.target, row.format);
 
@@ -2608,13 +2655,13 @@
                     data-tooltip-actual="${formatValue(row.ytd, row.format)}">
                     <div class="target-content">
                         <span class="target-variance">
-                            <span class="variance-arrow">${arrow}</span>
+                            <span class="variance-arrow ${colorClass}">${arrow}</span>
                             ${formattedVariance}
                         </span>
                         <div class="target-bar-container">
                             <div class="target-bar ${barClass}" style="width: ${progressPct}%"></div>
                         </div>
-                        <span class="target-context">Tgt: ${formattedTarget}</span>
+                        <span class="target-context">TGT: ${formattedTarget}</span>
                     </div>
                 </td>`;
             }
@@ -2646,10 +2693,12 @@
                                 <span>Below Target</span>
                             </div>
                         </div>
+                        <div class="scorecard-tolerance">Near Target: within 5% for value metrics, within 0.5 PP for percentage metrics</div>
                     </div>
                     <table class="scorecard-table">
                         <thead>
                             <tr class="header-group">
+                                <th class="order-header sortable-col ${getSortClass('order')}" rowspan="2" data-sort="order"># <span class="sort-indicator"></span></th>
                                 <th class="kpi-header" rowspan="2">KPI</th>
                                 <th class="group-ytd" colspan="3">YTD Performance</th>
                                 <th class="group-r12m" colspan="3">Rolling 12 Months</th>
@@ -2662,32 +2711,33 @@
                                     vs Target <span class="sort-indicator"></span>
                                 </th>
                                 <th class="ytd-section ytd-section-last sortable-col ${getSortClass('vsLYTD')}" data-sort="vsLYTD">
-                                    vs LY <span class="sort-indicator"></span>
+                                    vs LY YTD <span class="sort-indicator"></span>
                                 </th>
                                 <th class="r12m-section sortable-col ${getSortClass('r12m')}" data-sort="r12m">
                                     Value <span class="sort-indicator"></span>
                                 </th>
                                 <th class="r12m-section sortable-col ${getSortClass('vsLMR12M')}" data-sort="vsLMR12M">
-                                    vs Prior Mo <span class="sort-indicator"></span>
+                                    vs LM R12M <span class="sort-indicator"></span>
                                 </th>
                                 <th class="r12m-section sortable-col ${getSortClass('vsLYR12M')}" data-sort="vsLYR12M">
-                                    vs LY <span class="sort-indicator"></span>
+                                    vs LY R12M <span class="sort-indicator"></span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             ${rows.map(row => `
                                 <tr data-kpi="${row.key}" class="scorecard-row ${getRowStatus(row.vsTarget)}">
+                                    <td class="order-cell">${row.order}</td>
                                     <td class="kpi-name-cell">${row.name}</td>
                                     <td class="value-cell">
                                         <span class="value-main">${formatValue(row.ytd, row.format)}</span>
                                     </td>
                                     ${formatTargetCell(row)}
-                                    ${formatEnhancedVarianceCell(row.vsLYTD, row.format, 'LY', row.lytd, 'section-divider')}
+                                    ${formatEnhancedVarianceCell(row.vsLYTD, row.format, 'LY YTD', row.lytd, 'section-divider')}
                                     <td class="value-cell r12m-section">
                                         <span class="value-main">${formatValue(row.r12m, row.format)}</span>
                                     </td>
-                                    ${formatEnhancedVarianceCell(row.vsLMR12M, row.format, 'Prior Mo', row.lmr12m, 'r12m-section')}
+                                    ${formatEnhancedVarianceCell(row.vsLMR12M, row.format, 'LM R12M', row.lmr12m, 'r12m-section')}
                                     ${formatEnhancedVarianceCell(row.vsLYR12M, row.format, 'LY R12M', row.lytd, 'r12m-section')}
                                 </tr>
                             `).join('')}

@@ -433,6 +433,34 @@
 
         .dropzone:hover { border-color: var(--navy); background: var(--light-bg); }
         .dropzone-text { color: var(--text-muted); }
+
+        .sample-data-section {
+            text-align: center;
+        }
+
+        .sample-data-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--navy), #2a4a6a);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sample-data-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(28, 53, 80, 0.3);
+        }
+
+        .sample-data-btn svg {
+            flex-shrink: 0;
+        }
         .dropzone-text span { color: var(--navy); font-weight: 600; }
 
         .btn-primary {
@@ -1970,6 +1998,158 @@
             color: var(--navy);
         }
 
+        /* Market Tiles Row - 3 tiles side by side */
+        .market-tiles-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            .market-tiles-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .market-tile {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--light-steel);
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .market-tile-header {
+            margin-bottom: 20px;
+        }
+
+        .market-tile-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .market-tile-subtitle {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+        }
+
+        .market-tile-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .market-tile-empty {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: var(--font-h2);
+            font-weight: 300;
+        }
+
+        .market-tile-item {
+            display: grid;
+            grid-template-columns: 120px 1fr 70px;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(184, 212, 232, 0.2);
+        }
+
+        .market-tile-item:last-child {
+            border-bottom: none;
+        }
+
+        .market-tile-market {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: var(--font-body-sm);
+        }
+
+        .market-tile-bar-container {
+            height: 24px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .market-tile-value {
+            font-weight: 600;
+            font-size: var(--font-body-sm);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .market-tile-value.positive { color: var(--positive); }
+        .market-tile-value.negative { color: var(--negative); }
+        .market-tile-value.neutral { color: var(--text-muted); }
+
+        /* Diverging bar for growth comparison - centered at 0 */
+        .growth-diverging-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: rgba(184, 212, 232, 0.12);
+            border-radius: 4px;
+        }
+
+        .growth-diverging-center {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--navy);
+            opacity: 0.3;
+            z-index: 2;
+        }
+
+        .growth-diverging-bar {
+            position: absolute;
+            height: 18px;
+            top: 3px;
+            border-radius: 3px;
+            transition: all 0.4s ease;
+        }
+
+        .growth-diverging-bar.positive {
+            left: 50%;
+            background: linear-gradient(90deg, var(--positive), var(--positive-soft));
+        }
+
+        .growth-diverging-bar.negative {
+            right: 50%;
+            background: linear-gradient(270deg, var(--negative), var(--negative-soft));
+        }
+
+        /* Share bar */
+        .share-bar-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: rgba(184, 212, 232, 0.12);
+            border-radius: 4px;
+        }
+
+        .share-bar {
+            position: absolute;
+            left: 0;
+            height: 18px;
+            top: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-soft, #5a9fd4));
+            border-radius: 3px;
+            transition: all 0.4s ease;
+        }
+
         /* Target Attainment Section */
         .target-attainment-card {
             background: var(--white);
@@ -2528,42 +2708,75 @@
 
         // MUSE KPI configurations
         const KPI_CONFIG = {
+            // Sales & Revenue
             'SLS_TTL': { name: 'Total Sales', format: 'currency', good: 'up', hasShare: true },
             'SLS_PEN': { name: 'Sales Penetration', format: 'percent', good: 'up', hasShare: false },
+            'GCV': { name: 'Gift Card Value', format: 'currency', good: 'up', hasShare: true },
+
+            // Members
             'MBR_TTL': { name: 'Transacting Members', format: 'number', good: 'up', hasShare: true },
             'MBR_NEW': { name: 'New Members', format: 'number', good: 'up', hasShare: true },
             'MBR_RTN': { name: 'Returning Members', format: 'number', good: 'up', hasShare: true },
+            'JVA': { name: 'JV Acquisition', format: 'number', good: 'up', hasShare: true },
+            'MSP': { name: 'MUSE Prospects', format: 'number', good: 'up', hasShare: true },
+
+            // Averages & Ratios
             'AVG_ATF': { name: 'Avg Frequency', format: 'decimal', good: 'up', hasShare: false },
             'AVG_AOV': { name: 'Avg Order Value', format: 'currency_small', good: 'up', hasShare: false },
+            'AVG_BRD': { name: 'Avg Brands Shopped', format: 'decimal', good: 'up', hasShare: false },
+            'BTE': { name: 'Burn to Earn Ratio', format: 'decimal', good: 'up', hasShare: false },
+
+            // Percentages & Engagement
             'PCT_RDM': { name: 'Redeeming Members %', format: 'percent', good: 'up', loyalty: true, hasShare: false },
             'PCT_XBP': { name: 'Cross Brand Plus %', format: 'percent', good: 'up', loyalty: true, hasShare: false },
             'PCT_NBA': { name: 'New Brand Adopters %', format: 'percent', good: 'up', loyalty: true, hasShare: false },
-            'AVG_BRD': { name: 'Avg Brands Shopped', format: 'decimal', good: 'up', hasShare: false },
-            'PTS_BRN': { name: 'Points Burned Value', format: 'currency', good: 'up', hasShare: true }
+            'ENG': { name: 'Engaged Members %', format: 'percent', good: 'up', hasShare: false },
+
+            // Points & Redemptions
+            'PTS_BRN': { name: 'Points Burned Value', format: 'currency', good: 'up', hasShare: true },
+            'TUB': { name: 'TUB Delivered', format: 'number', good: 'up', hasShare: true },
+            'EXP': { name: 'Experience Redemptions', format: 'number', good: 'up', hasShare: true }
         };
 
         // Map human-readable KPI names to internal keys
         const KPI_NAME_MAP = {
+            // Sales & Revenue
             'Total Sales': 'SLS_TTL',
             'Sales Penetration': 'SLS_PEN',
+            'Gift Card Value': 'GCV',
+
+            // Members
             'Transacting Members': 'MBR_TTL',
             'New Members': 'MBR_NEW',
             'Returning Members': 'MBR_RTN',
+            'JV Acquisition': 'JVA',
+            'MUSE Prospects': 'MSP',
+
+            // Averages & Ratios
             'Avg Frequency': 'AVG_ATF',
             'Average Frequency': 'AVG_ATF',
             'Avg Order Value': 'AVG_AOV',
             'Average Order Value': 'AVG_AOV',
             'AOV': 'AVG_AOV',
+            'Avg Brands Shopped': 'AVG_BRD',
+            'Average Brands Shopped': 'AVG_BRD',
+            'Burn to Earn Ratio': 'BTE',
+
+            // Percentages & Engagement
             'Redeeming Members %': 'PCT_RDM',
             'Redeeming Members': 'PCT_RDM',
             'Cross Brand Plus %': 'PCT_XBP',
             'Cross Brand Plus': 'PCT_XBP',
             'New Brand Adopters %': 'PCT_NBA',
             'New Brand Adopters': 'PCT_NBA',
-            'Avg Brands Shopped': 'AVG_BRD',
-            'Average Brands Shopped': 'AVG_BRD',
+            'Engaged Members %': 'ENG',
+            'Engaged Members': 'ENG',
+
+            // Points & Redemptions
             'Points Burned Value': 'PTS_BRN',
-            'Points Burned': 'PTS_BRN'
+            'Points Burned': 'PTS_BRN',
+            'TUB Delivered': 'TUB',
+            'Experience Redemptions': 'EXP'
         };
 
         // Preferred market order
@@ -2581,7 +2794,8 @@
             'muse_data.csv',
             'data.csv',
             'muse.csv',
-            'kpi_data.csv'
+            'kpi_data.csv',
+            'sample_data.csv'
         ];
 
         let state = {
@@ -2806,6 +3020,17 @@
                             <p class="dropzone-text"><span>Click to browse</span> or drag and drop</p>
                             <p class="dropzone-text" style="font-size: 12px; margin-top: 8px;">Supports .csv files</p>
                         </div>
+                        <div class="sample-data-section">
+                            <p style="margin: 20px 0 10px; color: var(--text-muted); font-size: 13px;">Don't have data yet?</p>
+                            <button class="sample-data-btn" id="loadSampleBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Load Sample Data
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2840,7 +3065,8 @@
 
         function renderSummaryTab() {
             const market = getAggregateValue('market');
-            const allKPIs = ['SLS_TTL', 'MBR_TTL', 'AVG_AOV', 'AVG_ATF', 'SLS_PEN', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
+            // Use all available KPIs from the data
+            const allKPIs = getKPIs();
 
             return `
                 <div class="section-header">
@@ -2852,8 +3078,6 @@
                 <div class="exec-summary">
                     ${allKPIs.map(key => renderMetricCard(market, key)).join('')}
                 </div>
-
-                ${renderMarketRankingsWidget()}
             `;
         }
 
@@ -3012,19 +3236,14 @@
 
             return `
                 <div class="market-comparison-layout">
-                    <!-- Quick Stats Row -->
-                    ${renderQuickStats(kpiKey, month)}
-
-                    <!-- Main Comparison Bars -->
-                    ${renderComparisonBars(kpiKey, month, mode)}
-
-                    <!-- Two Column Layout: Target Attainment + Performance Trajectory -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                        ${renderTargetAttainment(kpiKey, month)}
-                        ${renderPerformanceTrajectory(kpiKey)}
+                    <!-- Three Tiles Row: Target Attainment | Growth Comparison | Share -->
+                    <div class="market-tiles-row">
+                        ${renderTargetAttainmentTile(kpiKey, month)}
+                        ${renderGrowthComparisonTile(kpiKey, month)}
+                        ${renderShareTile(kpiKey, month)}
                     </div>
 
-                    <!-- Multi-KPI Matrix -->
+                    <!-- Multi-KPI Matrix - All KPIs -->
                     ${renderKPIMatrix(month)}
                 </div>
             `;
@@ -3089,6 +3308,206 @@
                             <div class="quick-stat-value">${gapFormatted}</div>
                             <div class="quick-stat-detail">Between ${leader?.market || '—'} and ${laggard?.market || '—'}</div>
                         </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // === Three Market Tiles ===
+
+        // Tile 1: Target Attainment
+        function renderTargetAttainmentTile(kpiKey, month) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+
+            // Get market data with target attainment
+            const marketData = markets.map(m => {
+                const data = getDataForMonth(m, kpiKey, month);
+                if (!data || !data.Target) return null;
+
+                const attainment = (data.YTD / data.Target) * 100;
+                let status, statusClass;
+                if (attainment >= 100) {
+                    status = 'On Track';
+                    statusClass = 'achieved';
+                } else if (attainment >= 90) {
+                    status = 'Near';
+                    statusClass = 'near';
+                } else {
+                    status = 'Behind';
+                    statusClass = 'behind';
+                }
+
+                return {
+                    market: m,
+                    attainment,
+                    status,
+                    statusClass
+                };
+            }).filter(d => d).sort((a, b) => b.attainment - a.attainment);
+
+            // If no targets, show empty tile
+            if (marketData.length === 0) {
+                return `
+                    <div class="market-tile">
+                        <div class="market-tile-header">
+                            <div class="market-tile-title">Target Attainment</div>
+                            <div class="market-tile-subtitle">${config.name}</div>
+                        </div>
+                        <div class="market-tile-empty">—</div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="market-tile">
+                    <div class="market-tile-header">
+                        <div class="market-tile-title">Target Attainment</div>
+                        <div class="market-tile-subtitle">${config.name} — % of Target</div>
+                    </div>
+                    <div class="market-tile-content">
+                        ${marketData.map(item => {
+                            const barWidth = Math.min(item.attainment, 100);
+                            return `
+                                <div class="market-tile-item">
+                                    <div class="market-tile-market">${item.market}</div>
+                                    <div class="market-tile-bar-container">
+                                        <div class="target-attainment-bar ${item.statusClass}" style="width: ${barWidth}%; position: absolute; left: 0; height: 18px; top: 3px; border-radius: 3px;"></div>
+                                    </div>
+                                    <div class="market-tile-value ${item.statusClass === 'achieved' ? 'positive' : item.statusClass === 'behind' ? 'negative' : 'neutral'}">${item.attainment.toFixed(0)}%</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tile 2: Growth Comparison (Diverging bars centered at 0)
+        function renderGrowthComparisonTile(kpiKey, month) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+
+            const marketData = markets.map(m => {
+                const data = getDataForMonth(m, kpiKey, month);
+                if (!data) return null;
+                const change = calcChange(data.YTD, data.LYTD, config.format);
+                return {
+                    market: m,
+                    change,
+                    changeClass: getChangeClass(change, config.format)
+                };
+            }).filter(d => d).sort((a, b) => (b.change || 0) - (a.change || 0));
+
+            if (marketData.length === 0) {
+                return `
+                    <div class="market-tile">
+                        <div class="market-tile-header">
+                            <div class="market-tile-title">Growth Comparison</div>
+                            <div class="market-tile-subtitle">${config.name}</div>
+                        </div>
+                        <div class="market-tile-empty">—</div>
+                    </div>
+                `;
+            }
+
+            const maxAbsChange = Math.max(...marketData.map(d => Math.abs(d.change || 0)), 1);
+
+            return `
+                <div class="market-tile">
+                    <div class="market-tile-header">
+                        <div class="market-tile-title">Growth Comparison</div>
+                        <div class="market-tile-subtitle">${config.name} — vs Last Year</div>
+                    </div>
+                    <div class="market-tile-content">
+                        ${marketData.map(item => {
+                            const isPositive = item.change >= 0;
+                            const barWidth = Math.min((Math.abs(item.change || 0) / maxAbsChange) * 45, 45);
+                            return `
+                                <div class="market-tile-item">
+                                    <div class="market-tile-market">${item.market}</div>
+                                    <div class="market-tile-bar-container">
+                                        <div class="growth-diverging-track"></div>
+                                        <div class="growth-diverging-center"></div>
+                                        <div class="growth-diverging-bar ${isPositive ? 'positive' : 'negative'}" style="width: ${barWidth}%"></div>
+                                    </div>
+                                    <div class="market-tile-value ${item.changeClass}">${formatChange(item.change, config.format)}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tile 3: Share Visualization
+        function renderShareTile(kpiKey, month) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+
+            // Only show if KPI has share
+            if (!config.hasShare) {
+                return `
+                    <div class="market-tile">
+                        <div class="market-tile-header">
+                            <div class="market-tile-title">Market Share</div>
+                            <div class="market-tile-subtitle">${config.name}</div>
+                        </div>
+                        <div class="market-tile-empty">—</div>
+                    </div>
+                `;
+            }
+
+            // Get total from aggregate market
+            const totalMarketName = getAggregateValue('market');
+            const totalData = getDataForMonth(totalMarketName, kpiKey, month);
+            const totalValue = totalData?.YTD || 0;
+
+            if (totalValue === 0) {
+                return `
+                    <div class="market-tile">
+                        <div class="market-tile-header">
+                            <div class="market-tile-title">Market Share</div>
+                            <div class="market-tile-subtitle">${config.name}</div>
+                        </div>
+                        <div class="market-tile-empty">—</div>
+                    </div>
+                `;
+            }
+
+            const marketData = markets.map(m => {
+                const data = getDataForMonth(m, kpiKey, month);
+                if (!data) return null;
+                const share = (data.YTD / totalValue) * 100;
+                return {
+                    market: m,
+                    value: data.YTD,
+                    share
+                };
+            }).filter(d => d).sort((a, b) => b.share - a.share);
+
+            const maxShare = Math.max(...marketData.map(d => d.share), 1);
+
+            return `
+                <div class="market-tile">
+                    <div class="market-tile-header">
+                        <div class="market-tile-title">Market Share</div>
+                        <div class="market-tile-subtitle">${config.name} — % of Total</div>
+                    </div>
+                    <div class="market-tile-content">
+                        ${marketData.map(item => {
+                            const barWidth = (item.share / maxShare) * 100;
+                            return `
+                                <div class="market-tile-item">
+                                    <div class="market-tile-market">${item.market}</div>
+                                    <div class="market-tile-bar-container">
+                                        <div class="share-bar-track"></div>
+                                        <div class="share-bar" style="width: ${barWidth}%"></div>
+                                    </div>
+                                    <div class="market-tile-value">${item.share.toFixed(1)}%</div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 </div>
             `;
@@ -3423,7 +3842,8 @@
 
         function renderKPIMatrix(month) {
             const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
-            const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM', 'AVG_AOV'];
+            // Use ALL available KPIs from the data
+            const allKPIs = getKPIs();
 
             // Build a header row with legend
             return `
@@ -3449,7 +3869,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${keyKPIs.map(kpiKey => {
+                            ${allKPIs.map(kpiKey => {
                                 const config = KPI_CONFIG[kpiKey];
                                 if (!config) return '';
 
@@ -3817,10 +4237,24 @@
         }
 
         function renderScorecardTable(market, month) {
-            // Get all KPIs in the desired order
-            const kpiOrder = ['SLS_TTL', 'SLS_PEN', 'MBR_TTL', 'MBR_NEW', 'MBR_RTN', 'AVG_ATF', 'AVG_AOV', 'PCT_RDM', 'PCT_XBP', 'PCT_NBA', 'AVG_BRD', 'PTS_BRN'];
+            // Get all KPIs in the desired order (expanded list)
+            const kpiOrder = [
+                // Sales & Revenue
+                'SLS_TTL', 'SLS_PEN', 'GCV',
+                // Members
+                'MBR_TTL', 'MBR_NEW', 'MBR_RTN', 'JVA', 'MSP',
+                // Averages & Ratios
+                'AVG_ATF', 'AVG_AOV', 'AVG_BRD', 'BTE',
+                // Percentages & Engagement
+                'PCT_RDM', 'PCT_XBP', 'PCT_NBA', 'ENG',
+                // Points & Redemptions
+                'PTS_BRN', 'TUB', 'EXP'
+            ];
             const availableKPIs = getKPIs();
-            const kpis = kpiOrder.filter(k => availableKPIs.includes(k));
+            // Include KPIs in order, then any additional KPIs not in the order list
+            const orderedKPIs = kpiOrder.filter(k => availableKPIs.includes(k));
+            const extraKPIs = availableKPIs.filter(k => !kpiOrder.includes(k));
+            const kpis = [...orderedKPIs, ...extraKPIs];
 
             // Get data for each KPI with original order
             let rows = kpis.map((kpiKey, index) => {
@@ -4106,6 +4540,12 @@
                 fileInput.onchange = e => { if (e.target.files[0]) loadFile(e.target.files[0]); };
             }
 
+            // Load sample data button
+            const loadSampleBtn = document.getElementById('loadSampleBtn');
+            if (loadSampleBtn) {
+                loadSampleBtn.onclick = () => loadSampleData();
+            }
+
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.onclick = () => {
                     state.activeTab = tab.dataset.tab;
@@ -4379,6 +4819,32 @@
                 }
             };
             reader.readAsText(file);
+        }
+
+        // Load sample data from sample_data.csv
+        async function loadSampleData() {
+            try {
+                const response = await fetch('sample_data.csv');
+                if (response.ok) {
+                    const text = await response.text();
+                    const data = parseCSV(text);
+                    if (data.length > 0) {
+                        state.data = data;
+                        state.dataLoaded = true;
+                        state.loading = false;
+                        state.activeTab = 'summary';
+                        console.log('Loaded sample data successfully');
+                        render();
+                    } else {
+                        alert('Could not parse sample data.');
+                    }
+                } else {
+                    alert('Sample data file not found. Please ensure sample_data.csv is in the same directory.');
+                }
+            } catch (err) {
+                console.error('Error loading sample data:', err);
+                alert('Error loading sample data: ' + err.message);
+            }
         }
 
         // Auto-detect CSV files

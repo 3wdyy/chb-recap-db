@@ -1097,6 +1097,13 @@
             color: var(--text-muted);
         }
 
+        .scorecard-header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
         .scorecard-legend {
             display: flex;
             gap: 20px;
@@ -1120,6 +1127,13 @@
         .scorecard-legend-dot.positive { background: rgba(46, 125, 90, 0.2); border: 2px solid var(--positive); }
         .scorecard-legend-dot.negative { background: rgba(196, 49, 75, 0.2); border: 2px solid var(--negative); }
         .scorecard-legend-dot.neutral { background: rgba(184, 134, 11, 0.2); border: 2px solid var(--neutral); }
+
+        .scorecard-tolerance {
+            font-size: var(--font-micro);
+            color: var(--text-muted);
+            font-style: italic;
+            text-align: right;
+        }
 
         /* Table Base */
         .scorecard-table {
@@ -1227,31 +1241,6 @@
         .scorecard-table tbody tr {
             transition: all 0.2s ease;
             cursor: pointer;
-            position: relative;
-        }
-
-        /* Row Status Indicator (left border) */
-        .scorecard-table tbody tr::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--light-steel);
-            transition: background 0.2s ease;
-        }
-
-        .scorecard-table tbody tr.status-positive::before {
-            background: var(--positive);
-        }
-
-        .scorecard-table tbody tr.status-warning::before {
-            background: var(--neutral);
-        }
-
-        .scorecard-table tbody tr.status-negative::before {
-            background: var(--negative);
         }
 
         .scorecard-table tbody tr:hover {
@@ -1274,6 +1263,42 @@
 
         .scorecard-table tbody tr:last-child td {
             border-bottom: none;
+        }
+
+        /* Order Cell with Status Indicator */
+        .scorecard-table tbody td.order-cell {
+            position: relative;
+            width: 50px;
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: var(--font-body-sm);
+            background: rgba(248, 250, 252, 0.5);
+            border-right: 1px solid rgba(184, 212, 232, 0.5);
+        }
+
+        .scorecard-table tbody td.order-cell::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--light-steel);
+            transition: background 0.2s ease;
+        }
+
+        .scorecard-table tbody tr.status-positive td.order-cell::before {
+            background: var(--positive);
+        }
+
+        .scorecard-table tbody tr.status-warning td.order-cell::before {
+            background: var(--neutral);
+        }
+
+        .scorecard-table tbody tr.status-negative td.order-cell::before {
+            background: var(--negative);
         }
 
         /* KPI Name Cell */
@@ -1357,32 +1382,6 @@
             min-width: 50px;
             text-align: center;
             border-right: 2px solid rgba(255,255,255,0.3);
-        }
-
-        .scorecard-table thead tr.header-columns th.order-col {
-            width: 50px;
-            min-width: 50px;
-            text-align: center;
-            border-right: 2px solid var(--light-steel);
-        }
-
-        .scorecard-table tbody td.order-cell {
-            width: 50px;
-            min-width: 50px;
-            text-align: center;
-            font-weight: 600;
-            color: var(--text-muted);
-            font-size: var(--font-body-sm);
-            background: rgba(248, 250, 252, 0.5);
-            border-right: 1px solid rgba(184, 212, 232, 0.5);
-        }
-
-        /* Tolerance Text */
-        .scorecard-tolerance {
-            font-size: var(--font-caption);
-            color: var(--text-muted);
-            margin-top: 8px;
-            font-style: italic;
         }
 
         .variance-context {
@@ -2679,21 +2678,23 @@
                             <div class="scorecard-title">KPI Performance Summary</div>
                             <div class="scorecard-subtitle">${market} • ${getMonthDisplayName(month)} ${CURRENT_YEAR} YTD</div>
                         </div>
-                        <div class="scorecard-legend">
-                            <div class="scorecard-legend-item">
-                                <div class="scorecard-legend-dot positive"></div>
-                                <span>On/Above Target</span>
+                        <div class="scorecard-header-right">
+                            <div class="scorecard-legend">
+                                <div class="scorecard-legend-item">
+                                    <div class="scorecard-legend-dot positive"></div>
+                                    <span>On/Above Target</span>
+                                </div>
+                                <div class="scorecard-legend-item">
+                                    <div class="scorecard-legend-dot neutral"></div>
+                                    <span>Near Target</span>
+                                </div>
+                                <div class="scorecard-legend-item">
+                                    <div class="scorecard-legend-dot negative"></div>
+                                    <span>Below Target</span>
+                                </div>
                             </div>
-                            <div class="scorecard-legend-item">
-                                <div class="scorecard-legend-dot neutral"></div>
-                                <span>Near Target</span>
-                            </div>
-                            <div class="scorecard-legend-item">
-                                <div class="scorecard-legend-dot negative"></div>
-                                <span>Below Target</span>
-                            </div>
+                            <div class="scorecard-tolerance">Near Target: 0% to -5% (or 0 to -5 PP for percentage KPIs)</div>
                         </div>
-                        <div class="scorecard-tolerance">Near Target: within 5% for value metrics, within 0.5 PP for percentage metrics</div>
                     </div>
                     <table class="scorecard-table">
                         <thead>

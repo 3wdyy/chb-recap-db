@@ -1673,6 +1673,7 @@
             data: null,
             selectedMarket: null,
             selectedKPI: null,
+            selectedKPIMonth: null,
             activeTab: 'summary',
             dataLoaded: false,
             loading: true,
@@ -1905,15 +1906,15 @@
                 </header>
                 <nav class="nav-tabs">
                     <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
+                    <div class="nav-tab ${state.activeTab === 'scorecard' ? 'active' : ''}" data-tab="scorecard">Scorecard</div>
                     <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
                     <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
-                    <div class="nav-tab ${state.activeTab === 'scorecard' ? 'active' : ''}" data-tab="scorecard">Scorecard</div>
                 </nav>
                 <main class="main">
                     ${state.activeTab === 'summary' ? renderSummaryTab() : ''}
+                    ${state.activeTab === 'scorecard' ? renderScorecardTab() : ''}
                     ${state.activeTab === 'markets' ? renderMarketsTab() : ''}
                     ${state.activeTab === 'kpi' ? renderKPITab() : ''}
-                    ${state.activeTab === 'scorecard' ? renderScorecardTab() : ''}
                 </main>
             `;
         }
@@ -2187,11 +2188,14 @@
         function renderKPITab() {
             const kpis = getKPIs();
             const markets = getMarkets();
+            const months = getAvailableMonths();
             const defaultKPI = kpis.includes('SLS_TTL') ? 'SLS_TTL' : kpis[0];
             const defaultMarket = getAggregateValue('market');
+            const defaultMonth = months[months.length - 1]; // Latest month by default
 
             const selectedKPI = state.selectedKPI || defaultKPI;
             const selectedMarket = state.selectedMarket || defaultMarket;
+            const selectedMonth = state.selectedKPIMonth || defaultMonth;
 
             return `
                 <div class="section-header">
@@ -2213,14 +2217,20 @@
                             ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
                         </select>
                     </div>
+                    <div class="filter-group">
+                        <label>Month (Hero Card)</label>
+                        <select class="filter-select" id="kpiMonthSelect">
+                            ${months.map(m => `<option value="${m}" ${m === selectedMonth ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
                 </div>
                 <div id="kpiDetailContent">
-                    ${renderKPIDetail(selectedMarket, selectedKPI)}
+                    ${renderKPIDetail(selectedMarket, selectedKPI, selectedMonth)}
                 </div>
             `;
         }
 
-        function renderKPIDetail(market, kpiKey) {
+        function renderKPIDetail(market, kpiKey, selectedMonth = null) {
             const config = KPI_CONFIG[kpiKey];
             const monthlyData = getMonthlyData(market, kpiKey);
             const latestData = getLatestData(market, kpiKey);
@@ -2229,9 +2239,14 @@
                 return '<p>No data available for selection</p>';
             }
 
-            const ytdVsLytd = calcChange(latestData?.YTD, latestData?.LYTD, config.format);
-            const r12mVsLr12m = calcChange(latestData?.R12M, latestData?.LMR12M, config.format);
-            const ytdVsTarget = latestData?.Target ? calcTargetGap(latestData.YTD, latestData.Target, config.format) : null;
+            // Get hero card data for the selected month (or latest if not specified)
+            const months = getAvailableMonths();
+            const heroMonth = selectedMonth || months[months.length - 1];
+            const heroData = monthlyData.find(d => d.Month === heroMonth) || latestData;
+
+            const ytdVsLytd = calcChange(heroData?.YTD, heroData?.LYTD, config.format);
+            const r12mVsLr12m = calcChange(heroData?.R12M, heroData?.LMR12M, config.format);
+            const ytdVsTarget = heroData?.Target ? calcTargetGap(heroData.YTD, heroData.Target, config.format) : null;
 
             const chartData = MONTHS.map(month => {
                 const row = monthlyData.find(d => MONTH_MAP[d.Month] === month);
@@ -2341,15 +2356,15 @@
             return `
                 <div class="kpi-hero-row">
                     <div class="kpi-hero-card">
-                        <div class="kpi-hero-label">${config.name} — 2025${!isAllMarkets ? ` (${market})` : ''}</div>
+                        <div class="kpi-hero-label">${config.name} — YTD thru ${heroMonth} 2025${!isAllMarkets ? ` (${market})` : ''}</div>
                         <div class="kpi-hero-content">
                             <div class="kpi-hero-main">
-                                <div class="kpi-hero-value">${formatValue(latestData?.YTD, config.format)}</div>
+                                <div class="kpi-hero-value">${formatValue(heroData?.YTD, config.format)}</div>
                                 ${ytdVsTarget !== null ? `
                                 <div class="kpi-hero-target">
                                     <div class="kpi-hero-target-info">
                                         <span class="kpi-hero-target-label">vs Target</span>
-                                        <span class="kpi-hero-target-detail">Target: ${formatValue(latestData?.Target, config.format)}</span>
+                                        <span class="kpi-hero-target-detail">Target: ${formatValue(heroData?.Target, config.format)}</span>
                                     </div>
                                     <span class="kpi-hero-target-badge ${getChangeClass(ytdVsTarget, config.format)}">${formatChange(ytdVsTarget, config.format)}</span>
                                 </div>
@@ -2359,7 +2374,7 @@
                                 <div class="kpi-secondary-item">
                                     <div class="kpi-secondary-info">
                                         <span class="kpi-secondary-label">vs LY</span>
-                                        <span class="kpi-secondary-detail">2024: ${formatValue(latestData?.LYTD, config.format)}</span>
+                                        <span class="kpi-secondary-detail">2024: ${formatValue(heroData?.LYTD, config.format)}</span>
                                     </div>
                                     <span class="kpi-secondary-value ${getChangeClass(ytdVsLytd, config.format)}">${formatChange(ytdVsLytd, config.format)}</span>
                                 </div>
@@ -2367,7 +2382,7 @@
                                 <div class="kpi-secondary-item">
                                     <div class="kpi-secondary-info">
                                         <span class="kpi-secondary-label">R12M Momentum</span>
-                                        <span class="kpi-secondary-detail">R12M: ${formatValue(latestData?.R12M, config.format)} vs LMR12M: ${formatValue(latestData?.LMR12M, config.format)}</span>
+                                        <span class="kpi-secondary-detail">R12M: ${formatValue(heroData?.R12M, config.format)} vs LMR12M: ${formatValue(heroData?.LMR12M, config.format)}</span>
                                     </div>
                                     <span class="kpi-secondary-value ${getChangeClass(r12mVsLr12m, config.format)}">${formatChange(r12mVsLr12m, config.format)}</span>
                                 </div>
@@ -2793,16 +2808,18 @@
 
             const kpiMarketSelect = document.getElementById('kpiMarketSelect');
             const kpiSelect = document.getElementById('kpiSelect');
+            const kpiMonthSelect = document.getElementById('kpiMonthSelect');
 
             const defaultKPI = 'SLS_TTL';
             const defaultMarket = getAggregateValue('market');
+            const defaultMonth = getAvailableMonths()[getAvailableMonths().length - 1];
 
             if (kpiMarketSelect) {
                 kpiMarketSelect.onchange = () => {
                     state.selectedMarket = kpiMarketSelect.value;
                     const content = document.getElementById('kpiDetailContent');
                     if (content) {
-                        content.innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || defaultKPI);
+                        content.innerHTML = renderKPIDetail(state.selectedMarket, state.selectedKPI || defaultKPI, state.selectedKPIMonth || defaultMonth);
                         attachChartTooltips();
                     }
                 };
@@ -2813,7 +2830,18 @@
                     state.selectedKPI = kpiSelect.value;
                     const content = document.getElementById('kpiDetailContent');
                     if (content) {
-                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI);
+                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI, state.selectedKPIMonth || defaultMonth);
+                        attachChartTooltips();
+                    }
+                };
+            }
+
+            if (kpiMonthSelect) {
+                kpiMonthSelect.onchange = () => {
+                    state.selectedKPIMonth = kpiMonthSelect.value;
+                    const content = document.getElementById('kpiDetailContent');
+                    if (content) {
+                        content.innerHTML = renderKPIDetail(state.selectedMarket || defaultMarket, state.selectedKPI || defaultKPI, state.selectedKPIMonth);
                         attachChartTooltips();
                     }
                 };
@@ -2864,6 +2892,7 @@
                     if (kpiKey) {
                         state.selectedKPI = kpiKey;
                         state.selectedMarket = state.scorecardMarket || getAggregateValue('market');
+                        state.selectedKPIMonth = state.scorecardMonth || getAvailableMonths()[getAvailableMonths().length - 1];
                         state.activeTab = 'kpi';
                         render();
                     }
@@ -2911,19 +2940,13 @@
 
                     if (!title) return;
 
-                    let html = `<div class="scorecard-tooltip-title">${title}</div>`;
+                    // Show comparison value name with its value at the top in bold
+                    let html = `<div class="scorecard-tooltip-title">${title}: ${value || '—'}</div>`;
 
                     if (actual) {
                         html += `<div class="scorecard-tooltip-row">
                             <span class="scorecard-tooltip-label">Actual:</span>
                             <span class="scorecard-tooltip-value">${actual}</span>
-                        </div>`;
-                    }
-
-                    if (value) {
-                        html += `<div class="scorecard-tooltip-row">
-                            <span class="scorecard-tooltip-label">${title}:</span>
-                            <span class="scorecard-tooltip-value">${value}</span>
                         </div>`;
                     }
 

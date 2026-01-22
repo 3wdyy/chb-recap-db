@@ -1584,6 +1584,699 @@
                 display: none;
             }
         }
+
+        /* ============================================
+           MARKET COMPARISON STYLES
+           ============================================ */
+
+        /* Market Rankings Widget (Summary Tab) */
+        .market-rankings-widget {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--light-steel);
+        }
+
+        .market-rankings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .market-rankings-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .market-rankings-subtitle {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .market-rankings-link {
+            font-size: var(--font-body-sm);
+            color: var(--navy);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+
+        .market-rankings-link:hover {
+            opacity: 0.7;
+        }
+
+        .market-rank-item {
+            display: grid;
+            grid-template-columns: 32px 140px 1fr 100px 70px;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(184, 212, 232, 0.3);
+        }
+
+        .market-rank-item:last-child {
+            border-bottom: none;
+        }
+
+        .market-rank-position {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--font-body-sm);
+        }
+
+        .market-rank-position.rank-1 {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+        }
+
+        .market-rank-position.rank-2 {
+            background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+            color: white;
+        }
+
+        .market-rank-position.rank-3 {
+            background: linear-gradient(135deg, #CD7F32, #B87333);
+            color: white;
+        }
+
+        .market-rank-position.rank-other {
+            background: var(--light-bg);
+            color: var(--text-muted);
+        }
+
+        .market-rank-name {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: var(--font-body);
+        }
+
+        .market-rank-bar-container {
+            height: 24px;
+            background: rgba(184, 212, 232, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .market-rank-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .market-rank-bar.positive {
+            background: linear-gradient(90deg, var(--positive), var(--positive-soft));
+        }
+
+        .market-rank-bar.negative {
+            background: linear-gradient(90deg, var(--negative), var(--negative-soft));
+        }
+
+        .market-rank-bar.neutral {
+            background: linear-gradient(90deg, var(--navy), var(--steel-blue));
+        }
+
+        .market-rank-value {
+            font-weight: 700;
+            color: var(--navy);
+            font-size: var(--font-body);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .market-rank-change {
+            font-weight: 600;
+            font-size: var(--font-body-sm);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .market-rank-change.up { color: var(--positive); }
+        .market-rank-change.down { color: var(--negative); }
+        .market-rank-change.neutral { color: var(--neutral); }
+
+        /* Market Comparison Page Layout */
+        .market-comparison-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .market-comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .market-comparison-filters {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Comparison Bars Section */
+        .comparison-bars-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--light-steel);
+        }
+
+        .comparison-bars-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .comparison-bars-title {
+            font-size: var(--font-h2);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .comparison-bars-toggles {
+            display: flex;
+            gap: 4px;
+            background: var(--light-bg);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .comparison-toggle {
+            padding: 8px 16px;
+            font-size: var(--font-body-sm);
+            font-weight: 500;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .comparison-toggle.active {
+            background: var(--white);
+            color: var(--navy);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .comparison-toggle:hover:not(.active) {
+            color: var(--navy);
+        }
+
+        .comparison-bar-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 110px 80px;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(184, 212, 232, 0.25);
+        }
+
+        .comparison-bar-row:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-bar-market {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: var(--font-body);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comparison-bar-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--light-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-caption);
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .comparison-bar-rank.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: white; }
+        .comparison-bar-rank.rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: white; }
+        .comparison-bar-rank.rank-3 { background: linear-gradient(135deg, #CD7F32, #B87333); color: white; }
+
+        .comparison-bar-track {
+            height: 32px;
+            background: rgba(184, 212, 232, 0.15);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            min-width: 60px;
+        }
+
+        .comparison-bar-fill.positive {
+            background: linear-gradient(90deg, rgba(46, 125, 90, 0.85), rgba(61, 153, 112, 0.85));
+        }
+
+        .comparison-bar-fill.negative {
+            background: linear-gradient(90deg, rgba(196, 49, 75, 0.85), rgba(211, 93, 110, 0.85));
+        }
+
+        .comparison-bar-fill.neutral {
+            background: linear-gradient(90deg, rgba(27, 54, 93, 0.85), rgba(143, 175, 212, 0.85));
+        }
+
+        .comparison-bar-fill-label {
+            color: white;
+            font-size: var(--font-caption);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .comparison-bar-value {
+            font-weight: 700;
+            color: var(--navy);
+            font-size: var(--font-value-sm);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .comparison-bar-change {
+            font-weight: 600;
+            font-size: var(--font-body);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .comparison-bar-change.up { color: var(--positive); }
+        .comparison-bar-change.down { color: var(--negative); }
+        .comparison-bar-change.neutral { color: var(--neutral); }
+
+        .comparison-bar-axis {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0 0 160px;
+            margin-right: 210px;
+            border-top: 1px solid var(--light-steel);
+            margin-top: 8px;
+        }
+
+        .comparison-bar-axis-label {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Gap Analysis Section */
+        .gap-analysis-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--light-steel);
+        }
+
+        .gap-analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .gap-analysis-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .gap-analysis-benchmark {
+            font-size: var(--font-body-sm);
+            color: var(--text-muted);
+        }
+
+        .gap-analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .gap-analysis-item {
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .gap-analysis-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(27, 54, 93, 0.1);
+        }
+
+        .gap-analysis-market {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: var(--font-body);
+            margin-bottom: 12px;
+        }
+
+        .gap-analysis-value {
+            font-size: var(--font-value-lg);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .gap-analysis-value.above { color: var(--positive); }
+        .gap-analysis-value.below { color: var(--negative); }
+        .gap-analysis-value.at { color: var(--neutral); }
+
+        .gap-analysis-label {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+        }
+
+        /* Trend Comparison Section */
+        .trend-comparison-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--light-steel);
+        }
+
+        .trend-comparison-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+        }
+
+        .trend-comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .trend-card {
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .trend-card-market {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: var(--font-body);
+            margin-bottom: 16px;
+        }
+
+        .trend-card-sparkline {
+            height: 60px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .trend-card-sparkline svg {
+            width: 100%;
+            height: 60px;
+        }
+
+        .trend-card-change {
+            font-size: var(--font-body);
+            font-weight: 700;
+        }
+
+        .trend-card-change.up { color: var(--positive); }
+        .trend-card-change.down { color: var(--negative); }
+        .trend-card-change.neutral { color: var(--neutral); }
+
+        .trend-card-label {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Quick Stats Row */
+        .quick-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .quick-stat-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px 24px;
+            border: 1px solid var(--light-steel);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .quick-stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .quick-stat-icon.leader {
+            background: rgba(46, 125, 90, 0.12);
+            color: var(--positive);
+        }
+
+        .quick-stat-icon.laggard {
+            background: rgba(196, 49, 75, 0.12);
+            color: var(--negative);
+        }
+
+        .quick-stat-icon.gap {
+            background: rgba(27, 54, 93, 0.08);
+            color: var(--navy);
+        }
+
+        .quick-stat-content {
+            flex: 1;
+        }
+
+        .quick-stat-label {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .quick-stat-value {
+            font-size: var(--font-body-lg);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .quick-stat-detail {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Multi-KPI Matrix */
+        .kpi-matrix-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--light-steel);
+        }
+
+        .kpi-matrix-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+        }
+
+        .kpi-matrix-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .kpi-matrix-table th {
+            padding: 14px 12px;
+            text-align: center;
+            font-size: var(--font-caption);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            background: var(--navy);
+        }
+
+        .kpi-matrix-table th:first-child {
+            text-align: left;
+            border-radius: 8px 0 0 0;
+            min-width: 160px;
+        }
+
+        .kpi-matrix-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .kpi-matrix-table td {
+            padding: 14px 12px;
+            font-size: var(--font-body-sm);
+            border-bottom: 1px solid rgba(184, 212, 232, 0.3);
+            vertical-align: middle;
+        }
+
+        .kpi-matrix-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .kpi-matrix-kpi-cell {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .kpi-matrix-value-cell {
+            text-align: center;
+        }
+
+        .kpi-matrix-mini-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kpi-matrix-rank-badge {
+            font-size: var(--font-micro);
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .kpi-matrix-rank-badge.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); }
+        .kpi-matrix-rank-badge.rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
+        .kpi-matrix-rank-badge.rank-3 { background: linear-gradient(135deg, #CD7F32, #B87333); }
+        .kpi-matrix-rank-badge.rank-4 { background: var(--light-steel); color: var(--text-muted); }
+
+        .kpi-matrix-bar-wrapper {
+            width: 100%;
+            max-width: 80px;
+            height: 6px;
+            background: rgba(184, 212, 232, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .kpi-matrix-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--navy);
+        }
+
+        .kpi-matrix-variance {
+            font-size: var(--font-caption);
+            font-weight: 600;
+        }
+
+        .kpi-matrix-variance.up { color: var(--positive); }
+        .kpi-matrix-variance.down { color: var(--negative); }
+        .kpi-matrix-variance.neutral { color: var(--neutral); }
+
+        @media (max-width: 1200px) {
+            .gap-analysis-grid,
+            .trend-comparison-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .market-rank-item {
+                grid-template-columns: 32px 100px 1fr 80px 60px;
+                gap: 12px;
+            }
+
+            .comparison-bar-row {
+                grid-template-columns: 120px 1fr 90px 70px;
+                gap: 12px;
+            }
+
+            .market-comparison-layout > div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gap-analysis-grid,
+            .trend-comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .market-rank-item {
+                grid-template-columns: 28px 80px 1fr;
+            }
+
+            .market-rank-value,
+            .market-rank-change {
+                display: none;
+            }
+
+            .comparison-bar-row {
+                grid-template-columns: 100px 1fr;
+            }
+
+            .comparison-bar-value,
+            .comparison-bar-change {
+                display: none;
+            }
+
+            .kpi-matrix-table {
+                font-size: var(--font-caption);
+            }
+
+            .kpi-matrix-table th,
+            .kpi-matrix-table td {
+                padding: 8px 6px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1680,7 +2373,11 @@
             autoDetectFailed: false,
             scorecardMarket: null,
             scorecardMonth: null,
-            scorecardSort: { column: null, direction: 'asc' }
+            scorecardSort: { column: null, direction: 'asc' },
+            // Market Comparison state
+            marketCompareKPI: 'SLS_TTL',
+            marketCompareMonth: null,
+            marketCompareMode: 'vsLY' // 'vsLY', 'vsTarget', 'absolute'
         };
 
         // Helper functions
@@ -1907,7 +2604,7 @@
                 <nav class="nav-tabs">
                     <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
                     <div class="nav-tab ${state.activeTab === 'scorecard' ? 'active' : ''}" data-tab="scorecard">Scorecard</div>
-                    <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
+                    <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Comparison</div>
                     <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
                 </nav>
                 <main class="main">
@@ -1934,7 +2631,7 @@
                     ${allKPIs.map(key => renderMetricCard(market, key)).join('')}
                 </div>
 
-                ${renderMarketSummaryTable()}
+                ${renderMarketRankingsWidget()}
             `;
         }
 
@@ -1986,203 +2683,493 @@
             `;
         }
 
-        function renderMarketSummaryTable() {
+        function renderMarketRankingsWidget() {
             const markets = getMarkets();
-            const kpis = ['SLS_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM'];
+            const config = KPI_CONFIG['SLS_TTL'];
 
-            const individualMarkets = markets.filter(m => !isAggregateValue(m, 'market'))
-                .map(m => ({ market: m, data: getLatestData(m, 'SLS_TTL') }))
-                .sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0))
-                .map(d => d.market);
-            const totalMarket = markets.find(m => isAggregateValue(m, 'market'));
+            // Get individual markets sorted by Sales YTD
+            const marketData = markets
+                .filter(m => !isAggregateValue(m, 'market'))
+                .map(m => {
+                    const data = getLatestData(m, 'SLS_TTL');
+                    const change = data ? calcChange(data.YTD, data.LYTD, config.format) : null;
+                    return {
+                        market: m,
+                        value: data?.YTD || 0,
+                        change: change,
+                        changeClass: getChangeClass(change, config.format)
+                    };
+                })
+                .sort((a, b) => b.value - a.value);
 
-            function renderMarketRow(m, isTotal = false) {
-                return `
-                    <tr class="${isTotal ? 'total-row' : ''}">
-                        <td class="market-cell">${m}</td>
-                        ${kpis.map(k => {
-                            const config = KPI_CONFIG[k];
-                            const data = getLatestData(m, k);
-                            if (!data) return '<td class="compare-cell">—</td>';
-                            const change = calcChange(data.YTD, data.LYTD, config.format);
-                            const changeClass = getChangeClass(change, config.format);
-
-                            let targetPart = '';
-                            if (data.Target) {
-                                const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                                const tGapClass = getChangeClass(tGap, config.format);
-                                targetPart = `<span class="cell-divider">|</span><span class="cell-compare-label">TGT:</span> <span class="cell-compare-value ${tGapClass}">${formatChange(tGap, config.format)}</span>`;
-                            }
-
-                            return `
-                                <td class="compare-cell">
-                                    <div class="value-cell">${formatValue(data.YTD, config.format)}</div>
-                                    <div class="cell-compare-inline">
-                                        <span class="cell-compare-label">LY:</span> <span class="cell-compare-value ${changeClass}">${formatChange(change, config.format)}</span>
-                                        ${targetPart}
-                                    </div>
-                                </td>
-                            `;
-                        }).join('')}
-                    </tr>
-                `;
-            }
+            const maxValue = marketData[0]?.value || 1;
 
             return `
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <div class="chart-title">Market Comparison</div>
+                <div class="market-rankings-widget">
+                    <div class="market-rankings-header">
+                        <div>
+                            <div class="market-rankings-title">Market Rankings</div>
+                            <div class="market-rankings-subtitle">By Total Sales YTD</div>
+                        </div>
+                        <div class="market-rankings-link" onclick="document.querySelector('[data-tab=markets]').click()">
+                            View Full Comparison
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </div>
                     </div>
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th>Market</th>
-                                ${kpis.map(k => `<th class="center">${KPI_CONFIG[k]?.name || k}</th>`).join('')}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${individualMarkets.map(m => renderMarketRow(m, false)).join('')}
-                            ${totalMarket ? renderMarketRow(totalMarket, true) : ''}
-                        </tbody>
-                    </table>
+                    <div class="market-rankings-list">
+                        ${marketData.map((item, index) => {
+                            const barWidth = (item.value / maxValue) * 100;
+                            const rankClass = index < 3 ? `rank-${index + 1}` : 'rank-other';
+                            const barClass = item.change >= 0 ? (item.change > 2 ? 'positive' : 'neutral') : 'negative';
+                            const changeArrow = item.change >= 0 ? '↑' : '↓';
+
+                            return `
+                                <div class="market-rank-item">
+                                    <div class="market-rank-position ${rankClass}">${index + 1}</div>
+                                    <div class="market-rank-name">${item.market}</div>
+                                    <div class="market-rank-bar-container">
+                                        <div class="market-rank-bar ${barClass}" style="width: ${barWidth}%"></div>
+                                    </div>
+                                    <div class="market-rank-value">${formatValue(item.value, config.format)}</div>
+                                    <div class="market-rank-change ${item.changeClass}">
+                                        ${changeArrow} ${formatChange(item.change, config.format)}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
                 </div>
             `;
         }
 
         function renderMarketsTab() {
             const kpis = getKPIs();
-            const defaultKPI = kpis.includes('SLS_TTL') ? 'SLS_TTL' : kpis[0];
+            const months = getAvailableMonths();
+            const selectedKPI = state.marketCompareKPI || 'SLS_TTL';
+            const selectedMonth = state.marketCompareMonth || months[months.length - 1];
+            const selectedMode = state.marketCompareMode || 'vsLY';
 
             return `
                 <div class="section-header">
                     <div>
-                        <div class="section-title">Market Analysis</div>
-                        <div class="section-subtitle">Performance breakdown by market region</div>
+                        <div class="section-title">Market Comparison</div>
+                        <div class="section-subtitle">Compare performance across markets and identify leaders & laggards</div>
                     </div>
                 </div>
                 <div class="filter-row" style="margin-bottom: 24px;">
                     <div class="filter-group">
                         <label>KPI Metric</label>
-                        <select class="filter-select" id="marketKpiSelect">
-                            ${kpis.map(k => `<option value="${k}" ${k === defaultKPI ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
+                        <select class="filter-select" id="marketCompareKpiSelect">
+                            ${kpis.map(k => `<option value="${k}" ${k === selectedKPI ? 'selected' : ''}>${KPI_CONFIG[k]?.name || k}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Month</label>
+                        <select class="filter-select" id="marketCompareMonthSelect">
+                            ${months.map(m => `<option value="${m}" ${m === selectedMonth ? 'selected' : ''}>${m}</option>`).join('')}
                         </select>
                     </div>
                 </div>
                 <div id="marketComparisonContent">
-                    ${renderMarketAnalysis(defaultKPI)}
+                    ${renderMarketComparisonContent(selectedKPI, selectedMonth, selectedMode)}
                 </div>
             `;
         }
 
-        function renderMarketAnalysis(kpiKey) {
+        function renderMarketComparisonContent(kpiKey, month, mode) {
             const config = KPI_CONFIG[kpiKey];
             if (!config) return '<p>No data available</p>';
 
-            const markets = getMarkets();
-            const hasShare = config.hasShare === true;
-            const totalMarketName = getAggregateValue('market');
-            const totalData = getLatestData(totalMarketName, kpiKey);
-            const totalValue = totalData?.YTD || 0;
+            return `
+                <div class="market-comparison-layout">
+                    <!-- Quick Stats Row -->
+                    ${renderQuickStats(kpiKey, month)}
 
-            const allMarketData = markets.map(m => {
-                const data = getLatestData(m, kpiKey);
-                return { market: m, data, isTotal: isAggregateValue(m, 'market') };
+                    <!-- Main Comparison Bars -->
+                    ${renderComparisonBars(kpiKey, month, mode)}
+
+                    <!-- Two Column Layout: Gap Analysis + Trend Comparison -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        ${renderGapAnalysis(kpiKey, month)}
+                        ${renderTrendComparison(kpiKey)}
+                    </div>
+
+                    <!-- Multi-KPI Matrix -->
+                    ${renderKPIMatrix(month)}
+                </div>
+            `;
+        }
+
+        function renderQuickStats(kpiKey, month) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+
+            // Get market data for the selected month
+            const marketData = markets.map(m => {
+                const data = getDataForMonth(m, kpiKey, month);
+                const change = data ? calcChange(data.YTD, data.LYTD, config.format) : null;
+                return { market: m, data, change };
             }).filter(d => d.data);
 
-            const marketData = allMarketData.filter(d => !d.isTotal).sort((a, b) => (b.data?.YTD || 0) - (a.data?.YTD || 0));
-            const totalRow = allMarketData.find(d => d.isTotal);
+            // Sort by change to find leader and laggard
+            const sortedByChange = [...marketData].sort((a, b) => (b.change || 0) - (a.change || 0));
+            const leader = sortedByChange[0];
+            const laggard = sortedByChange[sortedByChange.length - 1];
 
-            const maxShare = Math.max(...marketData.map(d => totalValue > 0 ? (d.data.YTD / totalValue) * 100 : 0));
+            // Calculate gap
+            const gap = leader && laggard ? Math.abs((leader.change || 0) - (laggard.change || 0)) : 0;
+            const gapFormatted = config.format === 'percent' ? gap.toFixed(1) + ' PP' : gap.toFixed(1) + '%';
 
-            function renderShareCell(value, isTotal = false) {
-                if (!hasShare) {
-                    return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
-                }
-                if (isTotal) {
-                    return '<td class="compare-cell"><span style="font-weight:600;color:var(--navy)">100%</span></td>';
-                }
-                const share = totalValue > 0 ? (value / totalValue) * 100 : 0;
-                const barWidth = maxShare > 0 ? (share / maxShare) * 100 : 0;
-                return `
-                    <td class="compare-cell">
-                        <div class="share-cell">
-                            <span class="share-value">${share.toFixed(0)}%</span>
-                            <div class="share-bar-bg">
-                                <div class="share-bar" style="width: ${barWidth}%"></div>
-                            </div>
+            return `
+                <div class="quick-stats-row">
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon leader">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
                         </div>
-                    </td>
+                        <div class="quick-stat-content">
+                            <div class="quick-stat-label">Leader</div>
+                            <div class="quick-stat-value">${leader?.market || '—'}</div>
+                            <div class="quick-stat-detail" style="color: var(--positive)">${leader ? formatChange(leader.change, config.format) + ' vs LY' : ''}</div>
+                        </div>
+                    </div>
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon laggard">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                        </div>
+                        <div class="quick-stat-content">
+                            <div class="quick-stat-label">Needs Attention</div>
+                            <div class="quick-stat-value">${laggard?.market || '—'}</div>
+                            <div class="quick-stat-detail" style="color: var(--negative)">${laggard ? formatChange(laggard.change, config.format) + ' vs LY' : ''}</div>
+                        </div>
+                    </div>
+                    <div class="quick-stat-card">
+                        <div class="quick-stat-icon gap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12H3M21 12l-4-4m4 4l-4 4M3 12l4-4m-4 4l4 4"/>
+                            </svg>
+                        </div>
+                        <div class="quick-stat-content">
+                            <div class="quick-stat-label">Performance Gap</div>
+                            <div class="quick-stat-value">${gapFormatted}</div>
+                            <div class="quick-stat-detail">Between ${leader?.market || '—'} and ${laggard?.market || '—'}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderComparisonBars(kpiKey, month, mode) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+
+            // Get market data
+            const marketData = markets.map(m => {
+                const data = getDataForMonth(m, kpiKey, month);
+                if (!data) return null;
+                const change = calcChange(data.YTD, data.LYTD, config.format);
+                const targetGap = data.Target ? calcTargetGap(data.YTD, data.Target, config.format) : null;
+                return {
+                    market: m,
+                    value: data.YTD,
+                    lytd: data.LYTD,
+                    target: data.Target,
+                    change,
+                    targetGap,
+                    changeClass: getChangeClass(change, config.format),
+                    targetClass: targetGap !== null ? getChangeClass(targetGap, config.format) : null
+                };
+            }).filter(d => d).sort((a, b) => b.value - a.value);
+
+            const maxValue = marketData[0]?.value || 1;
+
+            // Determine what to show based on mode
+            const getBarInfo = (item, index) => {
+                let barWidth, barClass, displayChange, displayClass;
+
+                if (mode === 'absolute') {
+                    barWidth = (item.value / maxValue) * 100;
+                    barClass = 'neutral';
+                    displayChange = '';
+                    displayClass = '';
+                } else if (mode === 'vsTarget' && item.targetGap !== null) {
+                    barWidth = (item.value / maxValue) * 100;
+                    barClass = item.targetClass;
+                    displayChange = formatChange(item.targetGap, config.format);
+                    displayClass = item.targetClass;
+                } else {
+                    barWidth = (item.value / maxValue) * 100;
+                    barClass = item.changeClass;
+                    displayChange = formatChange(item.change, config.format);
+                    displayClass = item.changeClass;
+                }
+
+                return { barWidth, barClass, displayChange, displayClass };
+            };
+
+            // Calculate axis labels
+            const axisLabels = [0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue];
+
+            return `
+                <div class="comparison-bars-card">
+                    <div class="comparison-bars-header">
+                        <div class="comparison-bars-title">${config.name} — YTD thru ${month}</div>
+                        <div class="comparison-bars-toggles">
+                            <button class="comparison-toggle ${mode === 'vsLY' ? 'active' : ''}" data-mode="vsLY">vs Last Year</button>
+                            <button class="comparison-toggle ${mode === 'vsTarget' ? 'active' : ''}" data-mode="vsTarget">vs Target</button>
+                            <button class="comparison-toggle ${mode === 'absolute' ? 'active' : ''}" data-mode="absolute">Absolute</button>
+                        </div>
+                    </div>
+                    <div class="comparison-bars-body">
+                        ${marketData.map((item, index) => {
+                            const { barWidth, barClass, displayChange, displayClass } = getBarInfo(item, index);
+                            const rankClass = index < 3 ? `rank-${index + 1}` : '';
+                            const changeArrow = item.change >= 0 ? '↑' : '↓';
+
+                            return `
+                                <div class="comparison-bar-row">
+                                    <div class="comparison-bar-market">
+                                        <span class="comparison-bar-rank ${rankClass}">${index + 1}</span>
+                                        ${item.market}
+                                    </div>
+                                    <div class="comparison-bar-track">
+                                        <div class="comparison-bar-fill ${barClass}" style="width: ${barWidth}%">
+                                            ${barWidth > 15 ? `<span class="comparison-bar-fill-label">${displayChange}</span>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="comparison-bar-value">${formatValue(item.value, config.format)}</div>
+                                    <div class="comparison-bar-change ${displayClass}">
+                                        ${mode !== 'absolute' ? `${changeArrow} ${displayChange}` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="comparison-bar-axis">
+                        ${axisLabels.map(v => `<span class="comparison-bar-axis-label">${formatValue(v, config.format)}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGapAnalysis(kpiKey, month) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+            const totalMarket = getAggregateValue('market');
+            const totalData = getDataForMonth(totalMarket, kpiKey, month);
+
+            // Calculate average (use total if available, otherwise calculate mean)
+            let benchmarkValue;
+            if (totalData) {
+                benchmarkValue = totalData.YTD / markets.length; // Average per market
+            } else {
+                const allValues = markets.map(m => getDataForMonth(m, kpiKey, month)?.YTD || 0);
+                benchmarkValue = allValues.reduce((a, b) => a + b, 0) / allValues.length;
+            }
+
+            // Get market data with gap from average
+            const marketData = markets.map(m => {
+                const data = getDataForMonth(m, kpiKey, month);
+                if (!data) return null;
+                const gapFromAvg = benchmarkValue > 0 ? ((data.YTD - benchmarkValue) / benchmarkValue) * 100 : 0;
+                return {
+                    market: m,
+                    value: data.YTD,
+                    gap: gapFromAvg
+                };
+            }).filter(d => d).sort((a, b) => b.gap - a.gap);
+
+            return `
+                <div class="gap-analysis-card">
+                    <div class="gap-analysis-header">
+                        <div class="gap-analysis-title">Gap from Average</div>
+                        <div class="gap-analysis-benchmark">Benchmark: ${formatValue(benchmarkValue, config.format)} avg/market</div>
+                    </div>
+                    <div class="gap-analysis-grid">
+                        ${marketData.map(item => {
+                            const gapClass = item.gap > 2 ? 'above' : (item.gap < -2 ? 'below' : 'at');
+                            const gapSign = item.gap >= 0 ? '+' : '';
+                            const gapLabel = item.gap > 2 ? 'above average' : (item.gap < -2 ? 'below average' : 'at average');
+
+                            return `
+                                <div class="gap-analysis-item">
+                                    <div class="gap-analysis-market">${item.market}</div>
+                                    <div class="gap-analysis-value ${gapClass}">${gapSign}${item.gap.toFixed(1)}%</div>
+                                    <div class="gap-analysis-label">${gapLabel}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTrendComparison(kpiKey) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+            const months = getAvailableMonths();
+
+            // Get trend data for each market
+            const trendData = markets.map(m => {
+                const monthlyValues = months.map(month => {
+                    const data = getDataForMonth(m, kpiKey, month);
+                    return data?.YTD || null;
+                });
+
+                // Calculate overall YTD change (latest month)
+                const latestData = getLatestData(m, kpiKey);
+                const change = latestData ? calcChange(latestData.YTD, latestData.LYTD, config.format) : 0;
+
+                return {
+                    market: m,
+                    values: monthlyValues,
+                    change,
+                    changeClass: getChangeClass(change, config.format)
+                };
+            });
+
+            // Render sparkline SVG
+            function renderSparkline(values, changeClass) {
+                const validValues = values.filter(v => v !== null);
+                if (validValues.length < 2) return '<div style="color: var(--text-muted); font-style: italic;">Insufficient data</div>';
+
+                const minVal = Math.min(...validValues);
+                const maxVal = Math.max(...validValues);
+                const range = maxVal - minVal || 1;
+
+                const width = 120;
+                const height = 50;
+                const padding = 4;
+
+                // Create path points
+                let pathD = '';
+                let validIndex = 0;
+                values.forEach((v, i) => {
+                    if (v !== null) {
+                        const x = padding + (validIndex / (validValues.length - 1)) * (width - padding * 2);
+                        const y = height - padding - ((v - minVal) / range) * (height - padding * 2);
+                        pathD += (validIndex === 0 ? 'M' : 'L') + `${x},${y}`;
+                        validIndex++;
+                    }
+                });
+
+                const strokeColor = changeClass === 'up' ? 'var(--positive)' : (changeClass === 'down' ? 'var(--negative)' : 'var(--navy)');
+
+                return `
+                    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+                        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 `;
             }
 
-            function renderTargetCell(data) {
-                if (data.Target) {
-                    const tGap = calcTargetGap(data.YTD, data.Target, config.format);
-                    const tGapClass = getChangeClass(tGap, config.format);
-                    return `
-                        <td class="compare-cell">
-                            <div class="compare-group">
-                                <span class="compare-value">${formatValue(data.Target, config.format)}</span>
-                                <span class="compare-badge ${tGapClass}">${formatChange(tGap, config.format)}</span>
-                            </div>
-                        </td>
-                    `;
-                }
-                return '<td class="compare-cell"><span class="cell-na">NA</span></td>';
-            }
+            return `
+                <div class="trend-comparison-card">
+                    <div class="trend-comparison-title">Monthly Trend — ${config.name}</div>
+                    <div class="trend-comparison-grid">
+                        ${trendData.map(item => {
+                            const changeArrow = item.change >= 0 ? '↑' : '↓';
+                            return `
+                                <div class="trend-card">
+                                    <div class="trend-card-market">${item.market}</div>
+                                    <div class="trend-card-sparkline">
+                                        ${renderSparkline(item.values, item.changeClass)}
+                                    </div>
+                                    <div class="trend-card-change ${item.changeClass}">
+                                        ${changeArrow} ${formatChange(item.change, config.format)}
+                                    </div>
+                                    <div class="trend-card-label">YTD vs LY</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderKPIMatrix(month) {
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+            const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM', 'AVG_AOV'];
 
             return `
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <div class="chart-title">${config?.name || kpiKey} by Market</div>
-                    </div>
-                    <table class="modern-table">
+                <div class="kpi-matrix-card">
+                    <div class="kpi-matrix-title">Multi-KPI Performance Matrix — ${month}</div>
+                    <table class="kpi-matrix-table">
                         <thead>
                             <tr>
-                                <th>Market</th>
-                                <th class="center">2025</th>
-                                <th class="center">2024</th>
-                                <th class="center">Target</th>
-                                <th class="center">Share</th>
+                                <th>KPI</th>
+                                ${markets.map(m => `<th>${m}</th>`).join('')}
                             </tr>
                         </thead>
                         <tbody>
-                            ${marketData.map(({market, data}) => {
-                                const change = calcChange(data.YTD, data.LYTD, config.format);
-                                const changeClass = getChangeClass(change, config.format);
+                            ${keyKPIs.map(kpiKey => {
+                                const config = KPI_CONFIG[kpiKey];
+                                if (!config) return '';
+
+                                // Get data for all markets
+                                const marketValues = markets.map(m => {
+                                    const data = getDataForMonth(m, kpiKey, month);
+                                    if (!data) return { market: m, value: null, change: null };
+                                    const change = calcChange(data.YTD, data.LYTD, config.format);
+                                    return { market: m, value: data.YTD, change };
+                                });
+
+                                // Rank markets by value
+                                const sortedByValue = [...marketValues].filter(v => v.value !== null).sort((a, b) => b.value - a.value);
+                                const maxValue = sortedByValue[0]?.value || 1;
+                                const rankings = {};
+                                sortedByValue.forEach((item, idx) => {
+                                    rankings[item.market] = idx + 1;
+                                });
+
                                 return `
                                     <tr>
-                                        <td class="market-cell">${market}</td>
-                                        <td class="value-cell">${formatValue(data.YTD, config.format)}</td>
-                                        <td class="compare-cell">
-                                            <div class="compare-group">
-                                                <span class="compare-value">${formatValue(data.LYTD, config.format)}</span>
-                                                <span class="compare-badge ${changeClass}">${formatChange(change, config.format)}</span>
-                                            </div>
-                                        </td>
-                                        ${renderTargetCell(data)}
-                                        ${renderShareCell(data.YTD)}
+                                        <td class="kpi-matrix-kpi-cell">${config.name}</td>
+                                        ${marketValues.map(item => {
+                                            if (item.value === null) {
+                                                return '<td class="kpi-matrix-value-cell"><span class="cell-na">—</span></td>';
+                                            }
+
+                                            const rank = rankings[item.market] || 4;
+                                            const barWidth = (item.value / maxValue) * 100;
+                                            const changeClass = getChangeClass(item.change, config.format);
+                                            const changeArrow = item.change >= 0 ? '↑' : '↓';
+
+                                            return `
+                                                <td class="kpi-matrix-value-cell">
+                                                    <div class="kpi-matrix-mini-bar">
+                                                        <span class="kpi-matrix-rank-badge rank-${rank}">#${rank}</span>
+                                                        <div class="kpi-matrix-bar-wrapper">
+                                                            <div class="kpi-matrix-bar-fill" style="width: ${barWidth}%"></div>
+                                                        </div>
+                                                        <span class="kpi-matrix-variance ${changeClass}">${changeArrow} ${formatChange(item.change, config.format)}</span>
+                                                    </div>
+                                                </td>
+                                            `;
+                                        }).join('')}
                                     </tr>
                                 `;
                             }).join('')}
-                            ${totalRow ? `
-                                <tr class="total-row">
-                                    <td class="market-cell">${totalRow.market}</td>
-                                    <td class="value-cell">${formatValue(totalRow.data.YTD, config.format)}</td>
-                                    <td class="compare-cell">
-                                        <div class="compare-group">
-                                            <span class="compare-value">${formatValue(totalRow.data.LYTD, config.format)}</span>
-                                            <span class="compare-badge ${getChangeClass(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}">${formatChange(calcChange(totalRow.data.YTD, totalRow.data.LYTD, config.format), config.format)}</span>
-                                        </div>
-                                    </td>
-                                    ${renderTargetCell(totalRow.data)}
-                                    ${renderShareCell(totalRow.data.YTD, true)}
-                                </tr>
-                            ` : ''}
                         </tbody>
                     </table>
                 </div>
             `;
+        }
+
+        // Helper function to get data for a specific month
+        function getDataForMonth(market, kpiKey, month) {
+            if (!state.data) return null;
+            return state.data.find(row =>
+                row.Market === market &&
+                row.Month === month &&
+                row.Key === kpiKey
+            );
         }
 
         function renderKPITab() {
@@ -2799,11 +3786,49 @@
                 };
             });
 
-            const marketKpiSelect = document.getElementById('marketKpiSelect');
-            if (marketKpiSelect) {
-                marketKpiSelect.onchange = () => {
-                    document.getElementById('marketComparisonContent').innerHTML = renderMarketAnalysis(marketKpiSelect.value);
+            // Market Comparison event handlers
+            const marketCompareKpiSelect = document.getElementById('marketCompareKpiSelect');
+            const marketCompareMonthSelect = document.getElementById('marketCompareMonthSelect');
+
+            if (marketCompareKpiSelect) {
+                marketCompareKpiSelect.onchange = () => {
+                    state.marketCompareKPI = marketCompareKpiSelect.value;
+                    updateMarketComparison();
                 };
+            }
+
+            if (marketCompareMonthSelect) {
+                marketCompareMonthSelect.onchange = () => {
+                    state.marketCompareMonth = marketCompareMonthSelect.value;
+                    updateMarketComparison();
+                };
+            }
+
+            // Mode toggle buttons
+            document.querySelectorAll('.comparison-toggle').forEach(btn => {
+                btn.onclick = () => {
+                    state.marketCompareMode = btn.dataset.mode;
+                    updateMarketComparison();
+                };
+            });
+
+            function updateMarketComparison() {
+                const months = getAvailableMonths();
+                const content = document.getElementById('marketComparisonContent');
+                if (content) {
+                    content.innerHTML = renderMarketComparisonContent(
+                        state.marketCompareKPI || 'SLS_TTL',
+                        state.marketCompareMonth || months[months.length - 1],
+                        state.marketCompareMode || 'vsLY'
+                    );
+                    // Re-attach toggle handlers after re-render
+                    document.querySelectorAll('.comparison-toggle').forEach(btn => {
+                        btn.onclick = () => {
+                            state.marketCompareMode = btn.dataset.mode;
+                            updateMarketComparison();
+                        };
+                    });
+                }
             }
 
             const kpiMarketSelect = document.getElementById('kpiMarketSelect');

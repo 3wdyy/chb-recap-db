@@ -1056,6 +1056,152 @@
             .header, .main, .nav-tabs { padding-left: 20px; padding-right: 20px; }
             .exec-summary { grid-template-columns: 1fr; }
         }
+
+        /* Scorecard Table Styles */
+        .scorecard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(27, 54, 93, 0.08);
+        }
+
+        .scorecard-table thead th {
+            background: var(--navy);
+            color: white;
+            padding: 16px 14px;
+            font-size: var(--font-caption);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            border: none;
+        }
+
+        .scorecard-table thead th:first-child {
+            text-align: left;
+            padding-left: 20px;
+            border-radius: 12px 0 0 0;
+        }
+
+        .scorecard-table thead th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        .scorecard-table tbody tr {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .scorecard-table tbody tr:hover {
+            background: rgba(143, 175, 212, 0.12);
+        }
+
+        .scorecard-table tbody tr:hover td:first-child {
+            color: var(--steel-blue);
+        }
+
+        .scorecard-table tbody td {
+            padding: 14px 14px;
+            border-bottom: 1px solid rgba(184, 212, 232, 0.4);
+            font-size: var(--font-body);
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .scorecard-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .scorecard-table tbody tr:last-child td:first-child {
+            border-radius: 0 0 0 12px;
+        }
+
+        .scorecard-table tbody tr:last-child td:last-child {
+            border-radius: 0 0 12px 0;
+        }
+
+        .scorecard-table .kpi-name-cell {
+            text-align: left;
+            padding-left: 20px;
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap;
+        }
+
+        .scorecard-table .value-cell {
+            font-weight: 700;
+            color: var(--navy);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .scorecard-table .variance-cell {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .scorecard-table .variance-cell.positive {
+            color: var(--positive);
+        }
+
+        .scorecard-table .variance-cell.negative {
+            color: var(--negative);
+        }
+
+        .scorecard-table .variance-cell.neutral {
+            color: var(--neutral);
+        }
+
+        .scorecard-container {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid var(--light-steel);
+            box-shadow: 0 2px 12px rgba(27, 54, 93, 0.06);
+        }
+
+        .scorecard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--light-steel);
+        }
+
+        .scorecard-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .scorecard-subtitle {
+            font-size: var(--font-body-sm);
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .scorecard-filters {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .scorecard-click-hint {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 16px;
+        }
+
+        .scorecard-click-hint svg {
+            width: 14px;
+            height: 14px;
+        }
     </style>
 </head>
 <body>
@@ -1147,7 +1293,9 @@
             activeTab: 'summary',
             dataLoaded: false,
             loading: true,
-            autoDetectFailed: false
+            autoDetectFailed: false,
+            scorecardMarket: null,
+            scorecardMonth: null
         };
 
         // Helper functions
@@ -1375,11 +1523,13 @@
                     <div class="nav-tab ${state.activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Executive Summary</div>
                     <div class="nav-tab ${state.activeTab === 'markets' ? 'active' : ''}" data-tab="markets">Market Analysis</div>
                     <div class="nav-tab ${state.activeTab === 'kpi' ? 'active' : ''}" data-tab="kpi">KPI Deep Dive</div>
+                    <div class="nav-tab ${state.activeTab === 'scorecard' ? 'active' : ''}" data-tab="scorecard">Scorecard</div>
                 </nav>
                 <main class="main">
                     ${state.activeTab === 'summary' ? renderSummaryTab() : ''}
                     ${state.activeTab === 'markets' ? renderMarketsTab() : ''}
                     ${state.activeTab === 'kpi' ? renderKPITab() : ''}
+                    ${state.activeTab === 'scorecard' ? renderScorecardTab() : ''}
                 </main>
             `;
         }
@@ -1896,6 +2046,169 @@
             `;
         }
 
+        function getAvailableMonths() {
+            if (!state.data) return [];
+            const months = [...new Set(state.data.map(d => d.Month))].filter(m => m);
+            // Sort by month order
+            return months.sort((a, b) => {
+                const aMonth = MONTH_MAP[a] || a;
+                const bMonth = MONTH_MAP[b] || b;
+                const aIdx = MONTHS.indexOf(aMonth);
+                const bIdx = MONTHS.indexOf(bMonth);
+                return aIdx - bIdx;
+            });
+        }
+
+        function getMonthDisplayName(month) {
+            // Convert "01-Jan" or similar to "January"
+            const monthNames = {
+                'JAN': 'January', 'FEB': 'February', 'MAR': 'March', 'APR': 'April',
+                'MAY': 'May', 'JUN': 'June', 'JUL': 'July', 'AUG': 'August',
+                'SEP': 'September', 'OCT': 'October', 'NOV': 'November', 'DEC': 'December'
+            };
+            const normalized = MONTH_MAP[month] || month;
+            return monthNames[normalized] || month;
+        }
+
+        function renderScorecardTab() {
+            const markets = getMarkets();
+            const months = getAvailableMonths();
+            const defaultMarket = state.scorecardMarket || getAggregateValue('market');
+            const defaultMonth = state.scorecardMonth || months[months.length - 1]; // Latest month
+
+            return `
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Performance Scorecard</div>
+                        <div class="section-subtitle">Comprehensive KPI overview with variance analysis</div>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Market</label>
+                        <select class="filter-select" id="scorecardMarketSelect">
+                            ${markets.map(m => `<option value="${m}" ${m === defaultMarket ? 'selected' : ''}>${m}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Period</label>
+                        <select class="filter-select" id="scorecardMonthSelect">
+                            ${months.map(m => `<option value="${m}" ${m === defaultMonth ? 'selected' : ''}>${getMonthDisplayName(m)} (YTD)</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div id="scorecardContent">
+                    ${renderScorecardTable(defaultMarket, defaultMonth)}
+                </div>
+            `;
+        }
+
+        function renderScorecardTable(market, month) {
+            // Get all KPIs in the desired order
+            const kpiOrder = ['SLS_TTL', 'SLS_PEN', 'MBR_TTL', 'MBR_NEW', 'MBR_RTN', 'AVG_ATF', 'AVG_AOV', 'PCT_RDM', 'PCT_XBP', 'PCT_NBA', 'AVG_BRD', 'PTS_BRN'];
+            const availableKPIs = getKPIs();
+            const kpis = kpiOrder.filter(k => availableKPIs.includes(k));
+
+            // Get data for each KPI
+            const rows = kpis.map(kpiKey => {
+                const config = KPI_CONFIG[kpiKey];
+                if (!config) return null;
+
+                // Find the data row for this market, month, and KPI
+                const dataRow = state.data.find(d =>
+                    d.Market === market &&
+                    d.Month === month &&
+                    d.Key === kpiKey
+                );
+
+                if (!dataRow) return null;
+
+                // Calculate variances
+                const vsTarget = dataRow.Target ? calcTargetGap(dataRow.YTD, dataRow.Target, config.format) : null;
+                const vsLYTD = calcChange(dataRow.YTD, dataRow.LYTD, config.format);
+                const vsLMR12M = calcChange(dataRow.R12M, dataRow.LMR12M, config.format);
+                // For vs LY R12M: At year-end, R12M = YTD and LY R12M = LYTD
+                // So vs LY R12M = vs LYTD at December. For other months, we use the same approximation.
+                const vsLYR12M = vsLYTD;
+
+                return {
+                    key: kpiKey,
+                    name: config.name,
+                    format: config.format,
+                    ytd: dataRow.YTD,
+                    target: dataRow.Target,
+                    lytd: dataRow.LYTD,
+                    r12m: dataRow.R12M,
+                    lmr12m: dataRow.LMR12M,
+                    vsTarget,
+                    vsLYTD,
+                    vsLMR12M,
+                    vsLYR12M
+                };
+            }).filter(r => r !== null);
+
+            if (rows.length === 0) {
+                return `
+                    <div class="scorecard-container">
+                        <p style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            No data available for the selected market and period.
+                        </p>
+                    </div>
+                `;
+            }
+
+            function formatVarianceCell(variance, format) {
+                if (variance === null) return '<td class="variance-cell neutral">—</td>';
+                const colorClass = getChangeClass(variance, format);
+                const displayClass = colorClass === 'up' ? 'positive' : (colorClass === 'down' ? 'negative' : 'neutral');
+                return `<td class="variance-cell ${displayClass}">${formatChange(variance, format)}</td>`;
+            }
+
+            return `
+                <div class="scorecard-container">
+                    <div class="scorecard-header">
+                        <div>
+                            <div class="scorecard-title">KPI Performance Summary</div>
+                            <div class="scorecard-subtitle">${market} | ${getMonthDisplayName(month)} ${CURRENT_YEAR}</div>
+                        </div>
+                    </div>
+                    <table class="scorecard-table">
+                        <thead>
+                            <tr>
+                                <th>KPI</th>
+                                <th>YTD</th>
+                                <th>vs Target</th>
+                                <th>vs LYTD</th>
+                                <th>R12M</th>
+                                <th>vs LM R12M</th>
+                                <th>vs LY R12M</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(row => `
+                                <tr data-kpi="${row.key}" class="scorecard-row">
+                                    <td class="kpi-name-cell">${row.name}</td>
+                                    <td class="value-cell">${formatValue(row.ytd, row.format)}</td>
+                                    ${formatVarianceCell(row.vsTarget, row.format)}
+                                    ${formatVarianceCell(row.vsLYTD, row.format)}
+                                    <td class="value-cell">${formatValue(row.r12m, row.format)}</td>
+                                    ${formatVarianceCell(row.vsLMR12M, row.format)}
+                                    ${formatVarianceCell(row.vsLYR12M, row.format)}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="scorecard-click-hint">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                        <span>Click on any row to view detailed KPI analysis</span>
+                    </div>
+                </div>
+            `;
+        }
+
         function attachEvents() {
             const dropzone = document.getElementById('dropzone');
             const fileInput = document.getElementById('fileInput');
@@ -1958,7 +2271,56 @@
                 };
             }
 
+            // Scorecard event handlers
+            const scorecardMarketSelect = document.getElementById('scorecardMarketSelect');
+            const scorecardMonthSelect = document.getElementById('scorecardMonthSelect');
+
+            if (scorecardMarketSelect) {
+                scorecardMarketSelect.onchange = () => {
+                    state.scorecardMarket = scorecardMarketSelect.value;
+                    const content = document.getElementById('scorecardContent');
+                    if (content) {
+                        content.innerHTML = renderScorecardTable(
+                            state.scorecardMarket,
+                            state.scorecardMonth || getAvailableMonths()[getAvailableMonths().length - 1]
+                        );
+                        attachScorecardRowHandlers();
+                    }
+                };
+            }
+
+            if (scorecardMonthSelect) {
+                scorecardMonthSelect.onchange = () => {
+                    state.scorecardMonth = scorecardMonthSelect.value;
+                    const content = document.getElementById('scorecardContent');
+                    if (content) {
+                        content.innerHTML = renderScorecardTable(
+                            state.scorecardMarket || getAggregateValue('market'),
+                            state.scorecardMonth
+                        );
+                        attachScorecardRowHandlers();
+                    }
+                };
+            }
+
+            attachScorecardRowHandlers();
             attachChartTooltips();
+        }
+
+        function attachScorecardRowHandlers() {
+            const rows = document.querySelectorAll('.scorecard-row');
+            rows.forEach(row => {
+                row.onclick = () => {
+                    const kpiKey = row.dataset.kpi;
+                    if (kpiKey) {
+                        // Set the selected KPI and market, then navigate to KPI Deep Dive tab
+                        state.selectedKPI = kpiKey;
+                        state.selectedMarket = state.scorecardMarket || getAggregateValue('market');
+                        state.activeTab = 'kpi';
+                        render();
+                    }
+                };
+            });
         }
 
         function attachChartTooltips() {

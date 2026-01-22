@@ -1633,7 +1633,7 @@
 
         .market-rank-item {
             display: grid;
-            grid-template-columns: 32px 140px 1fr 100px 70px;
+            grid-template-columns: 32px 140px 1fr 90px;
             align-items: center;
             gap: 16px;
             padding: 14px 0;
@@ -1681,47 +1681,68 @@
             font-size: var(--font-body);
         }
 
-        .market-rank-bar-container {
-            height: 24px;
-            background: rgba(184, 212, 232, 0.2);
-            border-radius: 4px;
-            overflow: hidden;
+        /* Diverging Bar for Market Rankings */
+        .market-rank-diverging {
+            height: 28px;
+            display: flex;
+            align-items: center;
             position: relative;
         }
 
-        .market-rank-bar {
+        .market-rank-diverging-track {
+            position: absolute;
+            left: 0;
+            right: 0;
             height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .market-rank-diverging-center {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--light-steel);
+            z-index: 1;
+        }
+
+        .market-rank-diverging-bar {
+            position: absolute;
+            height: 20px;
             border-radius: 4px;
-            transition: width 0.5s ease;
-            position: relative;
+            display: flex;
+            align-items: center;
+            transition: all 0.5s ease;
         }
 
-        .market-rank-bar.positive {
+        .market-rank-diverging-bar.positive {
+            left: 50%;
             background: linear-gradient(90deg, var(--positive), var(--positive-soft));
+            justify-content: flex-end;
+            padding-right: 8px;
         }
 
-        .market-rank-bar.negative {
-            background: linear-gradient(90deg, var(--negative), var(--negative-soft));
+        .market-rank-diverging-bar.negative {
+            right: 50%;
+            background: linear-gradient(270deg, var(--negative), var(--negative-soft));
+            justify-content: flex-start;
+            padding-left: 8px;
         }
 
-        .market-rank-bar.neutral {
-            background: linear-gradient(90deg, var(--navy), var(--steel-blue));
-        }
-
-        .market-rank-value {
-            font-weight: 700;
-            color: var(--navy);
-            font-size: var(--font-body);
-            text-align: right;
-            font-variant-numeric: tabular-nums;
+        .market-rank-diverging-label {
+            color: white;
+            font-size: var(--font-caption);
+            font-weight: 600;
+            white-space: nowrap;
         }
 
         .market-rank-change {
-            font-weight: 600;
-            font-size: var(--font-body-sm);
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-weight: 700;
+            font-size: var(--font-body);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
         }
 
         .market-rank-change.up { color: var(--positive); }
@@ -1805,7 +1826,7 @@
 
         .comparison-bar-row {
             display: grid;
-            grid-template-columns: 140px 1fr 110px 80px;
+            grid-template-columns: 160px 1fr 100px;
             align-items: center;
             gap: 20px;
             padding: 16px 0;
@@ -1836,77 +1857,106 @@
             font-size: var(--font-caption);
             font-weight: 700;
             color: var(--text-muted);
+            flex-shrink: 0;
         }
 
         .comparison-bar-rank.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: white; }
         .comparison-bar-rank.rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: white; }
         .comparison-bar-rank.rank-3 { background: linear-gradient(135deg, #CD7F32, #B87333); color: white; }
 
-        .comparison-bar-track {
-            height: 32px;
-            background: rgba(184, 212, 232, 0.15);
-            border-radius: 6px;
+        /* Diverging Bar Track */
+        .comparison-diverging-track {
+            height: 36px;
             position: relative;
-            overflow: hidden;
-        }
-
-        .comparison-bar-fill {
-            height: 100%;
-            border-radius: 6px;
-            transition: width 0.6s ease;
             display: flex;
             align-items: center;
+        }
+
+        .comparison-diverging-bg {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: rgba(184, 212, 232, 0.12);
+            border-radius: 6px;
+        }
+
+        .comparison-diverging-center {
+            position: absolute;
+            left: 50%;
+            top: 4px;
+            bottom: 4px;
+            width: 2px;
+            background: var(--navy);
+            opacity: 0.3;
+            z-index: 2;
+        }
+
+        .comparison-diverging-bar {
+            position: absolute;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            transition: all 0.5s ease;
+            z-index: 1;
+        }
+
+        .comparison-diverging-bar.positive {
+            left: 50%;
+            background: linear-gradient(90deg, var(--positive), var(--positive-soft));
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
             justify-content: flex-end;
-            padding-right: 12px;
-            min-width: 60px;
+            padding-right: 10px;
         }
 
-        .comparison-bar-fill.positive {
-            background: linear-gradient(90deg, rgba(46, 125, 90, 0.85), rgba(61, 153, 112, 0.85));
+        .comparison-diverging-bar.negative {
+            right: 50%;
+            background: linear-gradient(270deg, var(--negative), var(--negative-soft));
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            justify-content: flex-start;
+            padding-left: 10px;
         }
 
-        .comparison-bar-fill.negative {
-            background: linear-gradient(90deg, rgba(196, 49, 75, 0.85), rgba(211, 93, 110, 0.85));
-        }
-
-        .comparison-bar-fill.neutral {
-            background: linear-gradient(90deg, rgba(27, 54, 93, 0.85), rgba(143, 175, 212, 0.85));
-        }
-
-        .comparison-bar-fill-label {
+        .comparison-diverging-label {
             color: white;
-            font-size: var(--font-caption);
+            font-size: var(--font-body-sm);
             font-weight: 600;
             white-space: nowrap;
+        }
+
+        .comparison-bar-info {
+            text-align: right;
         }
 
         .comparison-bar-value {
             font-weight: 700;
             color: var(--navy);
-            font-size: var(--font-value-sm);
-            text-align: right;
+            font-size: var(--font-body);
             font-variant-numeric: tabular-nums;
         }
 
         .comparison-bar-change {
-            font-weight: 600;
-            font-size: var(--font-body);
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 2px;
         }
 
-        .comparison-bar-change.up { color: var(--positive); }
-        .comparison-bar-change.down { color: var(--negative); }
-        .comparison-bar-change.neutral { color: var(--neutral); }
-
         .comparison-bar-axis {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0 0 160px;
-            margin-right: 210px;
+            display: grid;
+            grid-template-columns: 160px 1fr 100px;
+            gap: 20px;
+            padding-top: 12px;
             border-top: 1px solid var(--light-steel);
             margin-top: 8px;
+        }
+
+        .comparison-bar-axis-track {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .comparison-bar-axis-label {
@@ -1915,101 +1965,216 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* Gap Analysis Section */
-        .gap-analysis-card {
+        .comparison-bar-axis-center {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        /* Target Attainment Section */
+        .target-attainment-card {
             background: var(--white);
             border-radius: 16px;
             padding: 28px;
             border: 1px solid var(--light-steel);
         }
 
-        .gap-analysis-header {
+        .target-attainment-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
-        .gap-analysis-title {
+        .target-attainment-title {
             font-size: var(--font-h3);
             font-weight: 700;
             color: var(--navy);
         }
 
-        .gap-analysis-benchmark {
+        .target-attainment-subtitle {
             font-size: var(--font-body-sm);
             color: var(--text-muted);
         }
 
-        .gap-analysis-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
+        .target-attainment-list {
+            display: flex;
+            flex-direction: column;
             gap: 16px;
         }
 
-        .gap-analysis-item {
-            background: var(--light-bg);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
+        .target-attainment-item {
+            display: grid;
+            grid-template-columns: 140px 1fr 80px 90px;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(184, 212, 232, 0.25);
         }
 
-        .gap-analysis-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(27, 54, 93, 0.1);
+        .target-attainment-item:last-child {
+            border-bottom: none;
         }
 
-        .gap-analysis-market {
+        .target-attainment-market {
             font-weight: 600;
             color: var(--navy);
             font-size: var(--font-body);
-            margin-bottom: 12px;
         }
 
-        .gap-analysis-value {
-            font-size: var(--font-value-lg);
-            font-weight: 700;
-            margin-bottom: 6px;
+        .target-attainment-bar-container {
+            height: 24px;
+            background: rgba(184, 212, 232, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .gap-analysis-value.above { color: var(--positive); }
-        .gap-analysis-value.below { color: var(--negative); }
-        .gap-analysis-value.at { color: var(--neutral); }
+        .target-attainment-bar {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+        }
 
-        .gap-analysis-label {
+        .target-attainment-bar.achieved {
+            background: linear-gradient(90deg, var(--positive), var(--positive-soft));
+        }
+
+        .target-attainment-bar.near {
+            background: linear-gradient(90deg, var(--neutral), var(--neutral-soft));
+        }
+
+        .target-attainment-bar.behind {
+            background: linear-gradient(90deg, var(--negative), var(--negative-soft));
+        }
+
+        .target-attainment-bar-label {
+            color: white;
             font-size: var(--font-caption);
-            color: var(--text-muted);
+            font-weight: 600;
         }
 
-        /* Trend Comparison Section */
-        .trend-comparison-card {
+        .target-attainment-pct {
+            font-weight: 700;
+            font-size: var(--font-body);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .target-attainment-pct.achieved { color: var(--positive); }
+        .target-attainment-pct.near { color: var(--neutral); }
+        .target-attainment-pct.behind { color: var(--negative); }
+
+        .target-attainment-status {
+            font-size: var(--font-caption);
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .target-attainment-status.achieved {
+            background: rgba(46, 125, 90, 0.12);
+            color: var(--positive);
+        }
+
+        .target-attainment-status.near {
+            background: rgba(184, 134, 11, 0.12);
+            color: var(--neutral);
+        }
+
+        .target-attainment-status.behind {
+            background: rgba(196, 49, 75, 0.12);
+            color: var(--negative);
+        }
+
+        /* Performance Trajectory Section */
+        .trajectory-card {
             background: var(--white);
             border-radius: 16px;
             padding: 28px;
             border: 1px solid var(--light-steel);
         }
 
-        .trend-comparison-title {
-            font-size: var(--font-h3);
-            font-weight: 700;
-            color: var(--navy);
+        .trajectory-header {
             margin-bottom: 24px;
         }
 
-        .trend-comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
+        .trajectory-title {
+            font-size: var(--font-h3);
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .trajectory-subtitle {
+            font-size: var(--font-body-sm);
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .trajectory-list {
+            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
 
-        .trend-card {
+        .trajectory-item {
+            display: grid;
+            grid-template-columns: 140px 1fr 120px;
+            align-items: center;
+            gap: 20px;
+            padding: 16px;
             background: var(--light-bg);
             border-radius: 12px;
-            padding: 20px;
-            text-align: center;
         }
 
+        .trajectory-market {
+            font-weight: 600;
+            color: var(--navy);
+            font-size: var(--font-body);
+        }
+
+        .trajectory-chart {
+            height: 48px;
+            position: relative;
+        }
+
+        .trajectory-chart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .trajectory-insight {
+            text-align: right;
+        }
+
+        .trajectory-change {
+            font-size: var(--font-body);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .trajectory-change.up { color: var(--positive); }
+        .trajectory-change.down { color: var(--negative); }
+        .trajectory-change.neutral { color: var(--neutral); }
+
+        .trajectory-trend {
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .trajectory-trend.accelerating { color: var(--positive); }
+        .trajectory-trend.decelerating { color: var(--negative); }
+        .trajectory-trend.stable { color: var(--neutral); }
+
+        /* Legacy styles for backward compat - can be removed */
         .trend-card-market {
             font-weight: 600;
             color: var(--navy);
@@ -2112,7 +2277,7 @@
             margin-top: 2px;
         }
 
-        /* Multi-KPI Matrix */
+        /* Multi-KPI Matrix - Simplified Horizontal Layout */
         .kpi-matrix-card {
             background: var(--white);
             border-radius: 16px;
@@ -2120,12 +2285,40 @@
             border: 1px solid var(--light-steel);
         }
 
+        .kpi-matrix-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
         .kpi-matrix-title {
             font-size: var(--font-h3);
             font-weight: 700;
             color: var(--navy);
-            margin-bottom: 24px;
         }
+
+        .kpi-matrix-legend {
+            display: flex;
+            gap: 16px;
+            font-size: var(--font-caption);
+            color: var(--text-muted);
+        }
+
+        .kpi-matrix-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kpi-matrix-legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .kpi-matrix-legend-dot.positive { background: var(--positive); }
+        .kpi-matrix-legend-dot.negative { background: var(--negative); }
 
         .kpi-matrix-table {
             width: 100%;
@@ -2134,7 +2327,7 @@
         }
 
         .kpi-matrix-table th {
-            padding: 14px 12px;
+            padding: 14px 16px;
             text-align: center;
             font-size: var(--font-caption);
             color: white;
@@ -2147,7 +2340,7 @@
         .kpi-matrix-table th:first-child {
             text-align: left;
             border-radius: 8px 0 0 0;
-            min-width: 160px;
+            min-width: 180px;
         }
 
         .kpi-matrix-table th:last-child {
@@ -2155,7 +2348,7 @@
         }
 
         .kpi-matrix-table td {
-            padding: 14px 12px;
+            padding: 16px;
             font-size: var(--font-body-sm);
             border-bottom: 1px solid rgba(184, 212, 232, 0.3);
             vertical-align: middle;
@@ -2165,6 +2358,10 @@
             border-bottom: none;
         }
 
+        .kpi-matrix-table tbody tr:hover td {
+            background: rgba(143, 175, 212, 0.06);
+        }
+
         .kpi-matrix-kpi-cell {
             font-weight: 600;
             color: var(--navy);
@@ -2172,47 +2369,48 @@
 
         .kpi-matrix-value-cell {
             text-align: center;
+            position: relative;
         }
 
-        .kpi-matrix-mini-bar {
+        /* Subtle background tint based on performance */
+        .kpi-matrix-value-cell.cell-positive {
+            background: rgba(46, 125, 90, 0.06);
+        }
+
+        .kpi-matrix-value-cell.cell-negative {
+            background: rgba(196, 49, 75, 0.06);
+        }
+
+        /* Horizontal compact layout for cell content */
+        .kpi-matrix-cell-content {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .kpi-matrix-rank-badge {
+        .kpi-matrix-rank {
             font-size: var(--font-micro);
             font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 10px;
-            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
-        .kpi-matrix-rank-badge.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); }
-        .kpi-matrix-rank-badge.rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
-        .kpi-matrix-rank-badge.rank-3 { background: linear-gradient(135deg, #CD7F32, #B87333); }
-        .kpi-matrix-rank-badge.rank-4 { background: var(--light-steel); color: var(--text-muted); }
-
-        .kpi-matrix-bar-wrapper {
-            width: 100%;
-            max-width: 80px;
-            height: 6px;
-            background: rgba(184, 212, 232, 0.3);
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 0 auto;
-        }
-
-        .kpi-matrix-bar-fill {
-            height: 100%;
-            border-radius: 3px;
-            background: var(--navy);
-        }
+        .kpi-matrix-rank.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: white; }
+        .kpi-matrix-rank.rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: white; }
+        .kpi-matrix-rank.rank-3 { background: linear-gradient(135deg, #CD7F32, #B87333); color: white; }
+        .kpi-matrix-rank.rank-4 { background: var(--light-bg); color: var(--text-muted); }
 
         .kpi-matrix-variance {
-            font-size: var(--font-caption);
+            font-size: var(--font-body-sm);
             font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            min-width: 60px;
         }
 
         .kpi-matrix-variance.up { color: var(--positive); }
@@ -2220,23 +2418,28 @@
         .kpi-matrix-variance.neutral { color: var(--neutral); }
 
         @media (max-width: 1200px) {
-            .gap-analysis-grid,
-            .trend-comparison-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
             .quick-stats-row {
                 grid-template-columns: 1fr;
             }
 
             .market-rank-item {
-                grid-template-columns: 32px 100px 1fr 80px 60px;
+                grid-template-columns: 32px 100px 1fr 70px;
                 gap: 12px;
             }
 
             .comparison-bar-row {
-                grid-template-columns: 120px 1fr 90px 70px;
+                grid-template-columns: 130px 1fr 80px;
                 gap: 12px;
+            }
+
+            .target-attainment-item {
+                grid-template-columns: 120px 1fr 70px 80px;
+                gap: 12px;
+            }
+
+            .trajectory-item {
+                grid-template-columns: 120px 1fr 100px;
+                gap: 16px;
             }
 
             .market-comparison-layout > div[style*="grid-template-columns: 1fr 1fr"] {
@@ -2245,27 +2448,37 @@
         }
 
         @media (max-width: 768px) {
-            .gap-analysis-grid,
-            .trend-comparison-grid {
-                grid-template-columns: 1fr;
-            }
-
             .market-rank-item {
-                grid-template-columns: 28px 80px 1fr;
-            }
-
-            .market-rank-value,
-            .market-rank-change {
-                display: none;
+                grid-template-columns: 28px 1fr 60px;
             }
 
             .comparison-bar-row {
-                grid-template-columns: 100px 1fr;
+                grid-template-columns: 110px 1fr;
             }
 
-            .comparison-bar-value,
-            .comparison-bar-change {
+            .comparison-bar-info {
                 display: none;
+            }
+
+            .target-attainment-item {
+                grid-template-columns: 100px 1fr 60px;
+            }
+
+            .target-attainment-status {
+                display: none;
+            }
+
+            .trajectory-item {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .trajectory-market {
+                text-align: center;
+            }
+
+            .trajectory-insight {
+                text-align: center;
             }
 
             .kpi-matrix-table {
@@ -2274,7 +2487,16 @@
 
             .kpi-matrix-table th,
             .kpi-matrix-table td {
-                padding: 8px 6px;
+                padding: 10px 8px;
+            }
+
+            .kpi-matrix-cell-content {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .kpi-matrix-legend {
+                display: none;
             }
         }
     </style>
@@ -2687,7 +2909,7 @@
             const markets = getMarkets();
             const config = KPI_CONFIG['SLS_TTL'];
 
-            // Get individual markets sorted by Sales YTD
+            // Get individual markets sorted by vs LY change (best performer first)
             const marketData = markets
                 .filter(m => !isAggregateValue(m, 'market'))
                 .map(m => {
@@ -2700,16 +2922,17 @@
                         changeClass: getChangeClass(change, config.format)
                     };
                 })
-                .sort((a, b) => b.value - a.value);
+                .sort((a, b) => (b.change || 0) - (a.change || 0)); // Sort by performance, not size
 
-            const maxValue = marketData[0]?.value || 1;
+            // Find max absolute change for scaling
+            const maxAbsChange = Math.max(...marketData.map(d => Math.abs(d.change || 0)), 1);
 
             return `
                 <div class="market-rankings-widget">
                     <div class="market-rankings-header">
                         <div>
-                            <div class="market-rankings-title">Market Rankings</div>
-                            <div class="market-rankings-subtitle">By Total Sales YTD</div>
+                            <div class="market-rankings-title">Market Performance</div>
+                            <div class="market-rankings-subtitle">Total Sales vs Last Year</div>
                         </div>
                         <div class="market-rankings-link" onclick="document.querySelector('[data-tab=markets]').click()">
                             View Full Comparison
@@ -2720,19 +2943,24 @@
                     </div>
                     <div class="market-rankings-list">
                         ${marketData.map((item, index) => {
-                            const barWidth = (item.value / maxValue) * 100;
                             const rankClass = index < 3 ? `rank-${index + 1}` : 'rank-other';
-                            const barClass = item.change >= 0 ? (item.change > 2 ? 'positive' : 'neutral') : 'negative';
-                            const changeArrow = item.change >= 0 ? '↑' : '↓';
+                            const isPositive = item.change >= 0;
+                            const barWidth = Math.min((Math.abs(item.change || 0) / maxAbsChange) * 45, 45); // Max 45% width each side
+                            const changeArrow = isPositive ? '↑' : '↓';
 
                             return `
                                 <div class="market-rank-item">
                                     <div class="market-rank-position ${rankClass}">${index + 1}</div>
                                     <div class="market-rank-name">${item.market}</div>
-                                    <div class="market-rank-bar-container">
-                                        <div class="market-rank-bar ${barClass}" style="width: ${barWidth}%"></div>
+                                    <div class="market-rank-diverging">
+                                        <div class="market-rank-diverging-track">
+                                            <div class="market-rank-diverging-center"></div>
+                                            <div class="market-rank-diverging-bar ${isPositive ? 'positive' : 'negative'}"
+                                                 style="width: ${barWidth}%">
+                                                ${barWidth > 12 ? `<span class="market-rank-diverging-label">${formatChange(item.change, config.format)}</span>` : ''}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="market-rank-value">${formatValue(item.value, config.format)}</div>
                                     <div class="market-rank-change ${item.changeClass}">
                                         ${changeArrow} ${formatChange(item.change, config.format)}
                                     </div>
@@ -2790,10 +3018,10 @@
                     <!-- Main Comparison Bars -->
                     ${renderComparisonBars(kpiKey, month, mode)}
 
-                    <!-- Two Column Layout: Gap Analysis + Trend Comparison -->
+                    <!-- Two Column Layout: Target Attainment + Performance Trajectory -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                        ${renderGapAnalysis(kpiKey, month)}
-                        ${renderTrendComparison(kpiKey)}
+                        ${renderTargetAttainment(kpiKey, month)}
+                        ${renderPerformanceTrajectory(kpiKey)}
                     </div>
 
                     <!-- Multi-KPI Matrix -->
@@ -2886,52 +3114,47 @@
                     changeClass: getChangeClass(change, config.format),
                     targetClass: targetGap !== null ? getChangeClass(targetGap, config.format) : null
                 };
-            }).filter(d => d).sort((a, b) => b.value - a.value);
+            }).filter(d => d);
 
-            const maxValue = marketData[0]?.value || 1;
+            // Sort by the relevant metric based on mode
+            if (mode === 'vsTarget') {
+                marketData.sort((a, b) => (b.targetGap || -999) - (a.targetGap || -999));
+            } else if (mode === 'vsLY') {
+                marketData.sort((a, b) => (b.change || 0) - (a.change || 0));
+            } else {
+                marketData.sort((a, b) => b.value - a.value);
+            }
 
-            // Determine what to show based on mode
-            const getBarInfo = (item, index) => {
-                let barWidth, barClass, displayChange, displayClass;
-
-                if (mode === 'absolute') {
-                    barWidth = (item.value / maxValue) * 100;
-                    barClass = 'neutral';
-                    displayChange = '';
-                    displayClass = '';
-                } else if (mode === 'vsTarget' && item.targetGap !== null) {
-                    barWidth = (item.value / maxValue) * 100;
-                    barClass = item.targetClass;
-                    displayChange = formatChange(item.targetGap, config.format);
-                    displayClass = item.targetClass;
-                } else {
-                    barWidth = (item.value / maxValue) * 100;
-                    barClass = item.changeClass;
-                    displayChange = formatChange(item.change, config.format);
-                    displayClass = item.changeClass;
-                }
-
-                return { barWidth, barClass, displayChange, displayClass };
+            // Find max absolute change for scaling diverging bars
+            const getRelevantChange = (item) => {
+                if (mode === 'vsTarget') return item.targetGap || 0;
+                if (mode === 'vsLY') return item.change || 0;
+                return 0;
             };
+            const maxAbsChange = Math.max(...marketData.map(d => Math.abs(getRelevantChange(d))), 1);
 
-            // Calculate axis labels
-            const axisLabels = [0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue];
+            // Determine comparison label for mode
+            const modeLabel = mode === 'vsTarget' ? 'vs Target' : mode === 'vsLY' ? 'vs Last Year' : 'Value';
 
             return `
                 <div class="comparison-bars-card">
                     <div class="comparison-bars-header">
-                        <div class="comparison-bars-title">${config.name} — YTD thru ${month}</div>
+                        <div class="comparison-bars-title">${config.name} — ${modeLabel}</div>
                         <div class="comparison-bars-toggles">
                             <button class="comparison-toggle ${mode === 'vsLY' ? 'active' : ''}" data-mode="vsLY">vs Last Year</button>
                             <button class="comparison-toggle ${mode === 'vsTarget' ? 'active' : ''}" data-mode="vsTarget">vs Target</button>
-                            <button class="comparison-toggle ${mode === 'absolute' ? 'active' : ''}" data-mode="absolute">Absolute</button>
                         </div>
                     </div>
                     <div class="comparison-bars-body">
                         ${marketData.map((item, index) => {
-                            const { barWidth, barClass, displayChange, displayClass } = getBarInfo(item, index);
+                            const relevantChange = getRelevantChange(item);
+                            const isPositive = relevantChange >= 0;
+                            const barWidth = Math.min((Math.abs(relevantChange) / maxAbsChange) * 48, 48); // Max 48% each side
                             const rankClass = index < 3 ? `rank-${index + 1}` : '';
-                            const changeArrow = item.change >= 0 ? '↑' : '↓';
+                            const displayClass = mode === 'vsTarget' ? item.targetClass : item.changeClass;
+                            const displayChange = mode === 'vsTarget'
+                                ? formatChange(item.targetGap, config.format)
+                                : formatChange(item.change, config.format);
 
                             return `
                                 <div class="comparison-bar-row">
@@ -2939,70 +3162,97 @@
                                         <span class="comparison-bar-rank ${rankClass}">${index + 1}</span>
                                         ${item.market}
                                     </div>
-                                    <div class="comparison-bar-track">
-                                        <div class="comparison-bar-fill ${barClass}" style="width: ${barWidth}%">
-                                            ${barWidth > 15 ? `<span class="comparison-bar-fill-label">${displayChange}</span>` : ''}
+                                    <div class="comparison-diverging-track">
+                                        <div class="comparison-diverging-bg"></div>
+                                        <div class="comparison-diverging-center"></div>
+                                        <div class="comparison-diverging-bar ${isPositive ? 'positive' : 'negative'}"
+                                             style="width: ${barWidth}%">
+                                            ${barWidth > 15 ? `<span class="comparison-diverging-label">${displayChange}</span>` : ''}
                                         </div>
                                     </div>
-                                    <div class="comparison-bar-value">${formatValue(item.value, config.format)}</div>
-                                    <div class="comparison-bar-change ${displayClass}">
-                                        ${mode !== 'absolute' ? `${changeArrow} ${displayChange}` : ''}
+                                    <div class="comparison-bar-info">
+                                        <div class="comparison-bar-value">${formatValue(item.value, config.format)}</div>
+                                        <div class="comparison-bar-change">${displayChange}</div>
                                     </div>
                                 </div>
                             `;
                         }).join('')}
                     </div>
                     <div class="comparison-bar-axis">
-                        ${axisLabels.map(v => `<span class="comparison-bar-axis-label">${formatValue(v, config.format)}</span>`).join('')}
+                        <div></div>
+                        <div class="comparison-bar-axis-track">
+                            <span class="comparison-bar-axis-label">-${Math.round(maxAbsChange)}${config.format === 'percent' ? ' PP' : '%'}</span>
+                            <span class="comparison-bar-axis-label comparison-bar-axis-center">0</span>
+                            <span class="comparison-bar-axis-label">+${Math.round(maxAbsChange)}${config.format === 'percent' ? ' PP' : '%'}</span>
+                        </div>
+                        <div></div>
                     </div>
                 </div>
             `;
         }
 
-        function renderGapAnalysis(kpiKey, month) {
+        function renderTargetAttainment(kpiKey, month) {
             const config = KPI_CONFIG[kpiKey];
             const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
-            const totalMarket = getAggregateValue('market');
-            const totalData = getDataForMonth(totalMarket, kpiKey, month);
 
-            // Calculate average (use total if available, otherwise calculate mean)
-            let benchmarkValue;
-            if (totalData) {
-                benchmarkValue = totalData.YTD / markets.length; // Average per market
-            } else {
-                const allValues = markets.map(m => getDataForMonth(m, kpiKey, month)?.YTD || 0);
-                benchmarkValue = allValues.reduce((a, b) => a + b, 0) / allValues.length;
-            }
-
-            // Get market data with gap from average
+            // Get market data with target attainment
             const marketData = markets.map(m => {
                 const data = getDataForMonth(m, kpiKey, month);
-                if (!data) return null;
-                const gapFromAvg = benchmarkValue > 0 ? ((data.YTD - benchmarkValue) / benchmarkValue) * 100 : 0;
+                if (!data || !data.Target) return null;
+
+                const attainment = (data.YTD / data.Target) * 100;
+                let status, statusClass;
+                if (attainment >= 100) {
+                    status = 'On Track';
+                    statusClass = 'achieved';
+                } else if (attainment >= 90) {
+                    status = 'Near';
+                    statusClass = 'near';
+                } else if (attainment >= 75) {
+                    status = 'Behind';
+                    statusClass = 'behind';
+                } else {
+                    status = 'At Risk';
+                    statusClass = 'behind';
+                }
+
                 return {
                     market: m,
                     value: data.YTD,
-                    gap: gapFromAvg
+                    target: data.Target,
+                    attainment,
+                    status,
+                    statusClass
                 };
-            }).filter(d => d).sort((a, b) => b.gap - a.gap);
+            }).filter(d => d).sort((a, b) => b.attainment - a.attainment);
+
+            // If no targets available, show growth comparison instead
+            if (marketData.length === 0) {
+                return renderGrowthComparison(kpiKey, month);
+            }
 
             return `
-                <div class="gap-analysis-card">
-                    <div class="gap-analysis-header">
-                        <div class="gap-analysis-title">Gap from Average</div>
-                        <div class="gap-analysis-benchmark">Benchmark: ${formatValue(benchmarkValue, config.format)} avg/market</div>
+                <div class="target-attainment-card">
+                    <div class="target-attainment-header">
+                        <div>
+                            <div class="target-attainment-title">Target Attainment</div>
+                            <div class="target-attainment-subtitle">${config.name} — % of Target Achieved</div>
+                        </div>
                     </div>
-                    <div class="gap-analysis-grid">
+                    <div class="target-attainment-list">
                         ${marketData.map(item => {
-                            const gapClass = item.gap > 2 ? 'above' : (item.gap < -2 ? 'below' : 'at');
-                            const gapSign = item.gap >= 0 ? '+' : '';
-                            const gapLabel = item.gap > 2 ? 'above average' : (item.gap < -2 ? 'below average' : 'at average');
+                            const barWidth = Math.min(item.attainment, 100);
 
                             return `
-                                <div class="gap-analysis-item">
-                                    <div class="gap-analysis-market">${item.market}</div>
-                                    <div class="gap-analysis-value ${gapClass}">${gapSign}${item.gap.toFixed(1)}%</div>
-                                    <div class="gap-analysis-label">${gapLabel}</div>
+                                <div class="target-attainment-item">
+                                    <div class="target-attainment-market">${item.market}</div>
+                                    <div class="target-attainment-bar-container">
+                                        <div class="target-attainment-bar ${item.statusClass}" style="width: ${barWidth}%">
+                                            ${barWidth > 20 ? `<span class="target-attainment-bar-label">${item.attainment.toFixed(0)}%</span>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="target-attainment-pct ${item.statusClass}">${item.attainment.toFixed(0)}%</div>
+                                    <div class="target-attainment-status ${item.statusClass}">${item.status}</div>
                                 </div>
                             `;
                         }).join('')}
@@ -3011,80 +3261,158 @@
             `;
         }
 
-        function renderTrendComparison(kpiKey) {
+        // Fallback if no targets: show growth comparison
+        function renderGrowthComparison(kpiKey, month) {
+            const config = KPI_CONFIG[kpiKey];
+            const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
+
+            const marketData = markets.map(m => {
+                const data = getDataForMonth(m, kpiKey, month);
+                if (!data) return null;
+                const change = calcChange(data.YTD, data.LYTD, config.format);
+                return {
+                    market: m,
+                    change,
+                    changeClass: getChangeClass(change, config.format)
+                };
+            }).filter(d => d).sort((a, b) => (b.change || 0) - (a.change || 0));
+
+            const maxAbsChange = Math.max(...marketData.map(d => Math.abs(d.change || 0)), 1);
+
+            return `
+                <div class="target-attainment-card">
+                    <div class="target-attainment-header">
+                        <div>
+                            <div class="target-attainment-title">Growth Comparison</div>
+                            <div class="target-attainment-subtitle">${config.name} — vs Last Year</div>
+                        </div>
+                    </div>
+                    <div class="target-attainment-list">
+                        ${marketData.map(item => {
+                            const isPositive = item.change >= 0;
+                            const barWidth = Math.min((Math.abs(item.change) / maxAbsChange) * 100, 100);
+                            const statusClass = isPositive ? 'achieved' : 'behind';
+                            const status = isPositive ? 'Growing' : 'Declining';
+
+                            return `
+                                <div class="target-attainment-item">
+                                    <div class="target-attainment-market">${item.market}</div>
+                                    <div class="target-attainment-bar-container">
+                                        <div class="target-attainment-bar ${statusClass}" style="width: ${barWidth}%">
+                                            ${barWidth > 20 ? `<span class="target-attainment-bar-label">${formatChange(item.change, config.format)}</span>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="target-attainment-pct ${statusClass}">${formatChange(item.change, config.format)}</div>
+                                    <div class="target-attainment-status ${statusClass}">${status}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPerformanceTrajectory(kpiKey) {
             const config = KPI_CONFIG[kpiKey];
             const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
             const months = getAvailableMonths();
 
-            // Get trend data for each market
-            const trendData = markets.map(m => {
-                const monthlyValues = months.map(month => {
+            // Get trajectory data - how the vs LY gap has evolved
+            const trajectoryData = markets.map(m => {
+                // Calculate change vs LY for each month
+                const monthlyChanges = months.map(month => {
                     const data = getDataForMonth(m, kpiKey, month);
-                    return data?.YTD || null;
-                });
+                    if (!data || !data.LYTD) return null;
+                    return calcChange(data.YTD, data.LYTD, config.format);
+                }).filter(c => c !== null);
 
-                // Calculate overall YTD change (latest month)
+                // Calculate overall change and trend
                 const latestData = getLatestData(m, kpiKey);
-                const change = latestData ? calcChange(latestData.YTD, latestData.LYTD, config.format) : 0;
+                const currentChange = latestData ? calcChange(latestData.YTD, latestData.LYTD, config.format) : 0;
+
+                // Determine trajectory: is performance improving or declining?
+                let trend = 'stable';
+                let trendLabel = 'Stable';
+                if (monthlyChanges.length >= 3) {
+                    const firstHalf = monthlyChanges.slice(0, Math.floor(monthlyChanges.length / 2));
+                    const secondHalf = monthlyChanges.slice(Math.floor(monthlyChanges.length / 2));
+                    const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+                    const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+                    const delta = secondAvg - firstAvg;
+
+                    if (delta > 2) {
+                        trend = 'accelerating';
+                        trendLabel = 'Accelerating';
+                    } else if (delta < -2) {
+                        trend = 'decelerating';
+                        trendLabel = 'Decelerating';
+                    }
+                }
 
                 return {
                     market: m,
-                    values: monthlyValues,
-                    change,
-                    changeClass: getChangeClass(change, config.format)
+                    monthlyChanges,
+                    currentChange,
+                    changeClass: getChangeClass(currentChange, config.format),
+                    trend,
+                    trendLabel
                 };
-            });
+            }).sort((a, b) => (b.currentChange || 0) - (a.currentChange || 0));
 
-            // Render sparkline SVG
-            function renderSparkline(values, changeClass) {
-                const validValues = values.filter(v => v !== null);
-                if (validValues.length < 2) return '<div style="color: var(--text-muted); font-style: italic;">Insufficient data</div>';
+            // Render trajectory sparkline (showing vs LY change evolution, not absolute values)
+            function renderTrajectoryChart(changes, changeClass, trend) {
+                if (changes.length < 2) return '<div style="color: var(--text-muted); font-style: italic; text-align:center;">—</div>';
 
-                const minVal = Math.min(...validValues);
-                const maxVal = Math.max(...validValues);
+                const minVal = Math.min(...changes, 0); // Always include 0 in range
+                const maxVal = Math.max(...changes, 0);
                 const range = maxVal - minVal || 1;
 
-                const width = 120;
-                const height = 50;
+                const width = 200;
+                const height = 48;
                 const padding = 4;
+
+                // Calculate zero line position
+                const zeroY = height - padding - ((0 - minVal) / range) * (height - padding * 2);
 
                 // Create path points
                 let pathD = '';
-                let validIndex = 0;
-                values.forEach((v, i) => {
-                    if (v !== null) {
-                        const x = padding + (validIndex / (validValues.length - 1)) * (width - padding * 2);
-                        const y = height - padding - ((v - minVal) / range) * (height - padding * 2);
-                        pathD += (validIndex === 0 ? 'M' : 'L') + `${x},${y}`;
-                        validIndex++;
-                    }
+                changes.forEach((v, i) => {
+                    const x = padding + (i / (changes.length - 1)) * (width - padding * 2);
+                    const y = height - padding - ((v - minVal) / range) * (height - padding * 2);
+                    pathD += (i === 0 ? 'M' : 'L') + `${x},${y}`;
                 });
 
                 const strokeColor = changeClass === 'up' ? 'var(--positive)' : (changeClass === 'down' ? 'var(--negative)' : 'var(--navy)');
 
                 return `
                     <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+                        <line x1="${padding}" y1="${zeroY}" x2="${width - padding}" y2="${zeroY}" stroke="var(--light-steel)" stroke-width="1" stroke-dasharray="3,3"/>
                         <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 `;
             }
 
             return `
-                <div class="trend-comparison-card">
-                    <div class="trend-comparison-title">Monthly Trend — ${config.name}</div>
-                    <div class="trend-comparison-grid">
-                        ${trendData.map(item => {
-                            const changeArrow = item.change >= 0 ? '↑' : '↓';
+                <div class="trajectory-card">
+                    <div class="trajectory-header">
+                        <div class="trajectory-title">Performance Trajectory</div>
+                        <div class="trajectory-subtitle">${config.name} — How vs LY gap is evolving</div>
+                    </div>
+                    <div class="trajectory-list">
+                        ${trajectoryData.map(item => {
+                            const changeArrow = item.currentChange >= 0 ? '↑' : '↓';
                             return `
-                                <div class="trend-card">
-                                    <div class="trend-card-market">${item.market}</div>
-                                    <div class="trend-card-sparkline">
-                                        ${renderSparkline(item.values, item.changeClass)}
+                                <div class="trajectory-item">
+                                    <div class="trajectory-market">${item.market}</div>
+                                    <div class="trajectory-chart">
+                                        ${renderTrajectoryChart(item.monthlyChanges, item.changeClass, item.trend)}
                                     </div>
-                                    <div class="trend-card-change ${item.changeClass}">
-                                        ${changeArrow} ${formatChange(item.change, config.format)}
+                                    <div class="trajectory-insight">
+                                        <div class="trajectory-change ${item.changeClass}">
+                                            ${changeArrow} ${formatChange(item.currentChange, config.format)}
+                                        </div>
+                                        <div class="trajectory-trend ${item.trend}">${item.trendLabel}</div>
                                     </div>
-                                    <div class="trend-card-label">YTD vs LY</div>
                                 </div>
                             `;
                         }).join('')}
@@ -3097,9 +3425,22 @@
             const markets = getMarkets().filter(m => !isAggregateValue(m, 'market'));
             const keyKPIs = ['SLS_TTL', 'MBR_TTL', 'PCT_NBA', 'PCT_XBP', 'PCT_RDM', 'AVG_AOV'];
 
+            // Build a header row with legend
             return `
                 <div class="kpi-matrix-card">
-                    <div class="kpi-matrix-title">Multi-KPI Performance Matrix — ${month}</div>
+                    <div class="kpi-matrix-header">
+                        <div class="kpi-matrix-title">Multi-KPI Performance Matrix — ${month}</div>
+                        <div class="kpi-matrix-legend">
+                            <div class="kpi-matrix-legend-item">
+                                <span class="kpi-matrix-legend-dot positive"></span>
+                                <span>Positive vs LY</span>
+                            </div>
+                            <div class="kpi-matrix-legend-item">
+                                <span class="kpi-matrix-legend-dot negative"></span>
+                                <span>Negative vs LY</span>
+                            </div>
+                        </div>
+                    </div>
                     <table class="kpi-matrix-table">
                         <thead>
                             <tr>
@@ -3112,44 +3453,30 @@
                                 const config = KPI_CONFIG[kpiKey];
                                 if (!config) return '';
 
-                                // Get data for all markets
+                                // Get data for all markets - focus on vs LY change
                                 const marketValues = markets.map(m => {
                                     const data = getDataForMonth(m, kpiKey, month);
-                                    if (!data) return { market: m, value: null, change: null };
+                                    if (!data) return { market: m, change: null };
                                     const change = calcChange(data.YTD, data.LYTD, config.format);
-                                    return { market: m, value: data.YTD, change };
-                                });
-
-                                // Rank markets by value
-                                const sortedByValue = [...marketValues].filter(v => v.value !== null).sort((a, b) => b.value - a.value);
-                                const maxValue = sortedByValue[0]?.value || 1;
-                                const rankings = {};
-                                sortedByValue.forEach((item, idx) => {
-                                    rankings[item.market] = idx + 1;
+                                    return { market: m, change };
                                 });
 
                                 return `
                                     <tr>
                                         <td class="kpi-matrix-kpi-cell">${config.name}</td>
                                         ${marketValues.map(item => {
-                                            if (item.value === null) {
+                                            if (item.change === null) {
                                                 return '<td class="kpi-matrix-value-cell"><span class="cell-na">—</span></td>';
                                             }
 
-                                            const rank = rankings[item.market] || 4;
-                                            const barWidth = (item.value / maxValue) * 100;
                                             const changeClass = getChangeClass(item.change, config.format);
+                                            const cellClass = changeClass === 'up' ? 'cell-positive' :
+                                                              changeClass === 'down' ? 'cell-negative' : '';
                                             const changeArrow = item.change >= 0 ? '↑' : '↓';
 
                                             return `
-                                                <td class="kpi-matrix-value-cell">
-                                                    <div class="kpi-matrix-mini-bar">
-                                                        <span class="kpi-matrix-rank-badge rank-${rank}">#${rank}</span>
-                                                        <div class="kpi-matrix-bar-wrapper">
-                                                            <div class="kpi-matrix-bar-fill" style="width: ${barWidth}%"></div>
-                                                        </div>
-                                                        <span class="kpi-matrix-variance ${changeClass}">${changeArrow} ${formatChange(item.change, config.format)}</span>
-                                                    </div>
+                                                <td class="kpi-matrix-value-cell ${cellClass}">
+                                                    <span class="kpi-matrix-variance ${changeClass}">${changeArrow} ${formatChange(item.change, config.format)}</span>
                                                 </td>
                                             `;
                                         }).join('')}
